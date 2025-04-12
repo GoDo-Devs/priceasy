@@ -1,14 +1,16 @@
 # dependencies
-/front/node_modules
-/back/node_modules
+/frontend/node_modules
+/backend/node_modules
 
 # cache
-/front/package-lock
-/back/package-lock
+/frontend/package-lock
+/backend/package-lock
+/frontend/package-lock.json
+/backend/package-lock.json
 
 
 # local env files
-/front/.env
-/back/.env
+/frontend/.env
+/backend/.env
 
 node_modules/
