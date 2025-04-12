@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 
-const db = require("../db/conn");
+const db = require("../utils/db").default;
 
 const User = db.define("User", {
   name: {

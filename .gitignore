@@ -1,0 +1,14 @@
+# dependencies
+/front/node_modules
+/back/node_modules
+
+# cache
+/front/package-lock
+/back/package-lock
+
+
+# local env files
+/front/.env
+/back/.env
+
+node_modules/
