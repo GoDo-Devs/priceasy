@@ -1,11 +1,10 @@
-const express = require("express");
+import express from 'express'
+import sequelize from './db/index.js'
 
 const app = express();
 app.use(express.static("public"));
 
-const conn = require("./db/conn");
-
-conn
+sequelize
   .sync()
   .then(() => {
     app.listen(3006);
