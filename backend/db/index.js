@@ -8,16 +8,15 @@ const sequelize = new Sequelize(
   process.env.DB_USER,
   process.env.DB_PASSWORD,
   {
-    host: "localhost",
+    host: process.env.DB_HOST,
     dialect: "mysql",
   }
 );
 
 try {
   await sequelize.authenticate();
-  console.log("Conectado ao MySQL!");
 } catch (err) {
-  console.log(`Não foi possível conectar: ${err}`);
+  console.log(`Não foi possível conectar MySQL: ${err}`);
 }
 
 export default sequelize;

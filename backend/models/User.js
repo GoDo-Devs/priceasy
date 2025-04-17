@@ -1,20 +1,35 @@
-const { DataTypes } = require("sequelize");
+import { DataTypes, Sequelize, UUIDV4  } from "sequelize";
+import sequelize from "../db";
 
-const db = require("../utils/db").default;
-
-const User = db.define("User", {
+const User = sequelize.define("User", {
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: UUIDV4,
+    primaryKey: true,
+  },
   name: {
     type: DataTypes.STRING,
-    require: true,
-  },
-  email: {
-    type: DataTypes.STRING,
-    require: true,
+    allowNull: false,
   },
   password: {
     type: DataTypes.STRING,
-    require: true,
+    allowNull: false,
   },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    unique: true,
+  },
+  is_admin: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false,
+  },
+}, {
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at',
 });
 
-module.exports = User;
+export default User;

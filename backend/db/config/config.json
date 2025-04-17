@@ -3,9 +3,13 @@
     "username": "root",
     "password": "root",
     "database": "priceasy",
-    "host": "localhost",
-    "dialect": "mysql"
+    "host": "db",
+    "dialect": "mysql",
+    "define": {
+      "timestamps": true
+    }
   },
+
   "production": {
     "username": "root",
     "password": null,

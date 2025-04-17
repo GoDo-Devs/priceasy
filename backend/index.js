@@ -1,12 +1,13 @@
 import express from 'express'
-import sequelize from './db/index.js'
 
 const app = express();
 app.use(express.static("public"));
 
-sequelize
-  .sync()
-  .then(() => {
-    app.listen(3006);
-  })
-  .catch((err) => console.log(err));
+app.get('/health', (req, res) => {
+    res.send('Hello!!');
+});
+
+app.listen(4000, '0.0.0.0', () => {
+    console.log('Backend running on port 4000');
+});
+  
