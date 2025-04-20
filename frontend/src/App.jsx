@@ -1,10 +1,11 @@
-import { Stack } from "@mui/material"
+import {
+  RouterProvider,
+} from "react-router";
+import routes from "./router/routes";
 
 function App() {
   return (
-    <>
-      Hello World
-    </>
+    <RouterProvider router={routes} />
   )
 }
 
