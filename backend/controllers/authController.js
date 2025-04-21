@@ -1,0 +1,181 @@
+import User from "../models/User.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+import createUserToken from "../helpers/create-user-token.js";
+import getToken from "../helpers/get-token.js";
+import getUserByToken from "../helpers/get-user-by-token.js";
+
+export default class UserController {
+  // register
+  static async register(req, res) {
+    const { name, email, password, confirmpassword } = req.body;
+
+    if (!name) {
+      res.status(422).json({ message: "O nome é obrigatório!" });
+      return;
+    }
+
+    if (!email) {
+      res.status(422).json({ message: "O e-mail é obrigatório!" });
+      return;
+    }
+
+    if (!password) {
+      res.status(422).json({ message: "A senha é obrigatória!" });
+      return;
+    }
+
+    if (!confirmpassword) {
+      res
+        .status(422)
+        .json({ message: "A confirmação de senha é obrigatória!" });
+      return;
+    }
+
+    if (password !== confirmpassword) {
+      res.status(422).json({ message: "As senhas não conferem!" });
+      return;
+    }
+
+    const userExists = await User.findOne({ where: { email } });
+
+    if (userExists) {
+      res.status(422).json({ message: "Por favor, utilize outro e=mail!" });
+      return;
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    const passwordHash = await bcrypt.hash(password, salt);
+
+    const user = new User({
+      name: name,
+      email: email,
+      password: passwordHash,
+    });
+
+    try {
+      const newUser = await user.save();
+      await createUserToken(newUser, req, res);
+    } catch (error) {
+      res.status(500).json({ message: error });
+    }
+  }
+
+  // login
+  static async login(req, res) {
+    const { email, password } = req.body;
+
+    if (!email) {
+      res.status(422).json({ message: "O e-mail é obrigatório" });
+    }
+
+    if (!password) {
+      res.status(422).json({ message: "A senha é obrigatória!" });
+      return;
+    }
+
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      res.status(422).json({ message: "Usuário não encontrado!" });
+      return;
+    }
+
+    const checkPassword = await bcrypt.compare(password, user.password);
+
+    if (!checkPassword) {
+      res.status(422).json({ message: "Senha inválida!" });
+      return;
+    }
+
+    await createUserToken(user, req, res);
+  }
+
+  static async checkUser(req, res) {
+    let currentUser;
+
+    if (req.headers.authorization) {
+      try {
+        const token = getToken(req);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        currentUser = await User.findByPk(decoded.id);
+        if (currentUser) {
+          currentUser.password = undefined;
+        }
+      } catch (err) {
+        return res.status(401).json({ message: "Token inválido ou expirado." });
+      }
+    } else {
+      currentUser = null;
+    }
+
+    res.status(200).send(currentUser);
+  }
+
+  static async getUserById(req, res) {
+    const id = req.params.id;
+
+    const user = await User.findByPk(id, {
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!user) {
+      res.status(422).json({ message: "Usuário não encontrado" });
+      return;
+    }
+
+    res.status(200).json({ user });
+  }
+
+  static async editUser(req, res) {
+    const token = getToken(req);
+    const user = await getUserByToken(token);
+
+    const { name, email, password, confirmpassword, is_admin } = req.body;
+
+    if (!name) {
+      res.status(422).json({ message: "O nome é obrigatório!" });
+      return;
+    }
+
+    if (!email) {
+      res.status(422).json({ message: "O e-mail é obrigatório!" });
+      return;
+    }
+
+    const userExists = await User.findOne({ where: { email } });
+
+    if (user.email !== email && userExists) {
+      res.status(422).json({ message: "Por favor, utilize outro e-mail!" });
+      return;
+    }
+
+    try {
+      user.name = name;
+      user.email = email;
+      user.is_admin = is_admin;
+
+      if (password && password === confirmpassword) {
+        const salt = await bcrypt.genSalt(12);
+        const passwordHash = await bcrypt.hash(password, salt);
+        user.password = passwordHash;
+      }
+
+      await user.save();
+
+      res.status(200).json({
+        message: "Usuário atualizado com sucesso!",
+        data: {
+          name: user.name,
+          email: user.email,
+          is_admin: user.is_admin,
+        },
+      });
+    } catch (err) {
+      res.status(500).json({ message: err });
+      return;
+    }
+  }
+}
