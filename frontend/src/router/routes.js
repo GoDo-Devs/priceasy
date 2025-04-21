@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router";
 import Home from "../pages/Home.jsx";
-import Login from "../pages/Login.jsx";
+import Login from "../pages/auth/Login.jsx";
   
 const routes = createBrowserRouter([
     {
