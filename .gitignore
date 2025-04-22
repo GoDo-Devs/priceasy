@@ -12,5 +12,6 @@
 # local env files
 /frontend/.env
 /backend/.env
+/backend/config.json
 
 node_modules/
