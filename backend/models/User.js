@@ -1,7 +1,9 @@
-import { DataTypes, Sequelize, UUIDV4  } from "sequelize";
-import sequelize from "../db/index.js";
+import { DataTypes, Model, UUIDV4 } from 'sequelize';
+import sequelize from '../db/index.js';
 
-const User = sequelize.define("User", {
+class User extends Model {}
+
+User.init({
   id: {
     type: DataTypes.UUID,
     defaultValue: UUIDV4,
@@ -26,6 +28,8 @@ const User = sequelize.define("User", {
     allowNull: false,
   },
 }, {
+  sequelize,
+  modelName: 'User',
   tableName: 'users',
   timestamps: true,
   createdAt: 'created_at',
