@@ -2,9 +2,9 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import createUserToken from "../helpers/create-user-token.js";
-import getToken from "../helpers/get-token.js";
-import getUserByToken from "../helpers/get-user-by-token.js";
+import createUserToken from "../helpers/createUserToken.js";
+import getToken from "../helpers/getToken.js";
+import getUserByToken from "../helpers/getUserByToken.js";
 
 export default class UserController {
   // register

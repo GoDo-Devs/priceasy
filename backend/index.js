@@ -4,7 +4,7 @@ const app = express();
 import authRoutes from "./routes/authRoutes.js";
 
 app.use(express.json());
-app.use(cors({ credentials: true, origin: "http://localhost:4000" }));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.static("public"));
 
 app.use("/", authRoutes);
