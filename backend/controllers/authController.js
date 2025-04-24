@@ -9,34 +9,8 @@ import getUserByToken from "../helpers/getUserByToken.js";
 export default class UserController {
   // register
   static async register(req, res) {
-    const { name, email, password, confirmpassword } = req.body;
 
-    if (!name) {
-      res.status(422).json({ message: "O nome é obrigatório!" });
-      return;
-    }
-
-    if (!email) {
-      res.status(422).json({ message: "O e-mail é obrigatório!" });
-      return;
-    }
-
-    if (!password) {
-      res.status(422).json({ message: "A senha é obrigatória!" });
-      return;
-    }
-
-    if (!confirmpassword) {
-      res
-        .status(422)
-        .json({ message: "A confirmação de senha é obrigatória!" });
-      return;
-    }
-
-    if (password !== confirmpassword) {
-      res.status(422).json({ message: "As senhas não conferem!" });
-      return;
-    }
+    const {name, email, password} = req.body
 
     const userExists = await User.findOne({ where: { email } });
 
@@ -65,16 +39,6 @@ export default class UserController {
   // login
   static async login(req, res) {
     const { email, password } = req.body;
-
-    if (!email) {
-      res.status(422).json({ message: "O e-mail é obrigatório" });
-    }
-
-    if (!password) {
-      res.status(422).json({ message: "A senha é obrigatória!" });
-      return;
-    }
-
     const user = await User.findOne({ email: email });
 
     if (!user) {
@@ -133,17 +97,8 @@ export default class UserController {
     const token = getToken(req);
     const user = await getUserByToken(token);
 
-    const { name, email, password, confirmpassword, is_admin } = req.body;
+    const { name, email, password, confirmpassword } = req.body;
 
-    if (!name) {
-      res.status(422).json({ message: "O nome é obrigatório!" });
-      return;
-    }
-
-    if (!email) {
-      res.status(422).json({ message: "O e-mail é obrigatório!" });
-      return;
-    }
 
     const userExists = await User.findOne({ where: { email } });
 
@@ -155,7 +110,6 @@ export default class UserController {
     try {
       user.name = name;
       user.email = email;
-      user.is_admin = is_admin;
 
       if (password && password === confirmpassword) {
         const salt = await bcrypt.genSalt(12);
@@ -170,7 +124,6 @@ export default class UserController {
         data: {
           name: user.name,
           email: user.email,
-          is_admin: user.is_admin,
         },
       });
     } catch (err) {

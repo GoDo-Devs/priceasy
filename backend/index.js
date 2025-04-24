@@ -1,9 +1,10 @@
 import express from "express";
 import cors from "cors";
+import bodyParser from 'body-parser'
 const app = express();
 import authRoutes from "./routes/authRoutes.js";
 
-app.use(express.json());
+app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.static("public"));
 
