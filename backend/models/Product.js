@@ -1,10 +1,9 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
-import Product from "../models/Product.js";
 
-class ProductGroup extends Model {}
+class Product extends Model {}
 
-ProductGroup.init(
+Product.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -15,20 +14,19 @@ ProductGroup.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    price: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
   },
   {
     sequelize,
-    modelName: "ProductGroup",
-    tableName: "product_groups",
+    modelName: "Product",
+    tableName: "products",
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
   }
 );
 
-ProductGroup.hasMany(Product, {
-  foreignKey: "group_product_id",
-  as: "products",
-});
-
-export default ProductGroup;
+export default Product;
