@@ -1,6 +1,5 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
-import Product from "../models/Product.js";
 
 class ProductGroup extends Model {}
 
@@ -21,14 +20,9 @@ ProductGroup.init(
     modelName: "ProductGroup",
     tableName: "product_groups",
     timestamps: true,
-    createdAt: "created_at",
+    createdAt: "created_at", 
     updatedAt: "updated_at",
   }
 );
-
-ProductGroup.hasMany(Product, {
-  foreignKey: "group_product_id",
-  as: "products",
-});
 
 export default ProductGroup;

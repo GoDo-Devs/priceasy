@@ -8,10 +8,9 @@ export const registerSchema = Joi.object({
     .required()
     .messages({
       "string.empty": "O nome é obrigatório!",
-      "string.min": "O nome deve ter no mínimo {#limit} caracteres.",
+      "string.min": "O nome deve ter no mínimo 3 caracteres.",
       "string.pattern.base": "O nome deve conter apenas letras e espaços.",
     }),
-
   email: Joi.string()
     .email({ tlds: { allow: false } })
     .required()
@@ -19,7 +18,6 @@ export const registerSchema = Joi.object({
       "string.email": "Formato de e-mail inválido!",
       "string.empty": "O e-mail é obrigatório!",
     }),
-
   password: Joi.string()
     .min(6)
     .max(30)
@@ -31,7 +29,6 @@ export const registerSchema = Joi.object({
         "A senha pode conter apenas letras, números e @#$%!",
       "string.empty": "A senha é obrigatória!",
     }),
-
   confirmpassword: Joi.valid(Joi.ref("password")).required().messages({
     "any.only": "As senhas não conferem!",
     "any.required": "A confirmação de senha é obrigatória!",
@@ -42,7 +39,6 @@ export const loginSchema = Joi.object({
   email: Joi.string().required().messages({
     "string.empty": "O e-mail é obrigatório!",
   }),
-
   password: Joi.string().required().messages({
     "string.empty": "A senha é obrigatória!",
   }),

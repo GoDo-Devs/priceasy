@@ -6,7 +6,7 @@ import createUserToken from "../helpers/createUserToken.js";
 import getToken from "../helpers/getToken.js";
 import getUserByToken from "../helpers/getUserByToken.js";
 
-export default class UserController {
+export default class AuthController {
   // register
   static async register(req, res) {
 
@@ -75,7 +75,7 @@ export default class UserController {
       currentUser = null;
     }
 
-    res.status(200).send(currentUser);
+    res.status(200).json({currentUser});
   }
 
   static async getUserById(req, res) {

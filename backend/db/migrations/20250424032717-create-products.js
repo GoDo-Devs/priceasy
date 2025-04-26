@@ -18,7 +18,7 @@ export default {
         type: Sequelize.FLOAT,
         allowNull: false,
       },
-      group_product_id: {
+      product_group_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
         references: {
@@ -26,7 +26,7 @@ export default {
           key: "id",
         },
         onUpdate: "CASCADE",
-        onDelete: "SET NULL",
+        onDelete: "SET DEFAULT",
       },
       created_at: {
         allowNull: false,
@@ -44,6 +44,6 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("product_groups");
+    await queryInterface.dropTable("products");
   },
 };
