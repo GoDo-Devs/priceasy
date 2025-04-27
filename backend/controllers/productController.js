@@ -57,7 +57,7 @@ export default class ProductController {
     const productById = await Product.findByPk(id);
 
     if (!productById) {
-      res.status(404).json({ message: "Produto não encontrado" });
+      res.status(404).json({ message: "Produto não encontrado!" });
       return;
     }
 
@@ -67,7 +67,7 @@ export default class ProductController {
         product,
       });
     } catch (error) {
-      res.status(404).json({ message: "Produto não encontrado" });
+      res.status(404).json({ message: "Produto não encontrado!" });
       return;
     }
   }
@@ -78,7 +78,7 @@ export default class ProductController {
     const productById = await Product.findByPk(id);
 
     if (!productById) {
-      res.status(404).json({ message: "Produto não encontrado" });
+      res.status(404).json({ message: "Produto não encontrado!" });
       return;
     }
 
@@ -87,7 +87,7 @@ export default class ProductController {
       res.status(404).json({ message: "Produto removido com sucesso!" });
       return;
     } catch (error) {
-      res.status(404).json({ message: "Produto não encontrado" });
+      res.status(404).json({ message: "Produto não encontrado!" });
       return;
     }
   }
@@ -98,7 +98,7 @@ export default class ProductController {
     const productById = await Product.findByPk(id);
 
     if (!productById) {
-      res.status(404).json({ message: "Produto não encontrado" });
+      res.status(404).json({ message: "Produto não encontrado!" });
       return;
     }
 
