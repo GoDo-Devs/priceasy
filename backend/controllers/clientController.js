@@ -39,9 +39,10 @@ export default class ClientController {
   static async getAll(req, res) {
     try {
       const clients = await Client.findAll({
+        attributes: { exclude: ["cpf"] },
         order: [["name", "ASC"]],
       });
-      return res.status(200).json({ clients });
+      return res.status(200).json({ clients: clients });
     } catch (error) {
       return res.status(500).json({
         message: "Erro ao obter os Clientes.",
