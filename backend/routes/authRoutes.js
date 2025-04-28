@@ -15,7 +15,7 @@ router.post(
   AuthController.register
 );
 router.post("/login", validator.body(loginSchema), AuthController.login);
-router.get("/checkuser", AuthController.checkUser);
+router.get("/checkuser", checkToken, AuthController.checkUser);
 router.get("/:id", [checkToken, isAdmin], AuthController.getUserById);
 router.patch(
   "/edit/:id",

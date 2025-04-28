@@ -18,7 +18,12 @@ const checkToken = (req, res, next) => {
     User.findByPk(jwtUser.id, {
       attributes: { exclude: ["password"] },
     }).then((data) => {
+      if (!data) {
+        return res.status(400).json("Usuário não encontrado");
+      }
+
       req.user = data.dataValues
+
       next();
     });
   } catch (err) {
