@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.static("public"));
 
-app.use("/users", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
 
 app.listen(4000, "0.0.0.0", () => {
