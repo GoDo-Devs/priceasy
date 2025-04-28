@@ -14,11 +14,11 @@ Client.init({
     allowNull: false,
   },
   cpf: {
-    type: DataTypes.NUMBER,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   phone: {
-    type: DataTypes.NUMBER,
+    type: DataTypes.STRING,
     allowNull: false,
   },
 }, {
