@@ -57,25 +57,8 @@ export default class AuthController {
   }
 
   static async checkUser(req, res) {
-    let currentUser;
-
-    if (req.headers.authorization) {
-      try {
-        const token = getToken(req);
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        currentUser = await User.findByPk(decoded.id);
-        if (currentUser) {
-          currentUser.password = undefined;
-        }
-      } catch (err) {
-        return res.status(401).json({ message: "Token inválido ou expirado." });
-      }
-    } else {
-      currentUser = null;
-    }
-
-    res.status(200).json({currentUser});
+    const user = req.user;
+    res.status(200).json({user});
   }
 
   static async getUserById(req, res) {

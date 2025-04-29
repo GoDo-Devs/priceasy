@@ -3,6 +3,7 @@ import { createValidator } from "express-joi-validation";
 import ProductController from "../controllers/productController.js";
 import checkToken from "../middlewares/checkToken.js";
 import { createProductSchema } from "../validations/CreateProduct.js";
+import isAdmin from "../middlewares/isAdmin.js";
 
 const router = express.Router();
 const validator = createValidator({});
@@ -10,16 +11,16 @@ const validator = createValidator({});
 router.post(
   "/create",
   validator.body(createProductSchema),
-  checkToken,
+  [checkToken, isAdmin],
   ProductController.create
 );
 router.get("/", checkToken, ProductController.getAll);
 router.get("/:id", checkToken, ProductController.getProductById);
-router.delete("/:id", checkToken, ProductController.removeProductById);
+router.delete("/:id", [checkToken, isAdmin], ProductController.removeProductById);
 router.patch(
   "/:id",
   validator.body(createProductSchema),
-  checkToken,
+  [checkToken, isAdmin],
   ProductController.updateProductById
 );
 

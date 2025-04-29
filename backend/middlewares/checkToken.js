@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import getToken from "../helpers/getToken.js";
+import User from "../models/User.js";
 
 const checkToken = (req, res, next) => {
   if (!req.headers.authorization) {
@@ -13,9 +14,18 @@ const checkToken = (req, res, next) => {
   }
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = verified;
-    next();
+    const jwtUser = jwt.verify(token, process.env.JWT_SECRET);
+    User.findByPk(jwtUser.id, {
+      attributes: { exclude: ["password"] },
+    }).then((data) => {
+      if (!data) {
+        return res.status(400).json("Usuário não encontrado");
+      }
+
+      req.user = data.dataValues
+
+      next();
+    });
   } catch (err) {
     return res.status(400).json({ message: "Token inválido!" });
   }
