@@ -1,7 +1,12 @@
+import { Typography } from "@mui/material";
 import React from "react";
 
 function Home() {
-  return <div>Home</div>;
+  return (
+    <Typography color="primary">
+      Teste
+    </Typography>
+  )
 }
 
 export default Home;

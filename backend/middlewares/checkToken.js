@@ -3,18 +3,10 @@ import getToken from "../helpers/getToken.js";
 import User from "../models/User.js";
 
 const checkToken = (req, res, next) => {
-  if (!req.headers.authorization) {
-    return res.status(401).json({ message: "Acesso negado!" });
-  }
-
-  const token = getToken(req);
-
-  if (!token) {
-    return res.status(401).json({ message: "Acesso negado!" });
-  }
-
   try {
+    const token = getToken(req);
     const jwtUser = jwt.verify(token, process.env.JWT_SECRET);
+
     User.findByPk(jwtUser.id, {
       attributes: { exclude: ["password"] },
     }).then((data) => {
@@ -27,7 +19,7 @@ const checkToken = (req, res, next) => {
       next();
     });
   } catch (err) {
-    return res.status(400).json({ message: "Token inválido!" });
+    return res.status(401).json({ message: "Token inválido!" });
   }
 };
 

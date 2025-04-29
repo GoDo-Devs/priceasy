@@ -8,7 +8,7 @@ const routes = createBrowserRouter([
       Component: Home
     },
     {
-      path: "/login",
+      path: "/auth/login",
       Component: Login
     },
 ]);
