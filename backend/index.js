@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 const app = express();
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
+import productGroupRoutes from "./routes/productGroupRoutes.js";
 import clientRoutes from './routes/clientRoutes.js'
 
 app.use(bodyParser.json());
@@ -12,6 +13,7 @@ app.use(express.static("public"));
 
 app.use("/auth", authRoutes);
 app.use("/products", productRoutes);
+app.use("/product-groups", productGroupRoutes);
 app.use("/clients", clientRoutes);
 
 app.listen(4000, "0.0.0.0", () => {
