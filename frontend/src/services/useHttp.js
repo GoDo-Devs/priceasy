@@ -12,7 +12,7 @@ const useHttp = axios.create({
 useHttp.interceptors.response.use(
     function (response) {
         if (response.data.token) {
-            localStorage.setItem('access-toke', response.data.token);
+            localStorage.setItem('access-token', response.data.token);
         }
 
         return response;
@@ -27,3 +27,4 @@ useHttp.interceptors.response.use(
 );
 
 export default useHttp
+
