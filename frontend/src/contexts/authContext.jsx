@@ -5,22 +5,26 @@ import authService from "../services/authService";
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-    const [isLogged, setIsLogged] = useState(false);
+  const [isLogged, setIsLogged] = useState(false);
 
-    function getUserInfo() {
-        return authService.me();
-    }
+  function getUserInfo() {
+    return authService.me();
+  }
 
-    useEffect(() => {
-        getUserInfo();
-    }, [])
+  useEffect(() => {
+    getUserInfo()
+      .then(() => setIsLogged(true))
+      .catch(() => setIsLogged(false));
+  }, []);
 
-    return <AuthContext.Provider
-        value={{
-            isLogged,
-            setIsLogged,
-        }}
+  return (
+    <AuthContext.Provider
+      value={{
+        isLogged,
+        setIsLogged,
+      }}
     >
-        { children }
+      {children}
     </AuthContext.Provider>
+  );
 }

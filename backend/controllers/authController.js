@@ -9,7 +9,14 @@ import getUserByToken from "../helpers/getUserByToken.js";
 export default class AuthController {
   static async register(req, res) {
 
-    const {name, email, password} = req.body
+    const {name, email, password, confirmpassword} = req.body
+
+    if (password != confirmpassword) {
+      res
+        .status(422)
+        .json({ message: 'A senha e a confirmação precisam ser iguais!' })
+      return
+    }
 
     const userExists = await User.findOne({ where: { email } });
 

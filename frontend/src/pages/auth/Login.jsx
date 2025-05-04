@@ -1,76 +1,52 @@
-import React, { useContext, useEffect, useState } from "react";
-import authService from "../../services/authService";
-import { AuthContext } from "../../contexts/authContext";
-import {
-  Card,
-  Grid,
-  TextField,
-  IconButton,
-  InputAdornment,
-  Button,
-  FormControl,
-} from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import TextInput from "../../components/Form/TextInput";
+import { useState, useContext } from "react";
+import { Button, Grid, Paper, Typography, Box, Card } from "@mui/material";
+import authService from "../../services/authService.js";
+import {AuthContext} from '../../contexts/authContext.jsx'
+import TextInput from "../../components/Form/TextInput.jsx";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [data, setData] = useState({});
+  const { setIsLogged } = useContext(AuthContext);
 
-  function handleTogglePassword() {
-    setShowPassword((prev) => !prev);
+  function handleChange(e) {
+    setData({ ...data, [e.target.name]: e.target.value });
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await authService.login(data);
+    setIsLogged(true);
   };
-
-  async function handleLogin() {
-      const response = await authService.login({email, password});
-      localStorage.setItem('access-token', response.data.token);
-  };
-
 
   return (
     <Grid
       container
-      direction="column"
-      alignItems="center"
       justifyContent="center"
+      alignItems="center"
       className="h-screen"
     >
-      <Card className="p-8 w-full max-w-md shadow-lg">
-        <h2 className="text-2xl font-semibold text-center mb-6">Entrar</h2>
-        <TextInput
-          fullWidth
-          label="Email"
-          type="email"
-          variant="filled"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="mb-5"
-        />
-
-        <TextInput
-          label="Senha"
-          type={showPassword ? "text" : "password"}
-          variant="outlined"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          endAdornment= {
-            <IconButton onClick={handleTogglePassword} edge="end">
-              {showPassword ? <VisibilityOff /> : <Visibility />}
-            </IconButton>
-          }
-          className="mb-5"
-        />
-
-        <Button
-          fullWidth
-          variant="contained"
-          color="primary"
-          className="py-2 text-white"
-          onClick={handleLogin}
-        >
-          Entrar
-        </Button>
+      <Card className="p-5">
+        <Typography variant="h5" align="center" gutterBottom>
+          Login
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit}>
+          <TextInput
+            label="Email"
+            name="email"
+            className="mb-5"
+            onChange={handleChange}
+          />
+          <TextInput
+            label="Senha"
+            name="password"
+            type="password"
+            className="mb-5"
+            onChange={handleChange}
+          />
+          <Button type="submit" variant="contained" fullWidth>
+            Entrar
+          </Button>
+        </Box>
       </Card>
     </Grid>
   );
