@@ -4,6 +4,7 @@ import {
 import routes from "./router/routes";
 import { Card } from "@mui/material";
 import { AuthProvider } from "./contexts/authContext";
+import '@/theme/app.css'
 
 
 function App() {

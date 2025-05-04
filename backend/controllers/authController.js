@@ -7,7 +7,6 @@ import getToken from "../helpers/getToken.js";
 import getUserByToken from "../helpers/getUserByToken.js";
 
 export default class AuthController {
-  // register
   static async register(req, res) {
 
     const {name, email, password} = req.body
@@ -36,10 +35,9 @@ export default class AuthController {
     }
   }
 
-  // login
   static async login(req, res) {
     const { email, password } = req.body;
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({where: { email: email }});
 
     if (!user) {
       res.status(422).json({ message: "Usuário não encontrado!" });
