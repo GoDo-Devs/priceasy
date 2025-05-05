@@ -1,21 +1,24 @@
-import { useState, useContext } from "react";
+import { useContext } from "react";
 import { Button, Grid, Paper, Typography, Box, Card } from "@mui/material";
-import authService from "../../services/authService.js";
-import {AuthContext} from '../../contexts/authContext.jsx'
-import TextInput from "../../components/Form/TextInput.jsx";
+import authService from "@/services/authService.js";
+import {AuthContext} from '@/contexts/authContext.jsx'
+import TextInput from "@/components/Form/TextInput.jsx";
+import useForm from "@/hooks/useForm.js";
+import loginValidator from "@/validators/loginValidator";
+import { useNavigate } from "react-router";
 
 function Login() {
-  const [data, setData] = useState({});
-  const { setIsLogged } = useContext(AuthContext);
+  const { handleLogin } = useContext(AuthContext);
+  const { fields, handleChange, validate, errors } = useForm({
+    email: '',
+    password: '',
+  }, loginValidator);
+  const navigate = useNavigate();
 
-  function handleChange(e) {
-    setData({ ...data, [e.target.name]: e.target.value });
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await authService.login(data);
-    setIsLogged(true);
+  async function handleSubmit() {
+    if (await validate() && await handleLogin(fields)) {
+      navigate('/')
+    };
   };
 
   return (
@@ -29,12 +32,13 @@ function Login() {
         <Typography variant="h5" align="center" gutterBottom>
           Login
         </Typography>
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box>
           <TextInput
             label="Email"
             name="email"
             className="mb-5"
             onChange={handleChange}
+            errors={errors}
           />
           <TextInput
             label="Senha"
@@ -42,8 +46,9 @@ function Login() {
             type="password"
             className="mb-5"
             onChange={handleChange}
+            errors={errors}
           />
-          <Button type="submit" variant="contained" fullWidth>
+          <Button onClick={handleSubmit} variant="contained" fullWidth>
             Entrar
           </Button>
         </Box>

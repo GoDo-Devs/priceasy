@@ -18,7 +18,14 @@ const theme = createTheme({
     },
     success: {
       main: '#51d6a4',
-    }
+    },
+    defaultBg: {
+      main: '#4d566b',
+      light: '#4d566b',
+      dark: '#4d566b',
+      contrastText: '#fff',
+    },
+
   },
 });
 

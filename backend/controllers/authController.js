@@ -58,11 +58,20 @@ export default class AuthController {
       return;
     }
 
-    await createUserToken(user, req, res);
+    const token = await createUserToken(user, req, res);
+
+    user.password = undefined;
+
+    res.status(200).json({
+      message: "Você está autenticado",
+      token: token,
+      user: user,
+    });
   }
 
   static async checkUser(req, res) {
     const user = req.user;
+
     res.status(200).json({user});
   }
 

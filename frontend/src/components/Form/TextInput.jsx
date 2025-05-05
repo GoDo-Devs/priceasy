@@ -4,6 +4,7 @@ import { FormHelperText, InputLabel, TextField } from '@mui/material'
 function TextInput({
     type,
     value,
+    name,
     onChange,
     endAdornment,
     startAdornment,
@@ -14,12 +15,13 @@ function TextInput({
 }) {
   return (
     <div className={className}>
-        <InputLabel>
+        <InputLabel className="text-white mb-1">
             { label }
         </InputLabel>
         <TextField
             fullWidth
             size='small'
+            name={name}
             placeholder={placeholder}
             type={type}
             variant="outlined"
@@ -31,13 +33,13 @@ function TextInput({
                     startAdornment: startAdornment
                 },
             }}
-            error={errors.length > 0}
+            error={errors[name]?.length > 0}
         />
-        <FormHelperText>
-            {errors.map((error) => (
-                <caption>{error}</caption>
-            ))}
-        </FormHelperText>
+        {errors[name]?.map((error) => (
+            <FormHelperText error>
+                { error } 
+            </FormHelperText>
+        ))}
     </div>
   )
 }
