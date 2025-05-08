@@ -1,7 +1,11 @@
-import { AppBar, Toolbar, Typography } from '@mui/material'
+import { AppBar, IconButton, Toolbar, Typography } from '@mui/material'
+import MenuIcon from '@mui/icons-material/Menu';
 import React from 'react'
 
-function LayoutAppBar() {
+function LayoutAppBar({
+  setOpenDrawer,
+  openDrawer,
+}) {
   return (
     <AppBar
       position="fixed"
@@ -9,13 +13,16 @@ function LayoutAppBar() {
       color='defaultBg'
       elevation={0}
       enableColorOnDark
-  >
+    >
         <Toolbar>
-          <Typography variant="h6" noWrap component="div">
-            Permanent drawer
+          <IconButton onClick={() => setOpenDrawer(!openDrawer)}>
+            <MenuIcon />
+          </IconButton>
+          <Typography ml={2} variant="h6" noWrap component="div">
+            ClubPro
           </Typography>
         </Toolbar>
-      </AppBar>
+    </AppBar>
   )
 }
 

@@ -1,19 +1,25 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Button, Grid, Paper, Typography, Box, Card } from "@mui/material";
-import authService from "@/services/authService.js";
 import {AuthContext} from '@/contexts/authContext.jsx'
 import TextInput from "@/components/Form/TextInput.jsx";
 import useForm from "@/hooks/useForm.js";
 import loginValidator from "@/validators/loginValidator";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from "react-router";
 
 function Login() {
   const { handleLogin } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
   const { fields, handleChange, validate, errors } = useForm({
     email: '',
     password: '',
   }, loginValidator);
   const navigate = useNavigate();
+
+  function togglePasswordVisibility () {
+    setShowPassword(!showPassword)
+  }
 
   async function handleSubmit() {
     if (await validate() && await handleLogin(fields)) {
@@ -43,8 +49,13 @@ function Login() {
           <TextInput
             label="Senha"
             name="password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             className="mb-5"
+            endAdornment={
+              showPassword
+                ? <VisibilityIcon onClick={togglePasswordVisibility} />
+                : <VisibilityOffIcon onClick={togglePasswordVisibility} />
+            }
             onChange={handleChange}
             errors={errors}
           />

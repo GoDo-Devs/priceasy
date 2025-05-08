@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState } from "react";
-import authService from "../services/authService";
+import authService from "@/services/authService";
 import { redirect, useNavigate } from "react-router";
 
 export const AuthContext = createContext(null);
