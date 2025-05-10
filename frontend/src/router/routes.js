@@ -8,6 +8,7 @@ import AppLayout from "@/layout/AppLayout.jsx";
 //icons
 import HomeIcon from '@mui/icons-material/Home';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import RootLayout from "@/layout/RootLayout";
 
 export const protectedRoutes = [
   {
@@ -36,11 +37,16 @@ export const publicRoutes = [
 ];
   
 const routes = createBrowserRouter([
-  ...publicRoutes,
   {
-    Component: AppLayout,
-    children: protectedRoutes,
-  },
+    Component: RootLayout,
+    children: [
+      {
+        Component: AppLayout,
+        children: protectedRoutes,
+      },
+      ...publicRoutes,
+    ]
+  }
 ]);
 
 export default routes;

@@ -10,6 +10,7 @@ function TextInput({
     startAdornment,
     label,
     placeholder,
+    disabled,
     className,
     errors = [],
 }) {
@@ -24,7 +25,9 @@ function TextInput({
             name={name}
             placeholder={placeholder}
             type={type}
+            color='primary'
             variant="outlined"
+            disabled={disabled}
             value={value}
             onChange={onChange}
             slotProps={{

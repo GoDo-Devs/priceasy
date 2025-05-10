@@ -1,17 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState } from "react";
 import authService from "@/services/authService";
-import { redirect, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 
 export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [isLogged, setIsLogged] = useState(false);
   const [user, setUser] = useState({});
+  const navigate = useNavigate();
 
-  function getUserInfo() {
+  async function getUserInfo() {
     try {
-      const { data } =  authService.me();
+      const { data } =  await authService.me();
       afterConfirmLogin(data);
       return true
     } catch (e) {
@@ -34,20 +35,20 @@ export function AuthProvider({ children }) {
   function afterConfirmLogin(data) {
     setIsLogged(true);
     setUser(data.user);
-
-    if(data.token) {
-      localStorage.setItem('access-token', data.token);
-    }
   }
 
   function handleLogout() {
     setIsLogged(false);
+    setUser({});
     localStorage.clear('access-token');
+    navigate('/auth/login')
     setUser({});
   }
 
   useEffect(() => {
-    getUserInfo();
+    if (!isLogged) {
+      getUserInfo();
+    }
   }, [])
 
   return (
@@ -59,6 +60,7 @@ export function AuthProvider({ children }) {
         user,
         setUser,
         handleLogin,
+        handleLogout,
       }}
     >
       {children}

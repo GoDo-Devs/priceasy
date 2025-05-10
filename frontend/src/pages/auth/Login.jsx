@@ -7,10 +7,13 @@ import loginValidator from "@/validators/loginValidator";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from "react-router";
+import LoginIcon from '@mui/icons-material/Login';
 
 function Login() {
   const { handleLogin } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const { fields, handleChange, validate, errors } = useForm({
     email: '',
     password: '',
@@ -22,9 +25,16 @@ function Login() {
   }
 
   async function handleSubmit() {
-    if (await validate() && await handleLogin(fields)) {
+    try {
+      setLoading(true);
+
+      if (await validate()) {
+        await handleLogin(fields);
+      };
       navigate('/')
-    };
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -34,15 +44,20 @@ function Login() {
       alignItems="center"
       className="h-screen"
     >
-      <Card className="p-5">
-        <Typography variant="h5" align="center" gutterBottom>
-          Login
+      <Card
+        className="px-8 pb-8 d-flex" variant="outlined"
+        sx={{ width: '400px', borderRadius: '20px' }}
+      >
+        <img src="../../logo.png" width={180} className="ms-auto me-auto" />
+        <Typography variant="h6" align="center" gutterBottom>
+          Bem Vindo !
         </Typography>
         <Box>
           <TextInput
             label="Email"
             name="email"
             className="mb-5"
+            disabled={loading}
             onChange={handleChange}
             errors={errors}
           />
@@ -50,7 +65,8 @@ function Login() {
             label="Senha"
             name="password"
             type={showPassword ? "text" : "password"}
-            className="mb-5"
+            className="mb-10"
+            disabled={loading}
             endAdornment={
               showPassword
                 ? <VisibilityIcon onClick={togglePasswordVisibility} />
@@ -59,7 +75,15 @@ function Login() {
             onChange={handleChange}
             errors={errors}
           />
-          <Button onClick={handleSubmit} variant="contained" fullWidth>
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            className="mt-5"
+            size="large"
+            fullWidth
+            loading={loading}
+            endIcon={<LoginIcon />}
+          >
             Entrar
           </Button>
         </Box>

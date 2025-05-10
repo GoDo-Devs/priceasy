@@ -21,3 +21,14 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #4d566b;
   }
+
+  .hoverable {
+    cursor: pointer;
+    color: gray;
+  }
+
+  .hoverable:hover {
+    background-color: #4d566b2b;
+    color: #fff !important;
+    text-decoration: underline;
+  }
