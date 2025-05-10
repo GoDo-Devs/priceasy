@@ -1,8 +1,6 @@
 import { Divider, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar } from '@mui/material'
-import React from 'react'
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import routes from '@/router/routes';
+import { NavLink } from 'react-router-dom';
+import { protectedRoutes } from '@/router/routes.js'
 
 function AppDrawer({open, drawerWidth}) {
   return (
@@ -14,13 +12,11 @@ function AppDrawer({open, drawerWidth}) {
       <Toolbar />
       <Divider />
       <List>
-        {['home'].map((text, index) => (
-          <ListItem text key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon  color='primary' /> : <MailIcon color='primary' />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
+        {protectedRoutes.map(({ path, icon: Icon, label }) => (
+          <ListItem key={path} disablePadding>
+            <ListItemButton component={NavLink} to={path}>
+              <ListItemIcon>{Icon && <Icon color="primary" />}</ListItemIcon>
+              <ListItemText primary={label} />
             </ListItemButton>
           </ListItem>
         ))}

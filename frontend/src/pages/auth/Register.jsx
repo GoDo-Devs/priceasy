@@ -1,8 +1,8 @@
 import { useState, useContext } from "react";
-import { Button, Grid, Paper, Typography, Box } from "@mui/material";
+import { Button, Grid, Typography, Box, Card } from "@mui/material";
 import TextInput from "../../components/Form/TextInput.jsx";
 import authService from "../../services/authService.js";
-import {AuthContext} from '../../contexts/authContext.jsx'
+import { AuthContext } from "../../contexts/authContext.jsx";
 
 function Register() {
   const [data, setData] = useState({});
@@ -26,7 +26,7 @@ function Register() {
       minHeight="100vh"
     >
       <Grid item xs={11} sm={8} md={6} lg={4}>
-        <Card>
+        <Card className="p-5">
           <Typography variant="h5" align="center" gutterBottom>
             Cadastro
           </Typography>
@@ -35,23 +35,27 @@ function Register() {
               label="Name"
               name="name"
               type="text"
+              className="mb-5"
               onChange={handleChange}
             />
             <TextInput
               label="Email"
               name="email"
+              className="mb-5"
               onChange={handleChange}
             />
             <TextInput
               label="Senha"
               name="password"
               type="password"
+              className="mb-5"
               onChange={handleChange}
             />
             <TextInput
               label="Confirmação de Senha"
               name="confirmpassword"
               type="password"
+              className="mb-5"
               onChange={handleChange}
             />
             <Button type="submit" variant="contained" fullWidth>
