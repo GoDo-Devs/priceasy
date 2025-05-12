@@ -18,7 +18,7 @@ function ListLink({
                     pointerEvents: 'none',
                     borderRadius: '20px 0px 0px 20px'
                 }}
-                className='my-2'
+                className='my-1'
                 key={path}
                 disablePadding
             >

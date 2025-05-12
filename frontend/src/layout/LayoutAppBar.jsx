@@ -2,11 +2,10 @@ import { AppBar, IconButton, Toolbar, Typography, Box } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import React from "react";
 import { useLocation } from "react-router";
-import { protectedRoutes } from "../router/routes";
+import { guardedAuthenticatedRoutes } from "../router/routes";
 
 function LayoutAppBar({ setOpenDrawer, openDrawer }) {
   const location = useLocation();
-  const route = protectedRoutes.find(a => a.path === location.pathname);
 
   return (
     <AppBar
@@ -26,7 +25,7 @@ function LayoutAppBar({ setOpenDrawer, openDrawer }) {
           alt="Logo"
           sx={{ width: 60, marginRight: 2 }}
         />
-        <Typography fontSize={20} fontWeight={700}>{route.label}</Typography>
+        {/* <Typography fontSize={20} fontWeight={700}>{route.label}</Typography> */}
       </Toolbar>
     </AppBar>
   );

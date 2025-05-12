@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router";
 import AppDrawer from "./AppDrawer";
 import { Box, useMediaQuery, useTheme } from "@mui/material";
 import LayoutAppBar from "./LayoutAppBar";
-import authService from "@/services/authService";
-import { AuthContext } from "../contexts/authContext";
+import { guardedAuthenticatedRoutes } from "../router/routes";
+import useNavigateTo from "../hooks/useNavigateTo";
 
 function AppLayout() {
   const [drawerWidth, setDrawerWidth] = useState(230);
@@ -13,6 +13,7 @@ function AppLayout() {
   const location = useLocation();
   const theme = useTheme();
   const isMdOrUp = useMediaQuery(theme.breakpoints.up('md'));
+  const { runGuards } = useNavigateTo();
 
   useEffect(() => {
     setIsMobile(!isMdOrUp);
@@ -20,7 +21,7 @@ function AppLayout() {
   }, [isMdOrUp])
 
   useEffect(() => {
-    authService.me();
+    runGuards(location.pathname);
   }, [location.pathname])
 
   return (
@@ -36,7 +37,7 @@ function AppLayout() {
         setDrawerWidth={setDrawerWidth}
         setOpenDrawer={setOpenDrawer}
       />
-      <Box component="main" className="mt-21">
+      <Box component="main" className="mt-16">
         <Outlet />
       </Box>
     </Box>

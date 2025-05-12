@@ -1,5 +1,5 @@
 import { Box, Divider, Drawer, List, Toolbar, Typography, Stack } from '@mui/material'
-import { protectedRoutes } from '@/router/routes.js'
+import { guardedAuthenticatedRoutes } from '@/router/routes.js'
 import ListLink from '../components/DrawerLinks/ListLink';
 import { ExitToApp } from '@mui/icons-material';
 import { AuthContext } from '@/contexts/authContext';
@@ -26,7 +26,7 @@ function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
           <Toolbar />
           <Divider />
           <List>
-            {protectedRoutes.map(({ path, icon: Icon, label }) => (
+            {guardedAuthenticatedRoutes[0].children.map(({ path, icon: Icon, label }) => (
               <ListLink
                 key={path}
                 path={path}

@@ -6,19 +6,19 @@ import useForm from "@/hooks/useForm.js";
 import loginValidator from "@/validators/loginValidator";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { useNavigate } from "react-router";
 import LoginIcon from '@mui/icons-material/Login';
+import useNavigateTo from "../../hooks/useNavigateTo";
 
 function Login() {
   const { handleLogin } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { redirect } = useNavigateTo(); 
 
   const { fields, handleChange, validate, errors } = useForm({
     email: '',
     password: '',
   }, loginValidator);
-  const navigate = useNavigate();
 
   function togglePasswordVisibility () {
     setShowPassword(!showPassword)
@@ -31,7 +31,7 @@ function Login() {
       if (await validate()) {
         await handleLogin(fields);
       };
-      navigate('/')
+      redirect('/')
     } finally {
       setLoading(false);
     }

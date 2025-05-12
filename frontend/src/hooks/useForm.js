@@ -20,8 +20,7 @@ function useForm(initialFields, validator) {
       let fieldErr = {};
 
       e.inner?.forEach((error) => {
-        console.log(error.path);
-        fieldErr[error.path] = error.errors;
+        fieldErr[error.path] = error.errors;  
       });
 
       setErrors(fieldErr);

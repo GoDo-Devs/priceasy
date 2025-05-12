@@ -1,53 +1,88 @@
-import { createBrowserRouter } from "react-router";
-//pages
+import { createBrowserRouter, useNavigate } from "react-router";
 import Home from "@/pages/Home.jsx";
-import Login from "@/pages/auth/Login.jsx";
-import Register from "@/pages/auth/Register.jsx";
-//layout
+import LoginPage from "@/pages/auth/Login.jsx";
+import RegisterPage from "@/pages/auth/Register.jsx";
 import AppLayout from "@/layout/AppLayout.jsx";
-//icons
 import HomeIcon from '@mui/icons-material/Home';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import RootLayout from "@/layout/RootLayout";
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import authService from '@/services/authService'
 
-export const protectedRoutes = [
+export const guardedAuthenticatedRoutes = [
   {
-    path: "/",
-    label: "Home",
-    icon: HomeIcon,
-    Component: Home,
-  },
-  {
-    path: "/price",
-    label: "Cotação",
-    icon: RequestQuoteIcon,
-    Component: Home,
+    Component: AppLayout,
+    guard: [checkIfLoggedIn],
+    children: [
+      {
+        path: "/",
+        label: "Home",
+        icon: HomeIcon,
+        Component: Home,
+      },
+      {
+        path: "/price",
+        label: "Cotação",
+        icon: RequestQuoteIcon,
+        Component: Home,
+      },
+      {
+        path: "/admin",
+        label: "Painel Administrativo",
+        icon: ManageAccountsIcon,
+        Component: Home,
+        guard: [checkIfAdmin],
+        children: [
+          {
+            path: "1",
+            label: "Painel Administrativo",
+            icon: ManageAccountsIcon,
+            Component: Home,
+            guard: [checkIfAdmin],
+            children: [
+              {
+                path: "2",
+                label: "Painel Administrativo",
+                icon: ManageAccountsIcon,
+                Component: Home,
+                guard: [checkIfAdmin],
+              }
+            ],
+          }
+        ]
+      }
+    ],
   },
 ];
 
-export const publicRoutes = [
+const guestRoutes = [
   {
     path: "/auth/login",
-    Component: Login,
+    Component: LoginPage,
   },
   {
     path: "/auth/register",
-    Component: Register,
+    Component: RegisterPage,
   },
 ];
-  
-const routes = createBrowserRouter([
+
+const router = createBrowserRouter([
   {
     Component: RootLayout,
     children: [
-      {
-        Component: AppLayout,
-        children: protectedRoutes,
-      },
-      ...publicRoutes,
+      ...guardedAuthenticatedRoutes,
+      ...guestRoutes,
     ]
   }
 ]);
 
-export default routes;
-  
+function checkIfAdmin(next, user) {
+  return user.is_admin ?? '/';
+}
+
+async function checkIfLoggedIn(next) {
+  const { data } = await authService.me();
+  return Boolean(data.user) ?? '/auth/login';
+}
+
+export default router;
