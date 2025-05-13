@@ -2,9 +2,11 @@ import { createBrowserRouter, useNavigate } from "react-router";
 import Home from "@/pages/Home.jsx";
 import LoginPage from "@/pages/auth/Login.jsx";
 import RegisterPage from "@/pages/auth/Register.jsx";
+import Product from "@/pages/product/Product";
 import AppLayout from "@/layout/AppLayout.jsx";
 import HomeIcon from '@mui/icons-material/Home';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
+import StorefrontIcon from '@mui/icons-material/Storefront';
 import RootLayout from "@/layout/RootLayout";
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import authService from '@/services/authService'
@@ -25,6 +27,12 @@ export const guardedAuthenticatedRoutes = [
         label: "Cotação",
         icon: RequestQuoteIcon,
         Component: Home,
+      },
+      {
+        path: "/products",
+        label: "Produtos",
+        icon: StorefrontIcon,
+        Component: Product,
       },
       {
         path: "/admin",

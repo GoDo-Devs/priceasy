@@ -1,12 +1,15 @@
-import { AuthProvider } from '../contexts/authContext'
-import { Outlet } from 'react-router'
+import { AuthProvider } from "../contexts/authContext";
+import { LayoutProvider } from "../contexts/layoutContext";
+import { Outlet } from "react-router";
 
 function RootLayout() {
   return (
-    <AuthProvider>
+    <LayoutProvider>
+      <AuthProvider>
         <Outlet />
-    </AuthProvider>
-  )
+      </AuthProvider>
+    </LayoutProvider>
+  );
 }
 
 export default RootLayout;

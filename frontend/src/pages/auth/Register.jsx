@@ -1,22 +1,46 @@
-import { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import { Button, Grid, Typography, Box, Card } from "@mui/material";
-import TextInput from "../../components/Form/TextInput.jsx";
-import authService from "../../services/authService.js";
-import { AuthContext } from "../../contexts/authContext.jsx";
+import { AuthContext } from "@/contexts/authContext.jsx";
+import TextInput from "@/components/Form/TextInput.jsx";
+import useForm from "@/hooks/useForm.js";
+import registerValidator from "@/validators/registerValidator";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import { useNavigate } from "react-router";
+import LoginIcon from "@mui/icons-material/Login";
 
 function Register() {
-  const [data, setData] = useState({});
-  const { setIsLogged } = useContext(AuthContext);
+  const { handleRegister } = useContext(AuthContext);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  function handleChange(e) {
-    setData({ ...data, [e.target.name]: e.target.value });
+  const { fields, handleChange, validate, errors } = useForm(
+    {
+      name: "",
+      email: "",
+      password: "",
+      confirmpassword: ""
+    },
+    registerValidator
+  );
+  const navigate = useNavigate();
+
+  function togglePasswordVisibility() {
+    setShowPassword(!showPassword);
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    await authService.register(data);
-    setIsLogged(true);
-  };
+  async function handleSubmit() {
+    try {
+      setLoading(true);
+
+      if (await validate()) {
+        await handleRegister(fields);
+      }
+      navigate("/");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Grid
@@ -26,8 +50,12 @@ function Register() {
       minHeight="100vh"
     >
       <Grid item xs={11} sm={8} md={6} lg={4}>
-        <Card className="p-5">
-          <Typography variant="h5" align="center" gutterBottom>
+        <Card
+          className="px-8 pb-8 d-flex"
+          variant="outlined"
+          sx={{ width: "400px", borderRadius: "20px" }}
+        >
+          <Typography sx={{marginTop: 5}} variant="h5" align="center" gutterBottom>
             Cadastro
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>
@@ -36,29 +64,71 @@ function Register() {
               name="name"
               type="text"
               className="mb-5"
+              disabled={loading}
               onChange={handleChange}
+              errors={errors}
             />
             <TextInput
               label="Email"
               name="email"
               className="mb-5"
+              disabled={loading}
               onChange={handleChange}
+              errors={errors}
             />
             <TextInput
               label="Senha"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="mb-5"
+              disabled={loading}
+              endAdornment={
+                showPassword ? (
+                  <VisibilityIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={togglePasswordVisibility}
+                  />
+                ) : (
+                  <VisibilityOffIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={togglePasswordVisibility}
+                  />
+                )
+              }
               onChange={handleChange}
+              errors={errors}
             />
             <TextInput
               label="Confirmação de Senha"
               name="confirmpassword"
-              type="password"
-              className="mb-5"
+              type={showPassword ? "text" : "password"}
+              className="mb-10"
+              disabled={loading}
+              endAdornment={
+                showPassword ? (
+                  <VisibilityIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={togglePasswordVisibility}
+                  />
+                ) : (
+                  <VisibilityOffIcon
+                    sx={{ cursor: "pointer" }}
+                    onClick={togglePasswordVisibility}
+                  />
+                )
+              }
               onChange={handleChange}
+              errors={errors}
             />
-            <Button type="submit" variant="contained" fullWidth>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              className="mt-5"
+              size="large"
+              fullWidth
+              loading={loading}
+              endIcon={<LoginIcon />}
+            >
               Cadastrar
             </Button>
           </Box>

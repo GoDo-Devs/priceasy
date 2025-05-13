@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useEffect, useState } from "react";
 import authService from "@/services/authService";
 import { useNavigate } from "react-router";
@@ -12,19 +11,30 @@ export function AuthProvider({ children }) {
 
   async function getUserInfo() {
     try {
-      const { data } =  await authService.me();
+      const { data } = await authService.me();
       afterConfirmLogin(data);
-      return true
+      return true;
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
   }
 
   async function handleLogin(loginFields) {
     try {
       const { data } = await authService.login(loginFields);
-      afterConfirmLogin(data)
-      return true
+      afterConfirmLogin(data);
+      return true;
+    } catch (e) {
+      console.log(e);
+
+      return false;
+    }
+  }
+
+  async function handleRegister(registerFields) {
+    try {
+      const { data } = await authService.register(registerFields);
+      return true;
     } catch (e) {
       console.log(e);
 
@@ -40,8 +50,8 @@ export function AuthProvider({ children }) {
   function handleLogout() {
     setIsLogged(false);
     setUser({});
-    localStorage.clear('access-token');
-    navigate('/auth/login')
+    localStorage.clear("access-token");
+    navigate("/auth/login");
     setUser({});
   }
 
@@ -49,7 +59,7 @@ export function AuthProvider({ children }) {
     if (!isLogged) {
       getUserInfo();
     }
-  }, [])
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -60,6 +70,7 @@ export function AuthProvider({ children }) {
         user,
         setUser,
         handleLogin,
+        handleRegister,
         handleLogout,
       }}
     >

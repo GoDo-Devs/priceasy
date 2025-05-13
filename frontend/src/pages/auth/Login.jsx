@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Button, Grid, Paper, Typography, Box, Card } from "@mui/material";
+import { Button, Grid, Typography, Box, Card } from "@mui/material";
 import {AuthContext} from '@/contexts/authContext.jsx'
 import TextInput from "@/components/Form/TextInput.jsx";
 import useForm from "@/hooks/useForm.js";
@@ -69,8 +69,8 @@ function Login() {
             disabled={loading}
             endAdornment={
               showPassword
-                ? <VisibilityIcon onClick={togglePasswordVisibility} />
-                : <VisibilityOffIcon onClick={togglePasswordVisibility} />
+                ? <VisibilityIcon sx={{cursor: 'pointer'}} onClick={togglePasswordVisibility} />
+                : <VisibilityOffIcon sx={{cursor: 'pointer'}} onClick={togglePasswordVisibility} />
             }
             onChange={handleChange}
             errors={errors}
