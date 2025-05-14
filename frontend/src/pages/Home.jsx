@@ -1,10 +1,9 @@
-import { Card, Typography } from "@mui/material";
-import React from "react";
+import { Card } from "@mui/material";
 
 function Home() {
   return (
     <Card>
-      dawed
+      Teste
     </Card>
   )
 }

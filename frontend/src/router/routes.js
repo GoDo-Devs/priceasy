@@ -1,15 +1,17 @@
-import { createBrowserRouter, useNavigate } from "react-router";
+import { createBrowserRouter } from "react-router";
 import Home from "@/pages/Home.jsx";
 import LoginPage from "@/pages/auth/Login.jsx";
 import RegisterPage from "@/pages/auth/Register.jsx";
-import Product from "@/pages/product/Product";
+import Product from "@/pages/product/Product.jsx";
+import User from "@/pages/user/User.jsx"
+import HomeIcon from "@mui/icons-material/Home";
+import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import PersonIcon from "@mui/icons-material/Person";
 import AppLayout from "@/layout/AppLayout.jsx";
-import HomeIcon from '@mui/icons-material/Home';
-import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
-import StorefrontIcon from '@mui/icons-material/Storefront';
 import RootLayout from "@/layout/RootLayout";
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import authService from '@/services/authService'
+import authService from "@/services/authService";
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -29,38 +31,28 @@ export const guardedAuthenticatedRoutes = [
         Component: Home,
       },
       {
-        path: "/products",
-        label: "Produtos",
-        icon: StorefrontIcon,
-        Component: Product,
-      },
-      {
-        path: "/admin",
         label: "Painel Administrativo",
         icon: ManageAccountsIcon,
-        Component: Home,
         guard: [checkIfAdmin],
         children: [
           {
-            path: "1",
-            label: "Painel Administrativo",
-            icon: ManageAccountsIcon,
-            Component: Home,
+            path: "/products/",
+            label: "Produtos",
+            icon: ShoppingCartIcon,
+            Component: Product,
             guard: [checkIfAdmin],
-            children: [
-              {
-                path: "2",
-                label: "Painel Administrativo",
-                icon: ManageAccountsIcon,
-                Component: Home,
-                guard: [checkIfAdmin],
-              }
-            ],
-          }
-        ]
-      }
+          },
+          {
+            path: "/users",
+            label: "Usuários",
+            icon: PersonIcon,
+            Component: User,
+            guard: [checkIfAdmin],
+          },
+        ],
+      },
     ],
-  },
+  }
 ];
 
 const guestRoutes = [
@@ -74,23 +66,21 @@ const guestRoutes = [
   },
 ];
 
+
 const router = createBrowserRouter([
   {
     Component: RootLayout,
-    children: [
-      ...guardedAuthenticatedRoutes,
-      ...guestRoutes,
-    ]
-  }
+    children: [...guardedAuthenticatedRoutes, ...guestRoutes],
+  },
 ]);
 
 function checkIfAdmin(next, user) {
-  return user.is_admin ?? '/';
+  return user.is_admin ?? "/";
 }
 
 async function checkIfLoggedIn(next) {
   const { data } = await authService.me();
-  return Boolean(data.user) ?? '/auth/login';
+  return Boolean(data.user) ?? "/auth/login";
 }
 
 export default router;

@@ -2,17 +2,18 @@ import { useContext, useState } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { MRT_Localization_PT_BR } from "material-react-table/locales/pt-BR";
 import { Box, IconButton, Tooltip, Fab } from "@mui/material";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { LayoutContext } from "@/contexts/layoutContext";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useColumnsProduct } from "@/hooks/useColumnsProduct";
-import DialogModal from '@/components/Modal/DialogModal.jsx'
+import { useColumnsUser } from "@/hooks/useColumnsUser.js";
+import { useNavigate } from "react-router";
 
 function Product() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, products, handleDelete } = useColumnsProduct();
-  const [openModal, setOpenModal] = useState(false); 
+  const { columns, users, handleDelete } = useColumnsUser();
+
+  const navigate = useNavigate()
 
   return (
     <Box
@@ -24,7 +25,7 @@ function Product() {
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
         columns={columns}
-        data={products}
+        data={users}
         enableFullScreenToggle={false}
         enableRowActions
         positionActionsColumn="last"
@@ -33,7 +34,6 @@ function Product() {
             <Tooltip title="Editar">
               <IconButton
                 color="primary"
-                onClick={() => setOpenModal(true)}
               >
                 <EditIcon />
               </IconButton>
@@ -58,7 +58,7 @@ function Product() {
       <Fab
         color="primary"
         aria-label="Criar Produto"
-        onClick={() => setOpenModal(true)}
+        onClick={() => navigate("/auth/register")}
         sx={{
           position: "fixed",
           bottom: 24,
@@ -66,9 +66,8 @@ function Product() {
           zIndex: 1000,
         }}
       >
-        <AddShoppingCartIcon />
+        <PersonAddIcon />
       </Fab>
-      <DialogModal open={openModal} onClose={() => setOpenModal(false)} />
     </Box>
   );
 }
