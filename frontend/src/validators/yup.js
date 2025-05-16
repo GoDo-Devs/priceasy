@@ -11,7 +11,7 @@ const translation = {
         length: 'Este campo deve ter exatamente ${length} caracteres',
         min: 'Este campo deve ter pelo menos ${min} caracteres',
         max: 'Este campo deve ter no máximo ${max} caracteres',
-        email: 'Este campo tem o formato de e-mail inválido',
+        email: 'Insira um Email válido',
         url: 'Este campo deve ter um formato de URL válida',
         trim: 'Este campo não deve conter espaços no início ou no fim.',
         lowercase: 'Este campo deve estar em maiúsculo',

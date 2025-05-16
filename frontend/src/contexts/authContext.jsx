@@ -20,26 +20,16 @@ export function AuthProvider({ children }) {
   }
 
   async function handleLogin(loginFields) {
-    try {
-      const { data } = await authService.login(loginFields);
-      afterConfirmLogin(data);
-      return true;
-    } catch (e) {
-      console.log(e);
+      const response = await authService.login(loginFields);
+      afterConfirmLogin(response.data);
 
-      return false;
-    }
+      return response;
   }
 
   async function handleRegister(registerFields) {
-    try {
-      const { data } = await authService.register(registerFields);
-      return true;
-    } catch (e) {
-      console.log(e);
+      const response = await authService.register(registerFields);
 
-      return false;
-    }
+      return response;
   }
 
   function afterConfirmLogin(data) {

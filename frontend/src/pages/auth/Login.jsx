@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Button, Grid, Typography, Box, Card } from "@mui/material";
+import { Button, Grid, Typography, Box, Card, FormHelperText } from "@mui/material";
 import {AuthContext} from '@/contexts/authContext.jsx'
 import TextInput from "@/components/Form/TextInput.jsx";
 import useForm from "@/hooks/useForm.js";
@@ -13,9 +13,10 @@ function Login() {
   const { handleLogin } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loginError, setLoginError] = useState(null);
   const { redirect } = useNavigateTo(); 
 
-  const { fields, handleChange, validate, errors } = useForm({
+  const { fields, handleChange, validate, errors, setErrors } = useForm({
     email: '',
     password: '',
   }, loginValidator);
@@ -26,13 +27,17 @@ function Login() {
 
   async function handleSubmit() {
     try {
+      setLoginError(false);
       setLoading(true);
 
       if (await validate()) {
         await handleLogin(fields);
+
+        redirect('/')
       };
-      redirect('/')
-    } finally {
+    } catch(e) {
+      setLoginError('Usuário ou senha inválido');
+    }finally {
       setLoading(false);
     }
   };
@@ -59,13 +64,13 @@ function Login() {
             className="mb-5"
             disabled={loading}
             onChange={handleChange}
+            error={loginError}
             errors={errors}
           />
           <TextInput
             label="Senha"
             name="password"
             type={showPassword ? "text" : "password"}
-            className="mb-10"
             disabled={loading}
             endAdornment={
               showPassword
@@ -73,19 +78,26 @@ function Login() {
                 : <VisibilityOffIcon sx={{cursor: 'pointer'}} onClick={togglePasswordVisibility} />
             }
             onChange={handleChange}
+            error={loginError}
             errors={errors}
           />
-          <Button
-            onClick={handleSubmit}
-            variant="contained"
-            className="mt-5"
-            size="large"
-            fullWidth
-            loading={loading}
-            endIcon={<LoginIcon />}
-          >
-            Entrar
-          </Button>
+
+          {loginError &&
+            <FormHelperText error>{loginError}</FormHelperText>
+          }
+
+          <div className="mt-10">
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              size="large"
+              fullWidth
+              loading={loading}
+              endIcon={<LoginIcon />}
+            >
+              Entrar
+            </Button>
+          </div>
         </Box>
       </Card>
     </Grid>

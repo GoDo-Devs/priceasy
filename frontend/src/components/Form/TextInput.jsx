@@ -13,6 +13,7 @@ function TextInput({
   disabled,
   className,
   errors = [],
+  error = false
 }) {
   return (
     <div className={className}>
@@ -34,7 +35,7 @@ function TextInput({
             startAdornment: startAdornment,
           },
         }}
-        error={errors[name]?.length > 0}
+        error={errors[name]?.length > 0 || error}
       />
       {errors[name]?.map((error) => (
         <FormHelperText error>{error}</FormHelperText>

@@ -15,6 +15,7 @@ function useForm(initialFields, validator) {
     try {
       await validator.validate(fields, { abortEarly: false });
       setErrors({});
+
       return true;
     } catch (e) {
       let fieldErr = {};
