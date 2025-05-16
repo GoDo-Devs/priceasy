@@ -6,7 +6,7 @@ import {
 } from "@mui/material";
 import { NavLink, useLocation } from "react-router";
 
-function ListLink({ Icon, path, title, children, onClick }) {
+function ListLink({ Icon, path, title }) {
   const router = useLocation();
 
   const active = path === router.pathname;
@@ -29,7 +29,6 @@ function ListLink({ Icon, path, title, children, onClick }) {
           component={NavLink}
           to={path}
           sx={{ borderRadius: "20px 0px 0px 20px" }}
-          onClick={onClick}
         >
           <div className="flex justify-between items-center">
             <Icon
@@ -37,7 +36,6 @@ function ListLink({ Icon, path, title, children, onClick }) {
               className="mt-0.5 me-3"
             />
             <ListItemText primary={title} />
-            <div>{children}</div>
           </div>
         </ListItemButton>
       </ListItem>

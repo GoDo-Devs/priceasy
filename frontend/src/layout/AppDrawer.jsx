@@ -13,6 +13,7 @@ import ListLink from "../components/DrawerLinks/ListLink.jsx";
 import { ExitToApp, ExpandLess, ExpandMore } from "@mui/icons-material";
 import { AuthContext } from "@/contexts/authContext";
 import { useContext, useState } from "react";
+import GroupLink from "../components/DrawerLinks/GroupLink.jsx";
 
 function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
   const { handleLogout } = useContext(AuthContext);
@@ -33,40 +34,9 @@ function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
           <List>
             {guardedAuthenticatedRoutes[0].children.map(
               ({ path, icon: Icon, label, children }) => {
-                const hasChildren =
-                  Array.isArray(children) && children.length > 0;
-                const [openCollapse, setOpenCollapse] = useState(false);
-
-                if (hasChildren) {
-                  return (
-                    <Box key={label}>
-                      <ListLink
-                        key={path}
-                        path={path}
-                        Icon={Icon}
-                        title={label}
-                        onClick={() => setOpenCollapse(!openCollapse)}
-                      >
-                        {openCollapse ? <ExpandLess /> : <ExpandMore />}
-                      </ListLink>
-                      <Collapse in={openCollapse} timeout="auto" unmountOnExit>
-                        {children.map(
-                          ({ path: subPath, icon: Icon, label: subLabel }) => (
-                            <ListLink
-                              key={subPath}
-                              path={subPath}
-                              Icon={Icon}
-                              title={subLabel}
-                            />
-                          )
-                        )}
-                      </Collapse>
-                    </Box>
-                  );
-                }
-                return (
-                  <ListLink key={path} path={path} Icon={Icon} title={label} />
-                );
+                return children
+                      ? <GroupLink key={label} path={path} Icon={Icon} title={label} children={children} />
+                      : <ListLink key={label} path={path} Icon={Icon} title={label} />
               }
             )}
           </List>
