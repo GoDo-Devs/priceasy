@@ -2,7 +2,6 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
-import CheckBoxInput from "@/components/Form/CheckBoxInput";
 import useHttp from "@/services/useHttp.js";
 
 function ProductModal({ open, onClose }) {

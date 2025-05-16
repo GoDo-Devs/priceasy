@@ -43,21 +43,18 @@ export const guardedAuthenticatedRoutes = [
             label: "Produtos",
             icon: ShoppingCartIcon,
             Component: Product,
-            guard: [checkIfAdmin],
           },
           {
             path: "/vehicles-types",
             label: "Veículos",
             icon: LocalShippingIcon,
             Component: VehicleType,
-            guard: [checkIfAdmin],
           },
           {
             path: "/users",
             label: "Usuários",
             icon: PersonIcon,
             Component: User,
-            guard: [checkIfAdmin],
           },
         ],
       },
@@ -85,12 +82,12 @@ const router = createBrowserRouter([
 ]);
 
 function checkIfAdmin(next, user) {
-  return user.is_admin ?? "/";
+  return user.is_admin ? true : "/";
 }
 
 async function checkIfLoggedIn(next) {
   const { data } = await authService.me();
-  return Boolean(data.user) ?? "/auth/login";
+  return data.user ?? "/auth/login";
 }
 
 export default router;

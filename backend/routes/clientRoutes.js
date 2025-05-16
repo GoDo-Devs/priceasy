@@ -14,6 +14,7 @@ router.post(
   [checkToken, isAdmin],
   ClientController.create
 );
+
 router.get("/", [checkToken, isAdmin], ClientController.getAll);
 
 export default router;

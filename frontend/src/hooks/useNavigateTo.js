@@ -33,7 +33,6 @@ function useNavigateTo() {
   const { user } = useContext(AuthContext);
 
   async function runGuards(path) {
-    console.log("aquo");
     const guards = getAllPathGuards(path, guardedAuthenticatedRoutes);
 
     for (const guard of guards) {
@@ -45,7 +44,6 @@ function useNavigateTo() {
       }
     }
 
-    console.log("saída");
     return true;
   }
 
