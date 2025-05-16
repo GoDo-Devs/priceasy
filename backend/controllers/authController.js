@@ -1,6 +1,5 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 
 import createUserToken from "../helpers/createUserToken.js";
 import getToken from "../helpers/getToken.js";
@@ -17,10 +16,10 @@ export default class AuthController {
       return;
     }
 
-    const userExists = await User.findOne({ where: { email } });
+    const userExists = await User.findOne({ where: { email: email } });
 
     if (userExists) {
-      res.status(422).json({ message: "Por favor, utilize outro e=mail!" });
+      res.status(422).json({ message: "Por favor, utilize outro e-mail!" });
       return;
     }
 
@@ -34,8 +33,7 @@ export default class AuthController {
         password: passwordHash,
       });
 
-      const { id, name: userName, email: userEmail } = user;
-      await createUserToken({ id, name: userName, email: userEmail }, req, res);
+      await createUserToken(user, req, res);
     } catch (error) {
       return res.status(500).json({ message: "Erro interno do servidor." });
     }

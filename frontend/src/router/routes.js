@@ -4,11 +4,14 @@ import LoginPage from "@/pages/auth/Login.jsx";
 import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx"
+import VehicleType from "@/pages/vehicle-type/VehicleType.jsx";
+
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonIcon from "@mui/icons-material/Person";
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
@@ -36,10 +39,17 @@ export const guardedAuthenticatedRoutes = [
         guard: [checkIfAdmin],
         children: [
           {
-            path: "/products/",
+            path: "/products",
             label: "Produtos",
             icon: ShoppingCartIcon,
             Component: Product,
+            guard: [checkIfAdmin],
+          },
+          {
+            path: "/vehicles-types",
+            label: "Veículos",
+            icon: LocalShippingIcon,
+            Component: VehicleType,
             guard: [checkIfAdmin],
           },
           {

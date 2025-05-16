@@ -1,14 +1,14 @@
 import { useContext, useState } from "react";
 import { Box, Fab } from "@mui/material";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import AddIcon from "@mui/icons-material/Add";
 import { LayoutContext } from "@/contexts/layoutContext";
-import { useColumnsProduct } from "@/hooks/useColumnsProduct";
-import ProductModal from "@/components/Modal/ProductModal.jsx";
+import { useColumnsVehicleType } from "@/hooks/useColumnsVehicleType.js";
+import VehicleTypeModal from "@/components/Modal/VehicleTypeModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
 
-function Product() {
+function VehicleType() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, products, handleDelete } = useColumnsProduct();
+  const { columns, vehiclesType, handleDelete } = useColumnsVehicleType();
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -20,12 +20,12 @@ function Product() {
     >
       <DataTable
         columns={columns}
-        data={products}
+        data={vehiclesType}
         handleDelete={handleDelete}
       />
       <Fab
         color="primary"
-        aria-label="Criar Produto"
+        aria-label="Criar Usuário"
         onClick={() => setOpenModal(true)}
         sx={{
           position: "fixed",
@@ -34,11 +34,11 @@ function Product() {
           zIndex: 1000,
         }}
       >
-        <AddShoppingCartIcon />
+        <AddIcon />
       </Fab>
-      <ProductModal open={openModal} onClose={() => setOpenModal(false)} />
+      <VehicleTypeModal open={openModal} onClose={() => setOpenModal(false)} />
     </Box>
   );
 }
 
-export default Product;
+export default VehicleType;

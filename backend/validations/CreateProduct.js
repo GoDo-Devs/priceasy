@@ -1,9 +1,9 @@
 import Joi from "joi";
 
 export const createProductSchema = Joi.object({
-  name: Joi.string().min(2).max(100).required().messages({
+  name: Joi.string().min(1).max(100).required().messages({
     "string.empty": "O nome do produto é obrigatório!",
-    "string.min": "O nome do produto deve ter pelo menos 2 caracteres.",
+    "string.min": "O nome do produto deve ter pelo menos 1 caracter.",
   }),
 
   price: Joi.number().positive().precision(2).required().messages({
