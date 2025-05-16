@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import useHttp from "@/services/useHttp";
+import useHttp from "@/services/useHttp.js";
 
 export function useColumnsProduct() {
   const [products, setProducts] = useState([]);
@@ -11,21 +11,26 @@ export function useColumnsProduct() {
   }, []);
 
   const fetchProducts = () => {
-    useHttp.get("/products").then((response) => {
-      setProducts(response.data.products || []);
+    useHttp.get("/products").then((res) => {
+      setProducts(res.data.products || []);
     });
   };
 
   const fetchProductGroups = () => {
-    useHttp.get("/product-groups").then((response) => {
-      setProductGroups(response.data.productsGroups || []);
+    useHttp.get("/product-groups").then((res) => {
+      setProductGroups(res.data.productsGroups || []);
     });
   };
 
   const handleDelete = (product) => {
-    useHttp.delete(`/products/${product.id}`).then(() => {
-      setProducts((prev) => prev.filter((p) => p.id !== product.id));
-    });
+    useHttp
+      .delete(`/products/${product.id}`)
+      .then(() => {
+        setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      })
+      .catch((err) => {
+        console.error("Erro ao deletar produto:", err);
+      });
   };
 
   const columns = [
@@ -40,14 +45,6 @@ export function useColumnsProduct() {
         }),
     },
     {
-      accessorKey: "cars",
-      header: "Tipo de Veículo",
-      Cell: ({ cell }) => {
-        const group = productGroups.find((g) => g.id === cell.getValue());
-        return group ? group.name : "Nenhum";
-      },
-    },
-    {
       accessorKey: "product_group_id",
       header: "Grupo de Produtos",
       Cell: ({ cell }) => {
@@ -57,5 +54,5 @@ export function useColumnsProduct() {
     },
   ];
 
-  return { columns, products, handleDelete };
+  return { columns, products, setProducts, handleDelete };
 }

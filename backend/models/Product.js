@@ -7,6 +7,13 @@ class Product extends Model {
       foreignKey: "product_group_id",
       as: "product_groups",
     });
+
+    Product.belongsToMany(models.VehicleType, {
+      through: models.ProductVehicleType,
+      foreignKey: "product_id",
+      otherKey: "vehicle_type_id",
+      as: "vehicle_types",
+    });
   }
 }
 
