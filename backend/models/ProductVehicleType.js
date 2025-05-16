@@ -5,9 +5,14 @@ class ProductVehicleType extends Model {}
 
 ProductVehicleType.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     vehicle_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: "vehicle_types",
         key: "id",
@@ -15,7 +20,7 @@ ProductVehicleType.init(
     },
     product_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: "products",
         key: "id",
@@ -29,6 +34,12 @@ ProductVehicleType.init(
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
+    indexes: [
+      {
+        unique: true,
+        fields: ["product_id", "vehicle_type_id"],
+      },
+    ],
   }
 );
 

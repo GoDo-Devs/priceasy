@@ -4,6 +4,12 @@
 export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable("product_vehicle_types", {
+       id: {
+        allowNull: false,
+        primaryKey: true,
+        type: Sequelize.INTEGER,
+        autoIncrement: true,
+      },
       vehicle_type_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

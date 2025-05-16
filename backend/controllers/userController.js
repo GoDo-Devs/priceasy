@@ -26,7 +26,7 @@ export default class UserController {
 
     try {
       await User.destroy({ where: { id: id } });
-      res.status(404).json({ message: "Usuário removido com sucesso!" });
+      res.status(200).json({ message: "Usuário removido com sucesso!" });
     } catch (error) {
       res.status(404).json({ message: "Usuário não encontrado!" });
       return;

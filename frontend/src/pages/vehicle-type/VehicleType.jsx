@@ -10,6 +10,7 @@ function VehicleType() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, vehiclesType, handleDelete } = useColumnsVehicleType();
   const [openModal, setOpenModal] = useState(false);
+  const [vehicleType, setVehicleType] = useState({});
 
   return (
     <Box
@@ -25,7 +26,7 @@ function VehicleType() {
       />
       <Fab
         color="primary"
-        aria-label="Criar Usuário"
+        aria-label="Criar Tipo de Veículo"
         onClick={() => setOpenModal(true)}
         sx={{
           position: "fixed",
@@ -36,7 +37,15 @@ function VehicleType() {
       >
         <AddIcon />
       </Fab>
-      <VehicleTypeModal open={openModal} onClose={() => setOpenModal(false)} />
+      <VehicleTypeModal
+        open={openModal}
+        vehicleType={vehicleType}
+        setVehicleType={setVehicleType}
+        onClose={() => {
+          setOpenModal(false);
+          setVehicleType({});
+        }}
+      />
     </Box>
   );
 }

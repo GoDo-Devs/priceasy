@@ -26,7 +26,7 @@ export default class ProductGroupController {
 
     try {
       await ProductGroup.destroy({ where: { id: id } });
-      res.status(404).json({ message: "Grupo de Produtos removido com sucesso!" });
+      res.status(200).json({ message: "Grupo de Produtos removido com sucesso!" });
     } catch (error) {
       res.status(404).json({ message: "Grupo de Produtos não encontrado!" });
       return;

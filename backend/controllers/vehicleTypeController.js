@@ -4,7 +4,7 @@ export default class VehicleTypeController {
   static async create(req, res) {
     const { name } = req.body;
 
-    const nameExists = await VehicleType.findOne({ where: {name:name} });
+    const nameExists = await VehicleType.findOne({ where: { name: name } });
 
     if (nameExists) {
       return res.status(422).json({
@@ -40,6 +40,26 @@ export default class VehicleTypeController {
         message: "Erro ao obter os Tipos de Veiculos.",
         error: error.message,
       });
+    }
+  }
+
+  static async removeVehicleTypeById(req, res) {
+    const id = req.params.id;
+
+    const vehicleTypeExists = await VehicleType.findByPk(id);
+    if (!vehicleTypeExists) {
+      res.status(404).json({ message: "Tipo de Veículos não encontrado!" });
+      return;
+    }
+
+    try {
+      await VehicleType.destroy({ where: { id: id } });
+      res
+        .status(200)
+        .json({ message: "Tipo de Veículos removido com sucesso!" });
+    } catch (error) {
+      res.status(404).json({ message: "Tipo de Veículos não encontrado!" });
+      return;
     }
   }
 }

@@ -1,9 +1,12 @@
 import Product from "../models/Product.js";
+import ProductVehicleType from "../models/ProductVehicleType.js";
+import VehicleType from "../models/VehicleType.js"
 import getFinalGroupId from "../helpers/getFinalGroupId.js";
 
 export default class ProductController {
   static async create(req, res) {
-    const { name, price, product_group_id, group_name } = req.body;
+    const { name, price, product_group_id, group_name, vehicle_type_ids } =
+      req.body;
 
     const productExists = await Product.findOne({ where: { name } });
 
@@ -21,11 +24,38 @@ export default class ProductController {
     );
 
     try {
+      if (vehicle_type_ids && Array.isArray(vehicle_type_ids)) {
+        const validVehicleTypes = await VehicleType.findAll({
+          where: { id: vehicle_type_ids },
+          attributes: ["id"],
+        });
+
+        const validIds = validVehicleTypes.map((vt) => vt.id);
+        const invalidIds = vehicle_type_ids.filter(
+          (id) => !validIds.includes(id)
+        );
+
+        if (invalidIds.length > 0) {
+          return res.status(400).json({
+            message: `Tipos de veículo inválidos`
+          });
+        }
+      }
+
       const newProduct = await Product.create({
         name: name.trim(),
         price: Number(price),
         product_group_id: finalGroupId,
       });
+
+      if (vehicle_type_ids && Array.isArray(vehicle_type_ids)) {
+        const values = vehicle_type_ids.map((typeId) => ({
+          vehicle_type_id: typeId,
+          product_id: newProduct.id
+        }));
+
+        await ProductVehicleType.bulkCreate(values);
+      }
 
       return res.status(200).json({
         message: "Produto criado com sucesso!",
@@ -84,7 +114,7 @@ export default class ProductController {
 
     try {
       await Product.destroy({ where: { id: id } });
-      res.status(404).json({ message: "Produto removido com sucesso!" });
+      res.status(200).json({ message: "Produto removido com sucesso!" });
       return;
     } catch (error) {
       res.status(404).json({ message: "Produto não encontrado!" });

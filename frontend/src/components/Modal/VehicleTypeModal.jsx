@@ -1,16 +1,13 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
-import { useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
-function VehicleTypeModal({ open, onClose }) {
-  const [vehiclesType, setVehiclesType] = useState({});
-
+function VehicleTypeModal({ open, onClose, vehicleType, setVehicleType}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await useHttp.post("/vehicle-types/create/", vehiclesType);
-      console.log("Produto criado:", vehiclesType);
+      await useHttp.post("/vehicle-types/create/", vehicleType);
+      console.log("Produto criado:", vehicleType);
       onClose();
     } catch (error) {
       console.error("Erro ao salvar o produto:", error);
@@ -24,9 +21,9 @@ function VehicleTypeModal({ open, onClose }) {
           label="Nome do Tipo de Veículo"
           name="name"
           className="mt-5 mb-5"
-          value={vehiclesType.name || ""}
+          value={vehicleType.name || ""}
           onChange={(e) =>
-            setVehiclesType({ ...vehiclesType, name: e.target.value })
+            setVehicleType({ ...vehicleType, name: e.target.value })
           }
           required
         ></TextInput>

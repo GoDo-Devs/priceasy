@@ -1,14 +1,35 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
-import SelectInput from "@/components/Form/SelectInput.jsx";
+import SelectInput from "@/components/Form/SelectInput.jsx"
+import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
-function ProductModal({ open, onClose }) {
-  const [product, setProduct] = useState({});
-  const [showNewGroupInput, setShowNewGroupInput] = useState(false);
+function ProductModal({
+  open,
+  product,
+  setProduct,
+  showNewGroupInput,
+  handleGroupChange,
+  onClose,
+}) {
   const [groups, setGroups] = useState([]);
-  const [vehicleTypes, setVehicleTypes] = useState([]);
+  const [vehicleTypes, setVehicleTypes] = useState({
+    all: [],
+    selected: [],
+  });
+
+  useEffect(() => {
+    useHttp
+      .get("/vehicle-types")
+      .then((res) =>
+        setVehicleTypes({
+          all: res.data.vehicleTypes,
+          selected: [],
+        })
+      )
+      .catch((err) => console.error("Erro ao carregar grupos:", err));
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -19,25 +40,13 @@ function ProductModal({ open, onClose }) {
     }
   }, [open]);
 
-  const handleGroupChange = (e) => {
-    const selected = e.target.value;
-
-    if (selected === "new") {
-      setShowNewGroupInput(true);
-      setProduct({ ...product, product_group_id: null });
-    } else {
-      setShowNewGroupInput(false);
-      setProduct({
-        ...product,
-        product_group_id: selected === "Nenhum" ? null : selected,
-      });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await useHttp.post("/products/create/", product);
+      await useHttp.post("/products/create/", {
+        ...product,
+        vehicle_type_ids: vehicleTypes.selected,
+      });
       console.log("Produto criado:", product);
       onClose();
     } catch (error) {
@@ -94,6 +103,22 @@ function ProductModal({ open, onClose }) {
             }
           />
         )}
+        <CheckBoxInput
+          label="Selecione um Tipo de Veículo"
+          name="vehicle_type_ids"
+          className="mb-5"
+          value={vehicleTypes.selected}
+          onChange={(e) =>
+            setVehicleTypes((prev) => ({
+              ...prev,
+              selected: e.target.value,
+            }))
+          }
+          options={vehicleTypes.all.map((g) => ({
+            value: g.id,
+            label: g.name,
+          }))}
+        />
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
