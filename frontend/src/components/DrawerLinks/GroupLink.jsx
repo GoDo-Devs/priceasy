@@ -31,7 +31,10 @@ function GroupLink({ Icon, path, title, children }) {
                         className={isActive ? "mt-0.5 me-3" : "mt-0.5 me-3 ms-4"}
                         />
                         <ListItemText primary={title} />
-                        {open ? <ExpandLess /> : <ExpandMore />}
+                        {open 
+                            ? <ExpandLess className='mt-1 me-1' /> 
+                            : <ExpandMore className='mt-1 me-1' />
+                        }
                     </Stack>
                 </ListItemButton>
             </ListItem>

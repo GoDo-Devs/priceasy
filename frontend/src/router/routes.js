@@ -28,30 +28,30 @@ export const guardedAuthenticatedRoutes = [
         Component: Home,
       },
       {
-        path: "/price",
+        path: "/cotacao",
         label: "Cotação",
         icon: RequestQuoteIcon,
         Component: Home,
       },
       {
-        label: "Painel Administrativo",
+        label: "Administrativo",
         icon: ManageAccountsIcon,
         guard: [checkIfAdmin],
         children: [
           {
-            path: "/products",
+            path: "/produtos",
             label: "Produtos",
             icon: ShoppingCartIcon,
             Component: Product,
           },
           {
-            path: "/vehicles-types",
+            path: "/tipo",
             label: "Veículos",
             icon: LocalShippingIcon,
             Component: VehicleType,
           },
           {
-            path: "/users",
+            path: "/usuarios",
             label: "Usuários",
             icon: PersonIcon,
             Component: User,
