@@ -57,19 +57,18 @@ class FipeController {
   }
 
   static async getPrice(req, res) {
-    const { vehicleType, brandCode, modelCode, modelYear } = req.body;
+    const { vehicleType, brandCode, modelCode, year, fuelType } = req.body;
     const fipeService = new FipeTableService();
 
     try {
       await fipeService.setReferenceTable();
-      const [year, fuelType] = modelYear.split("-");
 
       const fipePrice = await fipeService.searchFipePrice(
         vehicleType,
         brandCode,
         modelCode,
         year,
-        Number(fuelType)
+        fuelType
       );
 
       return res.status(200).json({

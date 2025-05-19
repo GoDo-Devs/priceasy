@@ -51,7 +51,16 @@ class FipeTableService {
 
     this.checkErrors(response.data);
 
-    return response.data;
+    const yearWithFuel = response.data.map((yearFuel) => {
+      const [year, fuel] = yearFuel['Value'].split('-');
+
+      return {
+        anoModelo: year,
+        tipoCombustivel: fuel
+      }
+    })
+
+    return yearWithFuel;
   }
 
   async searchFipePrice(

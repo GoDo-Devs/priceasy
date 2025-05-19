@@ -3,7 +3,8 @@ import Joi from "joi";
 const vehicleType = Joi.number().valid(1, 2, 3).required();
 const brandCode = Joi.number().required();
 const modelCode = Joi.number().required();
-const modelYear = Joi.string().pattern(/^\d{4}-[1-3]$/).required();
+const modelYear = Joi.string().required();
+const fuelType = Joi.number().valid(1, 2, 3).required();
 
 export const brandsSchema = Joi.object({
   vehicleType,
@@ -25,4 +26,5 @@ export const priceSchema = Joi.object({
   brandCode,
   modelCode,
   modelYear,
+  fuelType,
 });
