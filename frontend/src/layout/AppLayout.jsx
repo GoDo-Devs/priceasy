@@ -1,9 +1,8 @@
 import { useEffect, useContext } from "react";
 import { Outlet, useLocation } from "react-router";
 import AppDrawer from "./AppDrawer";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box } from "@mui/material";
 import LayoutAppBar from "./LayoutAppBar";
-import { guardedAuthenticatedRoutes } from "../router/routes";
 import useNavigateTo from "../hooks/useNavigateTo";
 import { LayoutContext } from "../contexts/layoutContext";
 

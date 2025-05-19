@@ -34,7 +34,7 @@ function CheckBoxInput({
 
   return (
     <div className={className}>
-      <InputLabel className="text-white mb-1">{label}</InputLabel>
+      <InputLabel className="text-white">{label}</InputLabel>
       <FormGroup>
         {options.map((option) => (
           <FormControlLabel

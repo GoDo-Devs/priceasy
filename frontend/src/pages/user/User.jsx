@@ -25,7 +25,7 @@ function User() {
         onClick={() => navigate("/auth/register")}
         sx={{
           position: "fixed",
-          bottom: 24,
+          bottom: 40,
           right: 24,
           zIndex: 1000,
         }}

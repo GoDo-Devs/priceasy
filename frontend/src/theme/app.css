@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
 /* scroolbar */
 ::-webkit-scrollbar {
   width: 10px;
@@ -30,4 +35,15 @@
 .hoverable:hover {
   background-color: #4d566b2b;
   color: #fff !important;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remover setas no Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
 }

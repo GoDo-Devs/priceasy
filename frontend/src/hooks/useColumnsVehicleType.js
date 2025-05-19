@@ -3,14 +3,22 @@ import useHttp from "@/services/useHttp";
 
 export function useColumnsVehicleType() {
   const [vehiclesType, setVehiclesType] = useState([]);
+  const [relations, setRelations] = useState([]);
 
   useEffect(() => {
-    fetchUser();
+    fetchVehicleType();
+    fetchProductVehicleType();
   }, []);
 
-  const fetchUser = () => {
+  const fetchVehicleType = () => {
     useHttp.get("/vehicle-types").then((response) => {
       setVehiclesType(response.data.vehicleTypes || []);
+    });
+  };
+
+  const fetchProductVehicleType = () => {
+    useHttp.get("/product-vehicle-types").then((response) => {
+      setRelations(response.data.data || []);
     });
   };
 
@@ -21,7 +29,18 @@ export function useColumnsVehicleType() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome" }
+    { accessorKey: "name", header: "Nome" },
+    {
+      accessorKey: "id",
+      header: "Quantidade de Produtos",
+      Cell: ({ cell }) => {
+        const vehicleTypeId = cell.getValue();
+        const count = relations.filter(
+          (rel) => rel.vehicle_type_id === vehicleTypeId
+        ).length;
+        return count > 0 ? count : "Nenhum";
+      },
+    },
   ];
 
   return { columns, vehiclesType, handleDelete };

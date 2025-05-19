@@ -15,12 +15,11 @@ function VehicleTypeModal({ open, onClose, vehicleType, setVehicleType}) {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose}  PaperProps={{sx: {borderRadius: 8, padding: 2}}} fullWidth maxWidth="sm">
       <DialogContent>
         <TextInput
           label="Nome do Tipo de Veículo"
           name="name"
-          className="mt-5 mb-5"
           value={vehicleType.name || ""}
           onChange={(e) =>
             setVehicleType({ ...vehicleType, name: e.target.value })

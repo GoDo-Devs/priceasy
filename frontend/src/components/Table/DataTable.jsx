@@ -5,30 +5,32 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 function DataTable({ data, columns, handleDelete }) {
   return (
-    <MaterialReactTable
-      localization={MRT_Localization_PT_BR}
-      columns={columns}
-      data={data}
-      enableFullScreenToggle={false}
-      enableRowActions
-      positionActionsColumn="last"
-      renderRowActions={({ row }) => (
-        <Tooltip title="Excluir">
-          <IconButton
-            color="primary"
-            onClick={() => handleDelete(row.original)}
-          >
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-      muiTableContainerProps={{
-        sx: { height: "100%" },
-      }}
-      muiTableBodyProps={{
-        sx: { height: "100%" },
-      }}
-    />
+    <div style={{ height: 'calc(100vh - 64px)', overflowY: 'auto' }}>
+      <MaterialReactTable
+        localization={MRT_Localization_PT_BR}
+        columns={columns}
+        data={data}
+        enableFullScreenToggle={false}
+        enableRowActions
+        positionActionsColumn="last"
+        renderRowActions={({ row }) => (
+          <Tooltip title="Excluir">
+            <IconButton
+              color="primary"
+              onClick={() => handleDelete(row.original)}
+            >
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        )}
+        muiTableContainerProps={{
+          sx: { height: "100vh" },
+        }}
+        muiTableBodyProps={{
+          sx: { height: "100%" },
+        }}
+      />
+    </div>
   );
 }
 

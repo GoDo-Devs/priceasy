@@ -13,7 +13,7 @@ function ProductModal({
   handleGroupChange,
   onClose,
 }) {
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState([""]);
   const [vehicleTypes, setVehicleTypes] = useState({
     all: [],
     selected: [],
@@ -55,12 +55,12 @@ function ProductModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={onClose} PaperProps={{sx: {borderRadius: 8, padding: 1.5}}} fullWidth maxWidth="sm">
       <DialogContent>
         <TextInput
           label="Nome do Produto"
           name="name"
-          className="mt-5 mb-5"
+          className="mb-5"
           value={product.name}
           onChange={(e) => setProduct({ ...product, name: e.target.value })}
           required
@@ -106,7 +106,6 @@ function ProductModal({
         <CheckBoxInput
           label="Selecione um Tipo de Veículo"
           name="vehicle_type_ids"
-          className="mb-5"
           value={vehicleTypes.selected}
           onChange={(e) =>
             setVehicleTypes((prev) => ({
