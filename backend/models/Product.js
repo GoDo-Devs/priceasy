@@ -14,6 +14,13 @@ class Product extends Model {
       otherKey: "vehicle_type_id",
       as: "vehicle_types",
     });
+
+    Product.belongsToMany(models.Simulation, {
+      through: models.Simulation,
+      foreignKey: "product_id",
+      otherKey: "simulation_id",
+      as: "simulations",
+    });
   }
 }
 

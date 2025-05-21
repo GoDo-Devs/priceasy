@@ -8,6 +8,8 @@ export default function useFetch(endpoint) {
     dataService.fetchData(endpoint).then((res) => {
       const result = 
       res.data?.products ||
+      res.data?.vehicleTypes ||
+      res.data?.implementsList ||
       res.data?.brands ||
       res.data?.models ||
       res.data?.years ||
