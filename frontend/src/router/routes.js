@@ -5,6 +5,8 @@ import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx"
 import VehicleType from "@/pages/vehicle-type/VehicleType.jsx";
+import Implement from "../pages/implement/Implement.jsx";
+import Price from "../pages/price/Price.jsx"
 
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -12,6 +14,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonIcon from "@mui/icons-material/Person";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
@@ -31,7 +34,7 @@ export const guardedAuthenticatedRoutes = [
         path: "/cotacao",
         label: "Cotação",
         icon: RequestQuoteIcon,
-        Component: Home,
+        Component: Price,
       },
       {
         label: "Administrativo",
@@ -43,6 +46,12 @@ export const guardedAuthenticatedRoutes = [
             label: "Produtos",
             icon: ShoppingCartIcon,
             Component: Product,
+          },
+          {
+            path: "/implementos",
+            label: "Implementos",
+            icon: AutoAwesomeIcon,
+            Component: Implement,
           },
           {
             path: "/tipo",

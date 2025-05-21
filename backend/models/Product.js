@@ -29,7 +29,7 @@ Product.init(
       allowNull: false,
     },
     price: {
-      type: DataTypes.FLOAT,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     product_group_id: {

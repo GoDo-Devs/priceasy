@@ -2,12 +2,12 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import TextInput from "@/components/Form/TextInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
-function VehicleTypeModal({ open, onClose, vehicleType, setVehicleType}) {
+function ImplementModal({ open, onClose, implement, setImplement}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await useHttp.post("/vehicle-types/create/", vehicleType);
-      console.log("Tipo de veículo criado:", vehicleType);
+      await useHttp.post("/implements/create/", implement);
+      console.log("Implemento criado:", implement);
       onClose();
     } catch (error) {
       console.error("Erro ao salvar o produto:", error);
@@ -18,11 +18,21 @@ function VehicleTypeModal({ open, onClose, vehicleType, setVehicleType}) {
     <Dialog open={open} onClose={onClose}  PaperProps={{sx: {borderRadius: 8, padding: 2}}} fullWidth maxWidth="sm">
       <DialogContent>
         <TextInput
-          label="Nome do Tipo de Veículo"
+          label="Nome do Implemento"
           name="name"
-          value={vehicleType.name || ""}
+          className="mb-5"
+          value={implement.name || ""}
           onChange={(e) =>
-            setVehicleType({ ...vehicleType, name: e.target.value })
+            setImplement({ ...implement, name: e.target.value })
+          }
+          required
+        ></TextInput>
+        <TextInput
+          label="Preço"
+          name="price"
+          value={implement.price || ""}
+          onChange={(e) =>
+            setImplement({ ...implement, price: e.target.value })
           }
           required
         ></TextInput>
@@ -37,4 +47,4 @@ function VehicleTypeModal({ open, onClose, vehicleType, setVehicleType}) {
   );
 }
 
-export default VehicleTypeModal;
+export default ImplementModal;

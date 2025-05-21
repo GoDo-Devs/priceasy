@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("products", {
+    await queryInterface.createTable("implements", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -17,16 +17,6 @@ export default {
       price: {
         type: Sequelize.INTEGER,
         allowNull: false,
-      },
-      product_group_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: "product_groups",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET DEFAULT",
       },
       created_at: {
         allowNull: false,
@@ -44,6 +34,6 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("products");
+    await queryInterface.dropTable("implements");
   },
 };

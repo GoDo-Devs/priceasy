@@ -13,7 +13,7 @@ function ProductModal({
   handleGroupChange,
   onClose,
 }) {
-  const [groups, setGroups] = useState([""]);
+  const [groups, setGroups] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState({
     all: [],
     selected: [],
