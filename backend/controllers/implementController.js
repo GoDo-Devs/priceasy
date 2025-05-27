@@ -2,7 +2,7 @@ import Implement from "../models/Implement.js";
 
 export default class ImplementController {
   static async create(req, res) {
-    const { name, price } = req.body;
+    const { name } = req.body;
 
     const implementExists = await Implement.findOne({ where: { name } });
 

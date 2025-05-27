@@ -31,9 +31,7 @@ export default class VehicleTypeController {
 
   static async getAll(req, res) {
     try {
-      const vehicleTypes = await VehicleType.findAll({
-        order: [["name", "ASC"]],
-      });
+      const vehicleTypes = await VehicleType.findAll();
       return res.status(200).json({ vehicleTypes: vehicleTypes });
     } catch (error) {
       return res.status(500).json({

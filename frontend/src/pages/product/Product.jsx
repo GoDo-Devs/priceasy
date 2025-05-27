@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { Box, Fab } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { LayoutContext } from "@/contexts/layoutContext";
-import { useColumnsProduct } from "@/hooks/useColumnsProduct";
+import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
 

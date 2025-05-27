@@ -5,8 +5,9 @@ import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx"
 import VehicleType from "@/pages/vehicle-type/VehicleType.jsx";
-import Implement from "../pages/implement/Implement.jsx";
-import Price from "../pages/price/Price.jsx"
+import Implement from "@/pages/implement/Implement.jsx";
+import Price from "@/pages/price/Price.jsx"
+import Service from "@/pages/service/Service.jsx"
 
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -18,6 +19,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
+import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -41,6 +43,12 @@ export const guardedAuthenticatedRoutes = [
         icon: ManageAccountsIcon,
         guard: [checkIfAdmin],
         children: [
+          {
+            path: "/servicos",
+            label: "Serviços",
+            icon: MiscellaneousServicesIcon,
+            Component: Service,
+          },
           {
             path: "/produtos",
             label: "Produtos",

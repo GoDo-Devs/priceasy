@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("implements", {
+    await queryInterface.createTable("services", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -13,6 +13,16 @@ export default {
       name: {
         type: Sequelize.STRING,
         allowNull: false,
+      },
+      category_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: "categories",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
       },
       created_at: {
         allowNull: false,
@@ -30,6 +40,6 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("implements");
+    await queryInterface.dropTable("services");
   },
 };
