@@ -16,7 +16,7 @@ class Product extends Model {
     });
 
     Product.belongsToMany(models.Simulation, {
-      through: models.Simulation,
+      through: models.SimulationProduct,
       foreignKey: "product_id",
       otherKey: "simulation_id",
       as: "simulations",

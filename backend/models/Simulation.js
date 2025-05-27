@@ -19,14 +19,14 @@ class Simulation extends Model {
     });
 
     Simulation.belongsToMany(models.Product, {
-      through: models.Product,
+      through: models.SimulationProduct,
       foreignKey: "simulation_id",
       otherKey: "product_id",
       as: "simulation_products",
     });
 
     Simulation.belongsToMany(models.Implement, {
-      through: models.Implement,
+      through: models.SimulationImplement,
       foreignKey: "simulation_id",
       otherKey: "implement_id",
       as: "simulation_implements",

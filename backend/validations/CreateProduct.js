@@ -27,7 +27,6 @@ export const createProductSchema = Joi.object({
 
   vehicle_type_ids: Joi.array()
     .items(Joi.number().integer().positive().messages({
-      "number.base": "Cada tipo de veículo deve ser um número.",
       "number.integer": "O ID do tipo de veículo deve ser um número inteiro.",
       "number.positive": "O ID do tipo de veículo deve ser positivo.",
     }))
