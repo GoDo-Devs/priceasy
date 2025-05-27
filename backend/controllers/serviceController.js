@@ -51,4 +51,25 @@ export default class ServiceController {
       });
     }
   }
+
+  static async removeServiceById(req, res) {
+    const id = req.params.id;
+
+    const implementById = await Service.findByPk(id);
+
+    if (!implementById) {
+      res.status(404).json({ message: "Serviço não encontrado!" });
+      return;
+    }
+
+    try {
+      await Service.destroy({ where: { id: id } });
+      res.status(200).json({ message: "Serviço removido com sucesso!" });
+      return;
+    } catch (error) {
+      res.status(404).json({ message: "Serviço não encontrado!" });
+      return;
+    }
+  }
+
 }

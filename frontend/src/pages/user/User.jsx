@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsUser } from "@/hooks/useColumnsUser.js";
@@ -19,19 +19,21 @@ function User() {
       }}
     >
       <DataTable columns={columns} data={users} handleDelete={handleDelete} />
-      <Fab
-        color="primary"
-        aria-label="Criar Usuário"
-        onClick={() => navigate("/auth/register")}
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 24,
-          zIndex: 1000,
-        }}
-      >
-        <PersonAddIcon />
-      </Fab>
+      <Tooltip title="Criar Usuário">
+        <Fab
+          color="primary"
+          aria-label="Criar Usuário"
+          onClick={() => navigate("/auth/register")}
+          sx={{
+            position: "fixed",
+            bottom: 40,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <PersonAddIcon />
+        </Fab>
+      </Tooltip>
     </Box>
   );
 }

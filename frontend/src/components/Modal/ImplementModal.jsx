@@ -10,7 +10,7 @@ function ImplementModal({ open, onClose, implement, setImplement}) {
       console.log("Implemento criado:", implement);
       onClose();
     } catch (error) {
-      console.error("Erro ao salvar o produto:", error);
+      console.error("Erro ao salvar o implemento:", error);
     }
   };
 

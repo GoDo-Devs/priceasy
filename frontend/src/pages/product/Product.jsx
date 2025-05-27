@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
@@ -40,19 +40,21 @@ function Product() {
         data={products}
         handleDelete={handleDelete}
       />
-      <Fab
-        color="primary"
-        aria-label="Criar Produto"
-        onClick={() => setOpenModal(true)}
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 24,
-          zIndex: 1000,
-        }}
-      >
-        <AddShoppingCartIcon />
-      </Fab>
+      <Tooltip title="Criar Produto">
+        <Fab
+          color="primary"
+          aria-label="Criar Produto"
+          onClick={() => setOpenModal(true)}
+          sx={{
+            position: "fixed",
+            bottom: 40,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <AddShoppingCartIcon />
+        </Fab>
+      </Tooltip>
       <ProductModal
         open={openModal}
         product={product}

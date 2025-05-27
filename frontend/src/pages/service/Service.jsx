@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsService } from "@/hooks/useColumnsService.js";
@@ -12,12 +12,12 @@ function Service() {
   const [openModal, setOpenModal] = useState(false);
   const [service, setService] = useState({});
 
-   const handleGroupChange = (e) => {
+  const handleGroupChange = (e) => {
     const selected = e.target.value;
-      setProduct({
-        ...service,
-        category_id: selected,
-      });
+    setProduct({
+      ...service,
+      category_id: selected,
+    });
   };
 
   return (
@@ -32,19 +32,21 @@ function Service() {
         data={services}
         handleDelete={handleDelete}
       />
-      <Fab
-        color="primary"
-        aria-label="Criar Serviço"
-        onClick={() => setOpenModal(true)}
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 24,
-          zIndex: 1000,
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      <Tooltip title="Criar Serviço">
+        <Fab
+          color="primary"
+          aria-label="Criar Serviço"
+          onClick={() => setOpenModal(true)}
+          sx={{
+            position: "fixed",
+            bottom: 40,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      </Tooltip>
       <ServiceModal
         open={openModal}
         service={service}

@@ -14,8 +14,7 @@ export default class ImplementController {
 
     try {
       const newImplement = await Implement.create({
-        name: name.trim(),
-        price: Number(price),
+        name: name.trim()
       });
 
       return res.status(200).json({
@@ -53,7 +52,7 @@ export default class ImplementController {
     }
 
     try {
-      await Product.destroy({ where: { id: id } });
+      await Implement.destroy({ where: { id: id } });
       res.status(200).json({ message: "Implemento removido com sucesso!" });
       return;
     } catch (error) {

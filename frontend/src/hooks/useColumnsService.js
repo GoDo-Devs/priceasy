@@ -26,7 +26,7 @@ export function useColumnsService() {
     useHttp
       .delete(`/services/${service.id}`)
       .then(() => {
-        setServices((prev) => prev.filter((s) => s.id !== service.id));
+        setServices((prev) => prev.filter((p) => p.id !== service.id));
       })
       .catch((err) => {
         console.error("Erro ao deletar serviço:", err);
