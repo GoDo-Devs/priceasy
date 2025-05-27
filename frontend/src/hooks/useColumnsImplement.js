@@ -26,16 +26,7 @@ export function useColumnsImplement() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome" },
-    {
-      accessorKey: "price",
-      header: "Preço",
-      Cell: ({ cell }) =>
-        cell.getValue().toLocaleString("pt-BR", {
-          style: "currency",
-          currency: "BRL",
-        }),
-    },
+    { accessorKey: "name", header: "Nome" }
   ];
 
   return { columns, implementsList, setImplementsList, handleDelete };

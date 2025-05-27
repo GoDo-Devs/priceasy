@@ -15,6 +15,10 @@ router.post(
   ImplementController.create
 );
 router.get("/", [checkToken, isAdmin], ImplementController.getAll);
-router.delete("/:id", [checkToken, isAdmin], ImplementController.removeImplementById);
+router.delete(
+  "/:id",
+  [checkToken, isAdmin],
+  ImplementController.removeImplementById
+);
 
 export default router;

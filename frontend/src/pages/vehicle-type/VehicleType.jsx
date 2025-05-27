@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Box, Fab } from "@mui/material";
+import { Box, Fab, Tooltip } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsVehicleType } from "@/hooks/useColumnsVehicleType.js";
@@ -24,19 +24,21 @@ function VehicleType() {
         data={vehiclesType}
         handleDelete={handleDelete}
       />
-      <Fab
-        color="primary"
-        aria-label="Criar Tipo de Veículo"
-        onClick={() => setOpenModal(true)}
-        sx={{
-          position: "fixed",
-          bottom: 40,
-          right: 24,
-          zIndex: 1000,
-        }}
-      >
-        <AddIcon />
-      </Fab>
+      <Tooltip title="Criar Tipo de Veículo">
+        <Fab
+          color="primary"
+          aria-label="Criar Tipo de Veículo"
+          onClick={() => setOpenModal(true)}
+          sx={{
+            position: "fixed",
+            bottom: 40,
+            right: 24,
+            zIndex: 1000,
+          }}
+        >
+          <AddIcon />
+        </Fab>
+      </Tooltip>
       <VehicleTypeModal
         open={openModal}
         vehicleType={vehicleType}
