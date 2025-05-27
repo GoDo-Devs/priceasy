@@ -8,6 +8,7 @@ import VehicleType from "@/pages/vehicle-type/VehicleType.jsx";
 import Implement from "@/pages/implement/Implement.jsx";
 import Price from "@/pages/price/Price.jsx"
 import Service from "@/pages/service/Service.jsx"
+import Plan from "@/pages/plan/Plan.jsx"
 
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -20,6 +21,7 @@ import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
+import DiscountIcon from '@mui/icons-material/Discount';
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -43,6 +45,12 @@ export const guardedAuthenticatedRoutes = [
         icon: ManageAccountsIcon,
         guard: [checkIfAdmin],
         children: [
+          {
+            path: "/planos",
+            label: "Planos",
+            icon: DiscountIcon,
+            Component: Plan,
+          },
           {
             path: "/servicos",
             label: "Serviços",

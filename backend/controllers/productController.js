@@ -1,6 +1,7 @@
 import Product from "../models/Product.js";
 import ProductVehicleType from "../models/ProductVehicleType.js";
-import VehicleType from "../models/VehicleType.js"
+import VehicleType from "../models/VehicleType.js";
+import isValidArray from "../helpers/isValidArray.js";
 import getFinalGroupId from "../helpers/getFinalGroupId.js";
 
 export default class ProductController {
@@ -24,23 +25,12 @@ export default class ProductController {
     );
 
     try {
-      if (vehicle_type_ids && Array.isArray(vehicle_type_ids)) {
-        const validVehicleTypes = await VehicleType.findAll({
-          where: { id: vehicle_type_ids },
-          attributes: ["id"],
-        });
-
-        const validIds = validVehicleTypes.map((vt) => vt.id);
-        const invalidIds = vehicle_type_ids.filter(
-          (id) => !validIds.includes(id)
-        );
-
-        if (invalidIds.length > 0) {
-          return res.status(400).json({
-            message: `Tipos de veículo inválidos`
-          });
-        }
-      }
+      const validIds = await isValidArray(
+        vehicle_type_ids,
+        VehicleType,
+        req,
+        res
+      );
 
       const newProduct = await Product.create({
         name: name.trim(),
@@ -48,10 +38,10 @@ export default class ProductController {
         product_group_id: finalGroupId,
       });
 
-      if (vehicle_type_ids && Array.isArray(vehicle_type_ids)) {
-        const values = vehicle_type_ids.map((typeId) => ({
+      if (validIds.length > 0) {
+        const values = validIds.map((typeId) => ({
           vehicle_type_id: typeId,
-          product_id: newProduct.id
+          product_id: newProduct.id,
         }));
 
         await ProductVehicleType.bulkCreate(values);
