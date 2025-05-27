@@ -27,15 +27,6 @@ function ImplementModal({ open, onClose, implement, setImplement}) {
           }
           required
         ></TextInput>
-        <TextInput
-          label="Preço"
-          name="price"
-          value={implement.price || ""}
-          onChange={(e) =>
-            setImplement({ ...implement, price: e.target.value })
-          }
-          required
-        ></TextInput>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>

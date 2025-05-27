@@ -13,6 +13,7 @@ function CheckBoxInput({
   options = [],
   className,
 }) {
+  console.log(options)
   const handleCheckboxChange = (event) => {
   const checkboxValue = Number(event.target.value);
   const { checked } = event.target;
