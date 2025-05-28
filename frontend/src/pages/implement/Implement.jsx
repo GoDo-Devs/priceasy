@@ -11,6 +11,7 @@ function Implement() {
   const { columns, implementsList, handleDelete } = useColumnsImplement();
   const [openModal, setOpenModal] = useState(false);
   const [implement, setImplement] = useState({});
+  const width = 64;
 
   return (
     <Box
@@ -23,6 +24,7 @@ function Implement() {
         columns={columns}
         data={implementsList}
         handleDelete={handleDelete}
+        width={width}
       />
       <Tooltip title="Criar Implemento">
         <Fab

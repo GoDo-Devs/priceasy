@@ -10,6 +10,7 @@ function User() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, users, handleDelete } = useColumnsUser();
   const navigate = useNavigate();
+  const width = 64;
 
   return (
     <Box
@@ -18,7 +19,12 @@ function User() {
         transition: "width 0.1s ease",
       }}
     >
-      <DataTable columns={columns} data={users} handleDelete={handleDelete} />
+      <DataTable
+        columns={columns}
+        data={users}
+        handleDelete={handleDelete}
+        width={width}
+      />
       <Tooltip title="Criar Usuário">
         <Fab
           color="primary"

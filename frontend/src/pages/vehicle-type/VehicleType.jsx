@@ -11,6 +11,7 @@ function VehicleType() {
   const { columns, vehiclesType, handleDelete } = useColumnsVehicleType();
   const [openModal, setOpenModal] = useState(false);
   const [vehicleType, setVehicleType] = useState({});
+  const width = 64;
 
   return (
     <Box
@@ -23,6 +24,7 @@ function VehicleType() {
         columns={columns}
         data={vehiclesType}
         handleDelete={handleDelete}
+        width={width}
       />
       <Tooltip title="Criar Tipo de Veículo">
         <Fab

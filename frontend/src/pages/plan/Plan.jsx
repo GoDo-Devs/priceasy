@@ -11,6 +11,7 @@ function Plan() {
   const { columns, plans, handleDelete } = useColumnsPlan();
   const [openModal, setOpenModal] = useState(false);
   const [plan, setPlan] = useState();
+  const width = 64;
 
   return (
     <Box
@@ -23,6 +24,7 @@ function Plan() {
         columns={columns}
         data={plans}
         handleDelete={handleDelete}
+        width={width}
       />
       <Tooltip title="Criar Plano">
         <Fab

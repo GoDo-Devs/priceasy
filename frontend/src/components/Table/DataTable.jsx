@@ -5,13 +5,13 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AlertModal from "@/components/Modal/AlertModal.jsx";
 import { useState } from "react";
 
-function DataTable({ data, columns, handleDelete }) {
+function DataTable({ data, columns, handleDelete, width }) {
   const [alertModal, setAlertModal] = useState(false);
   const [selectedName, setSelectedName] = useState("");
   const [deletedId, setDeleteId] = useState("");
 
   return (
-    <div style={{ height: "calc(100vh - 64px)", overflowY: "auto" }}>
+    <div style={{ height: `calc(100vh - ${width}px)`, overflowY: "auto" }}>
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
         columns={columns}

@@ -12,6 +12,7 @@ function Product() {
   const [openModal, setOpenModal] = useState(false);
   const [product, setProduct] = useState({});
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
+  const width = 64
 
   const handleGroupChange = (e) => {
     const selected = e.target.value;
@@ -39,6 +40,7 @@ function Product() {
         columns={columns}
         data={products}
         handleDelete={handleDelete}
+        width={width}
       />
       <Tooltip title="Criar Produto">
         <Fab
