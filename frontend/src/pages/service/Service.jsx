@@ -1,5 +1,10 @@
+import * as React from "react";
 import { useContext, useState } from "react";
 import { Box, Fab, Tooltip } from "@mui/material";
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
 import AddIcon from "@mui/icons-material/Add";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsService } from "@/hooks/useColumnsService.js";
@@ -11,6 +16,14 @@ function Service() {
   const { columns, services, handleDelete } = useColumnsService();
   const [openModal, setOpenModal] = useState(false);
   const [service, setService] = useState({});
+  const filteredCoverage = services.filter((item) => item.category_id === 1);
+  const filteredAssistance = services.filter((item) => item.category_id === 2);
+  const [value, setValue] = React.useState("1");
+  const width = 114;
+
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
   const handleGroupChange = (e) => {
     const selected = e.target.value;
@@ -27,11 +40,6 @@ function Service() {
         transition: "width 0.1s ease",
       }}
     >
-      <DataTable
-        columns={columns}
-        data={services}
-        handleDelete={handleDelete}
-      />
       <Tooltip title="Criar Serviço">
         <Fab
           color="primary"
@@ -57,6 +65,30 @@ function Service() {
           setService({});
         }}
       />
+      <TabContext value={value}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+          <TabList onChange={handleChange}>
+            <Tab label="Cobertura" value="1" />
+            <Tab label="Assistência 24h" value="2" />
+          </TabList>
+        </Box>
+        <TabPanel value="1" sx={{ p: 0 }}>
+          <DataTable
+            columns={columns}
+            data={filteredCoverage}
+            handleDelete={handleDelete}
+            width={width}
+          />
+        </TabPanel>
+        <TabPanel value="2" sx={{ p: 0 }}>
+          <DataTable
+            columns={columns}
+            data={filteredAssistance}
+            handleDelete={handleDelete}
+            width={width}
+          />
+        </TabPanel>
+      </TabContext>
     </Box>
   );
 }

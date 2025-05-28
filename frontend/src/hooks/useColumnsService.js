@@ -45,5 +45,5 @@ export function useColumnsService() {
     },
   ];
 
-  return { columns, services, setServices, handleDelete };
+  return { columns, services, handleDelete };
 }
