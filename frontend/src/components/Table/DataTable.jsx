@@ -11,7 +11,7 @@ function DataTable({ data, columns, handleDelete, width }) {
   const [deletedId, setDeleteId] = useState("");
 
   return (
-    <div style={{ height: `calc(100vh - ${width}px)`, overflowY: "auto" }}>
+    <div>
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
         columns={columns}
@@ -33,8 +33,11 @@ function DataTable({ data, columns, handleDelete, width }) {
             </IconButton>
           </Tooltip>
         )}
+        muiTablePaperProps={{
+          sx: { borderRadius: "15px", overflow: "hidden" },
+        }}
         muiTableContainerProps={{
-          sx: { height: "100vh" },
+          sx: { height: `100vh`, padding: "30px" },
         }}
         muiTableBodyProps={{
           sx: { height: "100%" },

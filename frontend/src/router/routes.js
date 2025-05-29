@@ -9,6 +9,7 @@ import Implement from "@/pages/implement/Implement.jsx";
 import Price from "@/pages/price/Price.jsx"
 import Service from "@/pages/service/Service.jsx"
 import Plan from "@/pages/plan/Plan.jsx"
+import PlanAdd from "@/pages/plan/PlanAdd.jsx"
 
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -50,6 +51,13 @@ export const guardedAuthenticatedRoutes = [
             label: "Planos",
             icon: DiscountIcon,
             Component: Plan,
+          },
+          {
+            path: "/adicionar-plano",
+            label: "Planos",
+            icon: DiscountIcon,
+            Component: PlanAdd,
+            hidden: true
           },
           {
             path: "/servicos",
