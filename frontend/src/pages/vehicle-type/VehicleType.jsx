@@ -5,42 +5,32 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsVehicleType } from "@/hooks/useColumnsVehicleType.js";
 import VehicleTypeModal from "@/components/Modal/VehicleTypeModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
+import ButtonFab from "../../components/Fab/ButtonFab";
 
 function VehicleType() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, vehiclesType, handleDelete } = useColumnsVehicleType();
   const [openModal, setOpenModal] = useState(false);
   const [vehicleType, setVehicleType] = useState({});
-  const width = 64;
 
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "100vw" : `calc(100vw - ${drawerWidth}px)`,
+        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
+        padding: "30px"
       }}
     >
       <DataTable
         columns={columns}
         data={vehiclesType}
         handleDelete={handleDelete}
-        width={width}
       />
-      <Tooltip title="Criar Tipo de Veículo">
-        <Fab
-          color="primary"
-          aria-label="Criar Tipo de Veículo"
-          onClick={() => setOpenModal(true)}
-          sx={{
-            position: "fixed",
-            bottom: 40,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      <ButtonFab
+        title={"Criar Tipo de Veículo"}
+        onClick={() => setOpenModal(true)}
+        Icon={AddIcon}
+      />
       <VehicleTypeModal
         open={openModal}
         vehicleType={vehicleType}

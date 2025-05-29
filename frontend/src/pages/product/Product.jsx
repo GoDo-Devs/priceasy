@@ -5,6 +5,7 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
+import ButtonFab from "../../components/Fab/ButtonFab";
 
 function Product() {
   const { drawerWidth } = useContext(LayoutContext);
@@ -12,7 +13,6 @@ function Product() {
   const [openModal, setOpenModal] = useState(false);
   const [product, setProduct] = useState({});
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
-  const width = 64
 
   const handleGroupChange = (e) => {
     const selected = e.target.value;
@@ -32,31 +32,21 @@ function Product() {
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "100vw" : `calc(100vw - ${drawerWidth}px)`,
+        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
+        padding: "30px"
       }}
     >
       <DataTable
         columns={columns}
         data={products}
         handleDelete={handleDelete}
-        width={width}
       />
-      <Tooltip title="Criar Produto">
-        <Fab
-          color="primary"
-          aria-label="Criar Produto"
-          onClick={() => setOpenModal(true)}
-          sx={{
-            position: "fixed",
-            bottom: 40,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <AddShoppingCartIcon />
-        </Fab>
-      </Tooltip>
+      <ButtonFab
+        title={"Criar Produto"}
+        onClick={() => setOpenModal(true)}
+        Icon={AddShoppingCartIcon}
+      />
       <ProductModal
         open={openModal}
         product={product}

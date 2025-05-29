@@ -10,6 +10,7 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsService } from "@/hooks/useColumnsService.js";
 import ServiceModal from "@/components/Modal/ServiceModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
+import ButtonFab from "../../components/Fab/ButtonFab";
 
 function Service() {
   const { drawerWidth } = useContext(LayoutContext);
@@ -19,7 +20,6 @@ function Service() {
   const filteredCoverage = services.filter((item) => item.category_id === 1);
   const filteredAssistance = services.filter((item) => item.category_id === 2);
   const [value, setValue] = React.useState("1");
-  const width = 114;
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -36,25 +36,16 @@ function Service() {
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "100vw" : `calc(100vw - ${drawerWidth}px)`,
+        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
+        padding: "30px"
       }}
     >
-      <Tooltip title="Criar Serviço">
-        <Fab
-          color="primary"
-          aria-label="Criar Serviço"
-          onClick={() => setOpenModal(true)}
-          sx={{
-            position: "fixed",
-            bottom: 40,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      <ButtonFab
+        title={"Criar Serviço"}
+        onClick={() => setOpenModal(true)}
+        Icon={AddIcon}
+      />
       <ServiceModal
         open={openModal}
         service={service}
@@ -66,7 +57,7 @@ function Service() {
         }}
       />
       <TabContext value={value}>
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Box sx={{ borderBottom: 1, borderColor: "divider" }} className="mb-3">
           <TabList onChange={handleChange}>
             <Tab label="Cobertura" value="1" />
             <Tab label="Assistência 24h" value="2" />
@@ -77,7 +68,6 @@ function Service() {
             columns={columns}
             data={filteredCoverage}
             handleDelete={handleDelete}
-            width={width}
           />
         </TabPanel>
         <TabPanel value="2" sx={{ p: 0 }}>
@@ -85,7 +75,6 @@ function Service() {
             columns={columns}
             data={filteredAssistance}
             handleDelete={handleDelete}
-            width={width}
           />
         </TabPanel>
       </TabContext>

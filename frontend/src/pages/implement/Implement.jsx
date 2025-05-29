@@ -5,42 +5,32 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsImplement } from "@/hooks/useColumnsImplement.js";
 import ImplementModal from "@/components/Modal/ImplementModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
+import ButtonFab from "../../components/Fab/ButtonFab";
 
 function Implement() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, implementsList, handleDelete } = useColumnsImplement();
   const [openModal, setOpenModal] = useState(false);
   const [implement, setImplement] = useState({});
-  const width = 64;
 
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "100vw" : `calc(100vw - ${drawerWidth}px)`,
+        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
+        padding: "30px"
       }}
     >
       <DataTable
         columns={columns}
         data={implementsList}
         handleDelete={handleDelete}
-        width={width}
       />
-      <Tooltip title="Criar Implemento">
-        <Fab
-          color="primary"
-          aria-label="Criar Implemento"
-          onClick={() => setOpenModal(true)}
-          sx={{
-            position: "fixed",
-            bottom: 40,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <AddIcon />
-        </Fab>
-      </Tooltip>
+      <ButtonFab
+        title={"Criar Implemento"}
+        onClick={() => setOpenModal(true)}
+        Icon={AddIcon}
+      />
       <ImplementModal
         open={openModal}
         implement={implement}

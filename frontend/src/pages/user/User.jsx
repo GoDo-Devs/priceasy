@@ -5,41 +5,31 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsUser } from "@/hooks/useColumnsUser.js";
 import { useNavigate } from "react-router";
 import DataTable from "@/components/Table/DataTable.jsx";
+import ButtonFab from "../../components/Fab/ButtonFab";
 
 function User() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, users, handleDelete } = useColumnsUser();
   const navigate = useNavigate();
-  const width = 64;
 
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "100vw" : `calc(100vw - ${drawerWidth}px)`,
+        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
+        padding: "30px"
       }}
     >
       <DataTable
         columns={columns}
         data={users}
         handleDelete={handleDelete}
-        width={width}
       />
-      <Tooltip title="Criar Usuário">
-        <Fab
-          color="primary"
-          aria-label="Criar Usuário"
-          onClick={() => navigate("/auth/register")}
-          sx={{
-            position: "fixed",
-            bottom: 40,
-            right: 24,
-            zIndex: 1000,
-          }}
-        >
-          <PersonAddIcon />
-        </Fab>
-      </Tooltip>
+      <ButtonFab
+        title={"Criar Usuário"}
+        onClick={() => navigate("/auth/register")}
+        Icon={PersonAddIcon}
+      />
     </Box>
   );
 }

@@ -47,7 +47,7 @@ function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
           justifyContent="center"
           onClick={handleLogout}
         >
-          <Divider className="w-100 " />
+          <Divider className="w-100" />
           <Typography className="pt-3">
             Logout <ExitToApp className="ms-3" />
           </Typography>
