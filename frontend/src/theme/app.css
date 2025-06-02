@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   margin: 0;
 }
@@ -12,6 +14,7 @@ html, body, #root {
 
 ::-webkit-scrollbar-track {
   border-radius: 3px;
+  background: #282d38;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -37,12 +40,12 @@ html, body, #root {
   color: #fff !important;
 }
 
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type=number] {
+input[type="number"] {
   -moz-appearance: textfield;
 }

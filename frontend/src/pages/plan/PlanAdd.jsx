@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router";
 import { Box, Button } from "@mui/material";
 import { LayoutContext } from "@/contexts/layoutContext";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -7,21 +8,31 @@ import SelectDataTable from "@/components/Table/SelectDataTable.jsx";
 import useHttp from "@/services/useHttp.js";
 
 function PlanAdd() {
+  const navigate = useNavigate();
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, services } = useColumnsService();
   const filteredCoverage = services.filter((item) => item.category_id === 1);
   const filteredAssistance = services.filter((item) => item.category_id === 2);
-  const [plan, setPlan] = useState({});
+
+  const [plan, setPlan] = useState({name: "", services_id: "" });
+  const [coverageSelection, setCoverageSelection] = useState({});
+  const [assistanceSelection, setAssistanceSelection] = useState({});
+  const selectedCoverage = Object.keys(coverageSelection).map(
+    (key) => filteredCoverage[key]
+  );
+  const selectedAssistance = Object.keys(assistanceSelection).map(
+    (key) => filteredAssistance[key]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await useHttp.post("/plans/create/", {
         ...plan,
-        vehicle_type_ids: vehicleTypes.selected,
+        services_id: [...selectedCoverage, ...selectedAssistance].map((s) => s.id)
       });
       console.log("Plano criado:", plan);
-      onClose();
+      navigate("/planos")
     } catch (error) {
       console.error("Erro ao salvar o plano:", error);
     }
@@ -49,11 +60,16 @@ function PlanAdd() {
         columns={columns}
         data={filteredCoverage}
         title="Selecione todas as coberturas oferecidas neste planos"
+        rowSelection={coverageSelection}
+        onRowSelectionChange={setCoverageSelection}
       />
+
       <SelectDataTable
         columns={columns}
         data={filteredAssistance}
         title="Selecione as assistências 24 horas oferecidas neste plano"
+        rowSelection={assistanceSelection}
+        onRowSelectionChange={setAssistanceSelection}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
         <Button onClick={handleSubmit} variant="contained" color="primary">

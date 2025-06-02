@@ -26,7 +26,7 @@ function TextInput({
         color="primary"
         variant="outlined"
         disabled={disabled}
-        value={value}
+        value={value} 
         onChange={onChange}
         slotProps={{
           input: {

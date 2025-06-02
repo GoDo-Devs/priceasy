@@ -11,7 +11,7 @@ function Implement() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, implementsList, handleDelete } = useColumnsImplement();
   const [openModal, setOpenModal] = useState(false);
-  const [implement, setImplement] = useState({});
+  const [implement, setImplement] = useState({name: ""});
 
   return (
     <Box

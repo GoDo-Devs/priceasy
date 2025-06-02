@@ -11,7 +11,7 @@ function ButtonFab({ title, onClick, Icon }) {
           height: 50,
           width: 50,
           position: "fixed",
-          bottom: 6,
+          bottom: 10,
           right: 7,
           zIndex: 1000,
         }}

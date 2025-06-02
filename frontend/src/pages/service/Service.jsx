@@ -16,7 +16,7 @@ function Service() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, services, handleDelete } = useColumnsService();
   const [openModal, setOpenModal] = useState(false);
-  const [service, setService] = useState({});
+  const [service, setService] = useState({ name: "", category_id: "" });
   const filteredCoverage = services.filter((item) => item.category_id === 1);
   const filteredAssistance = services.filter((item) => item.category_id === 2);
   const [value, setValue] = React.useState("1");
@@ -38,7 +38,7 @@ function Service() {
       sx={{
         width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
-        padding: "30px"
+        padding: "30px",
       }}
     >
       <ButtonFab
