@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
 
-export function useColumnsImplement() {
+export function useColumnsPriceTable() {
   const [implementsList, setImplementsList] = useState([]);
 
   useEffect(() => {

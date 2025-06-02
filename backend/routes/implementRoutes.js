@@ -14,7 +14,7 @@ router.post(
   [checkToken, isAdmin],
   ImplementController.create
 );
-router.get("/", [checkToken, isAdmin], ImplementController.getAll);
+router.get("/", [checkToken], ImplementController.getAll);
 router.delete(
   "/:id",
   [checkToken, isAdmin],

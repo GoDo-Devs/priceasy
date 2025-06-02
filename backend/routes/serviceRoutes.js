@@ -6,7 +6,7 @@ import isAdmin from "../middlewares/isAdmin.js";
 const router = express.Router();
 
 router.post("/create", [checkToken, isAdmin], ServiceController.create);
-router.get("/", [checkToken, isAdmin], ServiceController.getAll);
+router.get("/", [checkToken], ServiceController.getAll);
 router.delete("/:id", [checkToken, isAdmin], ServiceController.removeServiceById);
 
 export default router;

@@ -14,8 +14,8 @@ router.post(
   [checkToken, isAdmin],
   ProductController.create
 );
-router.get("/", [checkToken, isAdmin], ProductController.getAll);
-router.get("/:id", [checkToken, isAdmin], ProductController.getProductById);
+router.get("/", [checkToken], ProductController.getAll);
+router.get("/:id", [checkToken], ProductController.getProductById);
 router.delete("/:id", [checkToken, isAdmin], ProductController.removeProductById);
 router.patch(
   "/:id",

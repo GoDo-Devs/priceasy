@@ -10,7 +10,7 @@ router.post(
   [checkToken, isAdmin],
   VehicleTypeController.create
 );
-router.get("/", [checkToken, isAdmin], VehicleTypeController.getAll);
+router.get("/", [checkToken], VehicleTypeController.getAll);
 router.delete("/:id", [checkToken, isAdmin], VehicleTypeController.removeVehicleTypeById);
 
 export default router;

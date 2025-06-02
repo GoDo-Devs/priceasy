@@ -10,6 +10,7 @@ import Price from "@/pages/price/Price.jsx"
 import Service from "@/pages/service/Service.jsx"
 import Plan from "@/pages/plan/Plan.jsx"
 import PlanAdd from "@/pages/plan/PlanAdd.jsx"
+import PriceTable from "../pages/price-table/PriceTable";
 
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
@@ -23,6 +24,7 @@ import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import DiscountIcon from '@mui/icons-material/Discount';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -47,6 +49,12 @@ export const guardedAuthenticatedRoutes = [
         guard: [checkIfAdmin],
         children: [
           {
+            path: "/servicos",
+            label: "Serviços",
+            icon: MiscellaneousServicesIcon,
+            Component: Service,
+          },
+          {
             path: "/planos",
             label: "Planos",
             icon: DiscountIcon,
@@ -60,10 +68,10 @@ export const guardedAuthenticatedRoutes = [
             hidden: true
           },
           {
-            path: "/servicos",
-            label: "Serviços",
-            icon: MiscellaneousServicesIcon,
-            Component: Service,
+            path: "/tabela",
+            label: "Tabela de Preços",
+            icon: PriceChangeIcon,
+            Component: PriceTable,
           },
           {
             path: "/produtos",

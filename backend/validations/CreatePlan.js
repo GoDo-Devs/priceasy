@@ -10,12 +10,6 @@ export const cratePlanSchema = Joi.object({
     "any.required": "O preço é obrigatório.",
   }),
 
-  type_vehicle_id: Joi.number()
-  .required
-  .allow(null) 
-  .allow(0)
-  .optional(),
-
   services_id: Joi.array()
     .items(Joi.number().required.integer().positive().messages({
       "number.integer": "O ID do plano deve ser um número inteiro.",

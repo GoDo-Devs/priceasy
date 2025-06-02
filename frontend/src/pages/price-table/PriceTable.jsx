@@ -2,12 +2,12 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router";
 import { Box, Button } from "@mui/material";
 import { LayoutContext } from "@/contexts/layoutContext";
-import { useColumnsPlan } from "@/hooks/useColumnsPlan.js";
+import { useColumnsPriceTable } from "@/hooks/useColumnsPriceTable.js";
 import DataTable from "@/components/Table/DataTable.jsx";
 
-function Plan() {
+function PriceTable() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, plans, handleDelete } = useColumnsPlan();
+  const { columns, implementsList, handleDelete } = useColumnsPriceTable();
   const navigate = useNavigate();
 
   return (
@@ -20,16 +20,17 @@ function Plan() {
     >
       <DataTable
         columns={columns}
-        data={plans}
+        data={implementsList}
         handleDelete={handleDelete}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
-        <Button onClick={()=> navigate("/adicionar-plano")} variant="contained" color="primary">
-          Adicionar Plano
+        <Button onClick={()=> navigate("/adicionar-tabela")} variant="contained" color="primary">
+          Adicionar Tabela
         </Button>
       </Box>
     </Box>
   );
 }
 
-export default Plan;
+export default PriceTable;
+

@@ -16,7 +16,7 @@ function SelectInput({
         fullWidth
         size="small"
         name={name}
-        value={value}
+        value={value} 
         onChange={onChange}
         variant="outlined"
       >

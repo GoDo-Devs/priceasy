@@ -1,9 +1,9 @@
 import express from "express";
-import CategoryController from "../controllers/categoryController.js";
+import PlanServiceController from "../controllers/planServiceController.js";
 import checkToken from "../middlewares/checkToken.js";
 
 const router = express.Router();
 
-router.get('/', [checkToken], CategoryController.getAll)
+router.get('/', [checkToken], PlanServiceController.getAll)
 
 export default router;

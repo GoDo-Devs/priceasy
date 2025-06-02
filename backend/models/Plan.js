@@ -3,11 +3,6 @@ import sequelize from "../db/index.js";
 
 class Plan extends Model {
   static associate(models) {
-    Plan.belongsTo(models.VehicleType, {
-      foreignKey: "vehicle_type_id",
-      as: "vehicle_types",
-    });
-
     Plan.belongsToMany(models.Service, {
       through: models.PlansService,
       foreignKey: "plan_id",
@@ -31,14 +26,6 @@ Plan.init(
     price: {
       type: DataTypes.INTEGER,
       allowNull: false,
-    },
-    vehicle_type_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "vehicle_types",
-        key: "id",
-      },
     },
   },
   {

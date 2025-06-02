@@ -18,16 +18,6 @@ export default {
         type: Sequelize.INTEGER,
         allowNull: false,
       },
-      vehicle_type_id: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
-        references: {
-          model: "vehicle_types",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET DEFAULT",
-      },
       created_at: {
         allowNull: false,
         type: "TIMESTAMP",

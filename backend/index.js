@@ -13,6 +13,7 @@ import implementRoutes from "./routes/implementRoutes.js"
 import categoryRoutes from "./routes/categoryRoutes.js"
 import serviceRoutes from "./routes/serviceRoutes.js"
 import planRoutes from "./routes/planRoutes.js"
+import planServicesRoutes from "./routes/planServicesRoutes.js"
 import fipeRoutes from "./routes/fipeRoutes.js";
 
 app.use(bodyParser.json());
@@ -30,6 +31,7 @@ app.use("/implements", implementRoutes);
 app.use("/categories", categoryRoutes);
 app.use("/services", serviceRoutes);
 app.use("/plans", planRoutes);
+app.use("/plan-services", planServicesRoutes);
 app.use("/fipe", fipeRoutes);
 
 app.listen(4000, "0.0.0.0", () => {

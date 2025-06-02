@@ -2,9 +2,7 @@ import { MaterialReactTable } from "material-react-table";
 import { MRT_Localization_PT_BR } from "material-react-table/locales/pt-BR";
 import { useState } from "react";
 
-function SelectDataTable({ data, columns, title }) {
-  const [rowSelection, setRowSelection] = useState({});
-
+function SelectDataTable({ data, columns, title, rowSelection, onRowSelectionChange}) {
   return (
     <div>
       {title && <h3 style={{ marginBottom: "10px"}}>{title}</h3>}
@@ -15,7 +13,7 @@ function SelectDataTable({ data, columns, title }) {
         enableFullScreenToggle={false}
         disableRowActions
         enableRowSelection
-        onRowSelectionChange={setRowSelection}
+        onRowSelectionChange={onRowSelectionChange}
         state={{ rowSelection }}
         muiTablePaperProps={{
           sx: { borderRadius: "15px", overflow: "hidden", marginBottom: "20px" },
