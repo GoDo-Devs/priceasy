@@ -49,6 +49,7 @@ function ServiceModal({
           label="Selecione um Categoria de Serviços"
           name="category_id"
           className="mb-5"
+          value={service.category_id ?? ''} 
           onChange={(e) => setService({ ...service, category_id: e.target.value })}
           options={[
             ...categories.map((g) => ({

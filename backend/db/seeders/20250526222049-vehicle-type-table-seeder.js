@@ -8,15 +8,19 @@ export default {
       [
         {
           id: 1,
-          name: "Carros",
+          name: "Carro",
         },
         {
           id: 2,
-          name: "Motos",
+          name: "Moto",
         },
         {
           id: 3,
-          name: "Caminhões",
+          name: "Caminhão",
+        },
+        {
+          id: 3,
+          name: "Agregado",
         },
       ],
       {}
@@ -27,7 +31,7 @@ export default {
     await queryInterface.bulkDelete(
       "vehicle_types",
       {
-        name: ["Carros", "Motos", "Caminhões"],
+        name: ["Carro", "Moto", "Caminhão", "Agregado"],
       },
       {}
     );

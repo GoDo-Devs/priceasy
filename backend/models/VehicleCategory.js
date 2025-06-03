@@ -1,18 +1,16 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class Plan extends Model {
+class VehicleCategory extends Model {
   static associate(models) {
-    Plan.belongsToMany(models.Service, {
-      through: models.PlanService,
-      foreignKey: "plan_id",
-      otherKey: "service_id",
-      as: "services",
+    VehicleCategory.belongsTo(models.VehicleType, {
+      foreignKey: "vehicle_type_id",
+      as: "vehicle_types",
     });
   }
 }
 
-Plan.init(
+VehicleCategory.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -23,19 +21,23 @@ Plan.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    price: {
+    vehicle_type_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      references: {
+        model: "vehicle_types",
+        key: "id",
+      },
     },
   },
   {
     sequelize,
-    modelName: "Plan",
-    tableName: "plans",
+    modelName: "VehicleCategory",
+    tableName: "vehicle_categories",
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
   }
 );
 
-export default Plan;
+export default VehicleCategory;
