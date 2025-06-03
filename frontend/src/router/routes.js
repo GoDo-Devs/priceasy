@@ -4,7 +4,7 @@ import LoginPage from "@/pages/auth/Login.jsx";
 import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx"
-import VehicleType from "@/pages/vehicle-type/VehicleType.jsx";
+import VehicleCategory from "@/pages/vehicle-category/VehicleCategory.jsx";
 import Implement from "@/pages/implement/Implement.jsx";
 import Price from "@/pages/price/Price.jsx"
 import Service from "@/pages/service/Service.jsx"
@@ -86,10 +86,10 @@ export const guardedAuthenticatedRoutes = [
             Component: Implement,
           },
           {
-            path: "/tipo",
+            path: "/categoria",
             label: "Veículos",
             icon: LocalShippingIcon,
-            Component: VehicleType,
+            Component: VehicleCategory,
           },
           {
             path: "/usuarios",

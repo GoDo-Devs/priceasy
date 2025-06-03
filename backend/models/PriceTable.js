@@ -1,18 +1,18 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class Plan extends Model {
+class PriceTable extends Model {
   static associate(models) {
-    Plan.belongsToMany(models.Service, {
-      through: models.PlanService,
-      foreignKey: "plan_id",
-      otherKey: "service_id",
-      as: "services",
+    PriceTable.belongsToMany(models.Plan, {
+      through: models.PriceTablePlan,
+      foreignKey: "table_price_id",
+      otherKey: "plan_id",
+      as: "plans",
     });
   }
 }
 
-Plan.init(
+PriceTable.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -23,19 +23,15 @@ Plan.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    price: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
   },
   {
     sequelize,
-    modelName: "Plan",
-    tableName: "plans",
+    modelName: "PriceTable",
+    tableName: "price_tables",
     timestamps: true,
     createdAt: "created_at",
     updatedAt: "updated_at",
   }
 );
 
-export default Plan;
+export default PriceTable;

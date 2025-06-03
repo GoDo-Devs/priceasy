@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useContext, useState } from "react";
-import { Box, Fab, Tooltip } from "@mui/material";
+import { Box} from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -53,7 +53,7 @@ function Service() {
         onChange={handleGroupChange}
         onClose={() => {
           setOpenModal(false);
-          setService({});
+          setService({ name: "", category_id: "" });
         }}
       />
       <TabContext value={value}>
