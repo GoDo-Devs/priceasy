@@ -19,13 +19,9 @@ import AgricultureIcon from '@mui/icons-material/Agriculture';
 
 function VehicleCategory() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, vehicleCategories, handleDelete } = useColumnsVehicleCategory();
+  const { columns, filteredCar, filteredMotorcycle, filteredTruck, filteredAggregate, handleDelete } = useColumnsVehicleCategory();
   const [openModal, setOpenModal] = useState(false);
   const [vehicleCategory, setVehicleCategory] = useState({name: "", vehicle_type_id:""});
-  const filteredCar = vehicleCategories.filter((item) => item.vehicle_type_id === 1);
-  const filteredMotorcycle = vehicleCategories.filter((item) => item.vehicle_type_id === 2);
-  const filteredTruck = vehicleCategories.filter((item) => item.vehicle_type_id === 3);
-  const filteredAggregate = vehicleCategories.filter((item) => item.vehicle_type_id === 4);
   const [value, setValue] = React.useState("1");
   
   const handleChange = (event, newValue) => {

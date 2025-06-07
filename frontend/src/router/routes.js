@@ -25,6 +25,7 @@ import authService from "@/services/authService";
 import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
 import DiscountIcon from '@mui/icons-material/Discount';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import PriceTableAdd from "../pages/price-table/PriceTableAdd";
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -68,10 +69,17 @@ export const guardedAuthenticatedRoutes = [
             hidden: true
           },
           {
-            path: "/tabela",
+            path: "/tabelas",
             label: "Tabela de Preços",
             icon: PriceChangeIcon,
             Component: PriceTable,
+          },
+          {
+            path: "/adicionar-tabela",
+            label: "Tabela de Preços",
+            icon: DiscountIcon,
+            Component: PriceTableAdd,
+            hidden: true
           },
           {
             path: "/produtos",

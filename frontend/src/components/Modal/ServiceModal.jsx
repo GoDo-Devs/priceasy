@@ -1,15 +1,10 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
-import SelectInput from "@/components/Form/SelectInput.jsx"
+import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
-function ServiceModal({
-  open,
-  service,
-  setService,
-  onClose,
-}) {
+function ServiceModal({ open, service, setService, onClose }) {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -35,7 +30,13 @@ function ServiceModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} PaperProps={{sx: {borderRadius: 8, padding: 1.5}}} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{ sx: { borderRadius: 8, padding: 1.5 } }}
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogContent>
         <TextInput
           label="Nome do Serviço"
@@ -49,8 +50,10 @@ function ServiceModal({
           label="Selecione um Categoria de Serviços"
           name="category_id"
           className="mb-5"
-          value={service.category_id ?? ''} 
-          onChange={(e) => setService({ ...service, category_id: e.target.value })}
+          value={service.category_id ?? ""}
+          onChange={(e) =>
+            setService({ ...service, category_id: e.target.value })
+          }
           options={[
             ...categories.map((g) => ({
               value: g.id,
@@ -61,7 +64,12 @@ function ServiceModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="secondary"
+          disabled={!service.name || !service.category_id}
+        >
           Salvar
         </Button>
       </DialogActions>

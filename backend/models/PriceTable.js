@@ -23,6 +23,18 @@ PriceTable.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    category_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "vehicle_categories",
+        key: "id",
+      },
+    },
+    ranges: {
+      type: DataTypes.JSON,
+      allowNull: false,
+    },
   },
   {
     sequelize,

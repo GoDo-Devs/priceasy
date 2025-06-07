@@ -26,6 +26,10 @@ PriceTablePlan.init(
         key: "id",
       },
     },
+    price: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
   },
   {
     sequelize,

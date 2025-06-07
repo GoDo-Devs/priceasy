@@ -2,30 +2,30 @@ import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
 
 export function useColumnsPriceTable() {
-  const [implementsList, setImplementsList] = useState([]);
+  const [priceTables, setPriceTables] = useState([]);
 
   useEffect(() => {
-    fetchImplementsList();
+    fetchPriceTables();
   }, []);
 
-  const fetchImplementsList = () => {
-    useHttp.get("/implements").then((res) => {
-      setImplementsList(res.data.implementsList || []);
+  const fetchPriceTables = () => {
+    useHttp.get("/price-tables").then((res) => {
+      setPriceTables(res.data.priceTables || []);
     });
   };
 
-  const handleDelete = (implement) => {
+  const handleDelete = (priceTable) => {
     useHttp
-      .delete(`/implements/${implement.id}`)
+      .delete(`/price-tables/${priceTable.id}`)
       .then(() => {
-        setImplementsList((prev) => prev.filter((p) => p.id !== implement.id));
+        setPriceTables((prev) => prev.filter((p) => p.id !== priceTable.id));
       })
       .catch((err) => {
-        console.error("Erro ao deletar implemento:", err);
+        console.error("Erro ao deletar Tabela de Preço:", err);
       });
   };
 
   const columns = [{ accessorKey: "name", header: "Nome" }];
 
-  return { columns, implementsList, setImplementsList, handleDelete };
+  return { columns, priceTables, setPriceTables, handleDelete };
 }

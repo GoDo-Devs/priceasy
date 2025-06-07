@@ -22,6 +22,9 @@ export function useColumnsService() {
     });
   };
 
+  const filteredCoverage = services.filter((item) => item.category_id === 1);
+  const filteredAssistance = services.filter((item) => item.category_id === 2);
+
   const handleDelete = (service) => {
     useHttp
       .delete(`/services/${service.id}`)
@@ -45,5 +48,5 @@ export function useColumnsService() {
     },
   ];
 
-  return { columns, services, handleDelete };
+  return { columns, filteredCoverage, filteredAssistance, handleDelete };
 }

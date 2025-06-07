@@ -30,7 +30,7 @@ function ImplementModal({ open, onClose, implement, setImplement}) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={!implement.name}>
           Salvar
         </Button>
       </DialogActions>

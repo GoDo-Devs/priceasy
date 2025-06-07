@@ -121,7 +121,7 @@ function ProductModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={!product.name || !product.price}>
           Salvar
         </Button>
       </DialogActions>
