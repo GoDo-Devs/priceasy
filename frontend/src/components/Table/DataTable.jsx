@@ -2,13 +2,21 @@ import { MaterialReactTable } from "material-react-table";
 import { MRT_Localization_PT_BR } from "material-react-table/locales/pt-BR";
 import { IconButton, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import AlertModal from "@/components/Modal/AlertModal.jsx";
 import { useState } from "react";
 
-function DataTable({ data, columns, handleDelete, width }) {
+function DataTable({
+  data,
+  columns,
+  handleDelete,
+  enableEdit = false,
+  enableDelete = true,
+  enableRowActions = true
+}) {
   const [alertModal, setAlertModal] = useState(false);
   const [selectedName, setSelectedName] = useState("");
-  const [deletedId, setDeleteId] = useState("");
+  const [selectRow, setSelectRow] = useState("");
 
   return (
     <div>
@@ -17,21 +25,32 @@ function DataTable({ data, columns, handleDelete, width }) {
         columns={columns}
         data={data}
         enableFullScreenToggle={false}
-        enableRowActions
+        enableRowActions={enableRowActions}
         positionActionsColumn="last"
         renderRowActions={({ row }) => (
-          <Tooltip title="Excluir">
-            <IconButton
-              color="primary"
-              onClick={() => {
-                setSelectedName(row.original.name);
-                setDeleteId(row.original);
-                setAlertModal(true);
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          <>
+            {enableEdit && (
+              <Tooltip title="Editar">
+                <IconButton color="primary" onClick={() => {}}>
+                  <EditIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            {enableDelete && (
+              <Tooltip title="Excluir">
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    setSelectedName(row.original.name);
+                    setSelectRow(row.original);
+                    setAlertModal(true);
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </>
         )}
         muiTablePaperProps={{
           sx: { borderRadius: "15px", overflow: "hidden" },
@@ -47,7 +66,7 @@ function DataTable({ data, columns, handleDelete, width }) {
         open={alertModal}
         selectedName={selectedName}
         handleDelete={() => {
-          handleDelete(deletedId);
+          handleDelete(selectRow);
           setAlertModal(false);
         }}
         onClose={() => {

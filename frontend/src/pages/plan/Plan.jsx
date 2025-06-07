@@ -22,6 +22,7 @@ function Plan() {
         columns={columns}
         data={plans}
         handleDelete={handleDelete}
+        enableEdit={true}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
         <Button onClick={()=> navigate("/adicionar-plano")} variant="contained" color="primary">

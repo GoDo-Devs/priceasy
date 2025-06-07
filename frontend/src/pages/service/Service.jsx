@@ -14,11 +14,9 @@ import ButtonFab from "../../components/Fab/ButtonFab";
 
 function Service() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, services, handleDelete } = useColumnsService();
+  const { columns, filteredCoverage, filteredAssistance,  handleDelete } = useColumnsService();
   const [openModal, setOpenModal] = useState(false);
   const [service, setService] = useState({ name: "", category_id: "" });
-  const filteredCoverage = services.filter((item) => item.category_id === 1);
-  const filteredAssistance = services.filter((item) => item.category_id === 2);
   const [value, setValue] = React.useState("1");
 
   const handleChange = (event, newValue) => {

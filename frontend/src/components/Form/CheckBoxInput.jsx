@@ -1,4 +1,4 @@
-import {
+import { 
   InputLabel,
   FormGroup,
   FormControlLabel,
@@ -14,35 +14,43 @@ function CheckBoxInput({
   className,
 }) {
   const handleCheckboxChange = (event) => {
-  const checkboxValue = Number(event.target.value);
-  const { checked } = event.target;
-  let newValue = [];
+    const checkboxValue = Number(event.target.value);
+    const { checked } = event.target;
+    let newValue = [];
 
-  if (checked) {
-    newValue = [...value, checkboxValue];
-  } else {
-    newValue = value.filter((v) => v !== checkboxValue);
-  }
+    if (checked) {
+      newValue = [...value, checkboxValue];
+    } else {
+      newValue = value.filter((v) => v !== checkboxValue);
+    }
 
-  onChange({
-    target: {
-      name,
-      value: newValue,
-    },
-  });
-};
+    onChange({
+      target: {
+        name,
+        value: newValue,
+      },
+    });
+  };
 
   return (
     <div className={className}>
-      <InputLabel className="text-white">{label}</InputLabel>
-      <FormGroup>
+      <InputLabel className="text-white">
+        {label}
+      </InputLabel>
+      <FormGroup
+        sx={{
+          flexDirection: "row", 
+          flexWrap: "wrap",
+          marginLeft: "10px"
+        }}
+      >
         {options.map((option) => (
           <FormControlLabel
             key={option.value}
             control={
               <Checkbox
                 value={option.value}
-                checked={value.includes(option.value)}
+                checked={value.includes(Number(option.value))}
                 onChange={handleCheckboxChange}
               />
             }

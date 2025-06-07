@@ -11,7 +11,7 @@ function Product() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, products, handleDelete } = useColumnsProduct();
   const [openModal, setOpenModal] = useState(false);
-  const [product, setProduct] = useState({name: "", product_group_id: ""});
+  const [product, setProduct] = useState({});
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
 
   const handleGroupChange = (e) => {
@@ -41,6 +41,7 @@ function Product() {
         columns={columns}
         data={products}
         handleDelete={handleDelete}
+        enableEdit={true}
       />
       <ButtonFab
         title={"Criar Produto"}

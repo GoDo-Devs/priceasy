@@ -3,26 +3,36 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("vehicle_categories", {
+    await queryInterface.createTable("price_table_plans", {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.INTEGER,
         autoIncrement: true,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      vehicle_type_id: {
+      price_table_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "vehicle_types",
+          model: "price_tables",
           key: "id",
         },
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
+      },
+      plan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "price_tables",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
+      },
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
@@ -40,6 +50,7 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("vehicle_categories");
+    await queryInterface.dropTable("price_table_plans");
   },
 };
+

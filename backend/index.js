@@ -15,6 +15,7 @@ import serviceRoutes from "./routes/serviceRoutes.js"
 import planRoutes from "./routes/planRoutes.js"
 import planServiceRoutes from "./routes/planServiceRoutes.js"
 import vehicleCategoryRoutes from "./routes/vehicleCategoryRoutes.js"
+import priceTableRoutes from "./routes/priceTableRoutes.js"
 import fipeRoutes from "./routes/fipeRoutes.js";
 
 app.use(bodyParser.json());
@@ -34,6 +35,7 @@ app.use("/services", serviceRoutes);
 app.use("/plans", planRoutes);
 app.use("/plan-services", planServiceRoutes);
 app.use("/vehicle-categories", vehicleCategoryRoutes);
+app.use("/price-tables", priceTableRoutes);
 app.use("/fipe", fipeRoutes);
 
 app.listen(4000, "0.0.0.0", () => {

@@ -7,7 +7,7 @@ import DataTable from "@/components/Table/DataTable.jsx";
 
 function PriceTable() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, implementsList, handleDelete } = useColumnsPriceTable();
+  const { columns, priceTables, handleDelete } = useColumnsPriceTable();
   const navigate = useNavigate();
 
   return (
@@ -20,8 +20,9 @@ function PriceTable() {
     >
       <DataTable
         columns={columns}
-        data={implementsList}
+        data={priceTables}
         handleDelete={handleDelete}
+        enableEdit={true}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
         <Button onClick={()=> navigate("/adicionar-tabela")} variant="contained" color="primary">

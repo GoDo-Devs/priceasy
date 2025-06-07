@@ -10,10 +10,7 @@ import useHttp from "@/services/useHttp.js";
 function PlanAdd() {
   const navigate = useNavigate();
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, services } = useColumnsService();
-  const filteredCoverage = services.filter((item) => item.category_id === 1);
-  const filteredAssistance = services.filter((item) => item.category_id === 2);
-
+  const { columns, filteredCoverage, filteredAssistance } = useColumnsService();
   const [plan, setPlan] = useState({name: "", services_id: "" });
   const [coverageSelection, setCoverageSelection] = useState({});
   const [assistanceSelection, setAssistanceSelection] = useState({});
@@ -63,7 +60,6 @@ function PlanAdd() {
         rowSelection={coverageSelection}
         onRowSelectionChange={setCoverageSelection}
       />
-
       <SelectDataTable
         columns={columns}
         data={filteredAssistance}
@@ -72,7 +68,7 @@ function PlanAdd() {
         onRowSelectionChange={setAssistanceSelection}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button onClick={handleSubmit} variant="contained" color="secondary">
           Salvar Plano
         </Button>
       </Box>

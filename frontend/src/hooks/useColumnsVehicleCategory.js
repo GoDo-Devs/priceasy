@@ -22,6 +22,11 @@ export function useColumnsVehicleCategory() {
     });
   };
 
+  const filteredCar = vehicleCategories.filter((item) => item.vehicle_type_id === 1);
+  const filteredMotorcycle = vehicleCategories.filter((item) => item.vehicle_type_id === 2);
+  const filteredTruck = vehicleCategories.filter((item) => item.vehicle_type_id === 3);
+  const filteredAggregate = vehicleCategories.filter((item) => item.vehicle_type_id === 4);
+
   const handleDelete = (vehiclesType) => {
     useHttp.delete(`/vehicle-types/${vehiclesType.id}`).then(() => {
       setVehicleCategories((prev) =>
@@ -42,5 +47,5 @@ export function useColumnsVehicleCategory() {
     },
   ];
 
-  return { columns, vehicleCategories, handleDelete };
+  return { columns, filteredCar, filteredMotorcycle, filteredTruck, filteredAggregate,  handleDelete };
 }

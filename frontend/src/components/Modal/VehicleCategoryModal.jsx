@@ -66,7 +66,7 @@ function VehicleCategoryModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="primary">
+        <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={!vehicleCategory.name || !vehicleCategory.vehicle_type_id}>
           Salvar
         </Button>
       </DialogActions>

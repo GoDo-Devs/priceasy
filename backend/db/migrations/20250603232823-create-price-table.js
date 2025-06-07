@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable("vehicle_categories", {
+    await queryInterface.createTable("price_tables", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -14,15 +14,23 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      vehicle_type_id: {
+      category_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "vehicle_types",
+          model: "vehicle_categories",
           key: "id",
         },
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
+      },
+      plansSelected: {
+        type: Sequelize.JSON,
+        allowNull: false,
+      },
+      ranges: {
+        type: Sequelize.JSON,
+        allowNull: false,
       },
       created_at: {
         allowNull: false,
@@ -40,6 +48,6 @@ export default {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable("vehicle_categories");
+    await queryInterface.dropTable("price_tables");
   },
 };
