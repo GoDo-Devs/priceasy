@@ -1,16 +1,7 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class PriceTable extends Model {
-  static associate(models) {
-    PriceTable.belongsToMany(models.Plan, {
-      through: models.PriceTablePlan,
-      foreignKey: "table_price_id",
-      otherKey: "plan_id",
-      as: "plans",
-    });
-  }
-}
+class PriceTable extends Model {}
 
 PriceTable.init(
   {
@@ -21,6 +12,10 @@ PriceTable.init(
     },
     name: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    plansSelected: {
+      type: DataTypes.JSON,
       allowNull: false,
     },
     category_id: {

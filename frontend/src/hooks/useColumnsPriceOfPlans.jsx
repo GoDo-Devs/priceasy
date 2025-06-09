@@ -32,7 +32,6 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
     const dynamicPlanColumns = (priceTable.plansSelected || []).map(
       (planId) => {
         const plan = plansAll.find((p) => p.id === planId);
-
         return {
           accessorKey: `plan_${planId}`,
           header: plan ? plan.name : `Plano ${planId}`,
@@ -40,10 +39,8 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
             const value = row.original.planPrices
               ? row.original.planPrices[planId] || ""
               : "";
-
             const handleChange = (e) => {
               const newValue = e.target.value;
-
               setPriceTable((prev) => {
                 const newRanges = prev.ranges.map((range, idx) => {
                   if (idx === row.index) {
@@ -67,7 +64,6 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
                 };
               });
             };
-
             return (
               <TextField
                 sx={{ width: "100px" }}

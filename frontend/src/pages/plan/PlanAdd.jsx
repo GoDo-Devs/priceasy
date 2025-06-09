@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import { useNavigate } from "react-router";
+import { useContext, useState, useEffect } from "react";
+import { useSearchParams, useNavigate } from "react-router";
 import { Box, Button } from "@mui/material";
 import { LayoutContext } from "@/contexts/layoutContext";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -8,28 +8,85 @@ import SelectDataTable from "@/components/Table/SelectDataTable.jsx";
 import useHttp from "@/services/useHttp.js";
 
 function PlanAdd() {
-  const navigate = useNavigate();
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, filteredCoverage, filteredAssistance } = useColumnsService();
-  const [plan, setPlan] = useState({name: "", services_id: "" });
+  const { columns, filteredCoverage, filteredAssistance, services } =
+    useColumnsService();
+  const [plan, setPlan] = useState({ name: "", price: "" });
   const [coverageSelection, setCoverageSelection] = useState({});
   const [assistanceSelection, setAssistanceSelection] = useState({});
-  const selectedCoverage = Object.keys(coverageSelection).map(
-    (key) => filteredCoverage[key]
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
+  useEffect(() => {
+    if (!id || !services.length) return;
+
+    let mounted = true;
+
+    const fetchPlan = async () => {
+      try {
+        const responsePlan = await useHttp.get(`/plans/${id}`);
+        const responsePlanServices = await useHttp.get(`/plan-services/${id}`);
+
+        if (!mounted) return;
+
+        setPlan({
+          name: responsePlan.data.name,
+          price: responsePlan.data.price,
+        });
+
+        const selectedCoverage = {};
+        const selectedAssistance = {};
+
+        responsePlanServices.data.forEach((serviceId) => {
+          const service = services.find((s) => s.id === serviceId);
+          if (!service) return;
+          if (service.category_id === 1) {
+            selectedCoverage[serviceId.toString()] = true;
+          } else if (service.category_id === 2) {
+            selectedAssistance[serviceId.toString()] = true;
+          }
+        });
+
+        setCoverageSelection(selectedCoverage);
+        setAssistanceSelection(selectedAssistance);
+      } catch (error) {
+        console.error("Erro ao carregar plano:", error);
+      }
+    };
+
+    fetchPlan();
+
+    return () => {
+      mounted = false;
+    };
+  }, [id, services]);
+
+  const selectedCoverage = filteredCoverage.filter(
+    (s) => coverageSelection[s.id.toString()]
   );
-  const selectedAssistance = Object.keys(assistanceSelection).map(
-    (key) => filteredAssistance[key]
+  const selectedAssistance = filteredAssistance.filter(
+    (s) => assistanceSelection[s.id.toString()]
   );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await useHttp.post("/plans/create/", {
+      const payload = {
         ...plan,
-        services_id: [...selectedCoverage, ...selectedAssistance].map((s) => s.id)
-      });
-      console.log("Plano criado:", plan);
-      navigate("/planos")
+        services_id: [...selectedCoverage, ...selectedAssistance].map(
+          (s) => s.id
+        ),
+      };
+
+      if (id) {
+        await useHttp.patch(`/plans/edit/${id}`, payload);
+        console.log("Plano atualizado:", payload);
+      } else {
+        await useHttp.post("/plans/create/", payload);
+        console.log("Plano criado:", payload);
+      }
+      navigate("/planos");
     } catch (error) {
       console.error("Erro ao salvar o plano:", error);
     }
@@ -56,7 +113,7 @@ function PlanAdd() {
       <SelectDataTable
         columns={columns}
         data={filteredCoverage}
-        title="Selecione todas as coberturas oferecidas neste planos"
+        title="Selecione todas as coberturas oferecidas neste plano"
         rowSelection={coverageSelection}
         onRowSelectionChange={setCoverageSelection}
       />
@@ -69,7 +126,7 @@ function PlanAdd() {
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
         <Button onClick={handleSubmit} variant="contained" color="secondary">
-          Salvar Plano
+          {id ? "Atualizar Plano" : "Salvar Plano"}
         </Button>
       </Box>
     </Box>

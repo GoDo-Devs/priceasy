@@ -62,7 +62,7 @@ export const guardedAuthenticatedRoutes = [
             Component: Plan,
           },
           {
-            path: "/adicionar-plano",
+            path: "/plano",
             label: "Planos",
             icon: DiscountIcon,
             Component: PlanAdd,

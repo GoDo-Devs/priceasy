@@ -10,16 +10,18 @@ function SelectDataTable({ data, columns, title, rowSelection, onRowSelectionCha
         localization={MRT_Localization_PT_BR}
         columns={columns}
         data={data}
+        getRowId={(row) => row.id.toString()} 
         enableFullScreenToggle={false}
         disableRowActions
         enableRowSelection
         onRowSelectionChange={onRowSelectionChange}
         state={{ rowSelection }}
+        enablePagination={false} 
         muiTablePaperProps={{
           sx: { borderRadius: "15px", overflow: "hidden", marginBottom: "20px" },
         }}
         muiTableContainerProps={{
-          sx: { maxHeight: `100vh`, padding: "30px"},
+          sx: { maxHeight: `100%`, padding: "30px"},
         }}
         muiTableBodyProps={{
           sx: { height: "100%"},

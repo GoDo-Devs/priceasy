@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router";
 import { Box, Button } from "@mui/material";
 import { LayoutContext } from "@/contexts/layoutContext";
@@ -23,9 +23,10 @@ function Plan() {
         data={plans}
         handleDelete={handleDelete}
         enableEdit={true}
+        handleEdit={(id) => navigate(`/plano?id=${id}`)}
       />
       <Box display="flex" justifyContent="flex-end" mt={3}>
-        <Button onClick={()=> navigate("/adicionar-plano")} variant="contained" color="primary">
+        <Button onClick={()=> navigate("/plano")} variant="contained" color="primary">
           Adicionar Plano
         </Button>
       </Box>

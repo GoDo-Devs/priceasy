@@ -57,6 +57,24 @@ export default class PlanController {
     }
   }
 
+  static async getPlanById(req, res) {
+    const id = req.params.id;
+
+    try {
+      const planById = await Plan.findByPk(id);
+
+      if (!planById) {
+        return res.status(404).json({ message: "Plano não encontrado!" });
+      }
+
+      return res.status(200).json(planById);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Erro ao obter o plano.", error: error.message });
+    }
+  }
+
   static async removePlanById(req, res) {
     const id = req.params.id;
 
@@ -74,6 +92,55 @@ export default class PlanController {
     } catch (error) {
       res.status(404).json({ message: "Plano não encontrado!" });
       return;
+    }
+  }
+
+  static async updatePlanById(req, res) {
+    const id = req.params.id;
+    const { name, price, services_id } = req.body;
+    const planById = await Plan.findByPk(id);
+
+    if (!planById) {
+      res.status(404).json({ message: "Plano não encontrado!" });
+      return;
+    }
+
+    try {
+      const validIds = await isValidArray(services_id, Service, req, res);
+      await Plan.update(
+        {
+          name: name.trim(),
+          price: Number(price),
+        },
+        {
+          where: { id },
+        }
+      );
+
+      await PlanService.destroy({
+        where: { plan_id: id },
+      });
+
+      if (validIds.length > 0) {
+        const values = validIds.map((service_id) => ({
+          service_id,
+          plan_id: id,
+        }));
+
+        await PlanService.bulkCreate(values);
+      }
+
+      const updatedPlan = await Plan.findByPk(id);
+
+      return res.status(200).json({
+        message: "Plano atualizado com sucesso!",
+        product: updatedPlan,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao atualizar o Plano.",
+        error: error.message,
+      });
     }
   }
 }

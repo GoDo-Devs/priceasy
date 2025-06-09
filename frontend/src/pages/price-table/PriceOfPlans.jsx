@@ -21,7 +21,7 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
       )
       .catch((err) => console.error("Erro ao carregar planos:", err));
   }, []);
-  console.log(priceTable)
+/*   console.log(priceTable); */
   return (
     <>
       <Box
@@ -34,12 +34,33 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
         <CheckBoxInput
           className="mb-1"
           value={priceTable.plansSelected}
-          onChange={(e) =>
-            setPriceTable((priceTable) => ({
-              ...priceTable,
-              plansSelected: e.target.value,
-            }))
-          }
+          onChange={(e) => {
+            const selectedPlans = e.target.value;
+            setPriceTable((prev) => {
+              const updatedRanges = prev.ranges.map((range) => {
+                const currentPlanPrices = { ...(range.planPrices || {}) };
+                selectedPlans.forEach((planId) => {
+                  if (!(planId in currentPlanPrices)) {
+                    currentPlanPrices[planId] = "";
+                  }
+                });
+                Object.keys(currentPlanPrices).forEach((planId) => {
+                  if (!selectedPlans.includes(parseInt(planId))) {
+                    delete currentPlanPrices[planId];
+                  }
+                });
+                return {
+                  ...range,
+                  planPrices: currentPlanPrices,
+                };
+              });
+              return {
+                ...prev,
+                plansSelected: selectedPlans,
+                ranges: updatedRanges,
+              };
+            });
+          }}
           options={plansAll.map((g) => ({
             value: g.id,
             label: g.name,

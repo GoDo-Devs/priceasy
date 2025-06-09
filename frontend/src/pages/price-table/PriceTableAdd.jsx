@@ -37,14 +37,33 @@ function PriceTableAdd() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    const formattedRanges = priceTable.ranges.map((range) => {
+      return {
+        ...range,
+        pricePlanId: Object.entries(range.planPrices || {}).map(
+          ([planId, basePrice]) => ({
+            plan_id: parseInt(planId),
+            basePrice: parseFloat(basePrice),
+          })
+        ),
+        planPrices: undefined,
+      };
+    });
+
+    console.log(priceTable)
+    console.log(formattedRanges)
+    const payload = {
+      ...priceTable,
+      ranges: formattedRanges,
+    };
+
     try {
-      await useHttp.post("/price-tables/create/", {
-        ...priceTable,
-      });
+      await useHttp.post("/price-tables/create/", payload);
       navigate("/tabelas");
-      console.log("Tabela criada:", priceTable);
+      console.log("Tabela criada:", payload);
     } catch (error) {
-      console.error("Erro ao salvar a tabela:", priceTable);
+      console.error("Erro ao salvar a tabela:", payload);
     }
   };
 
