@@ -1,12 +1,12 @@
 import PriceTable from "../models/PriceTable.js";
 import VehicleCategory from "../models/VehicleCategory.js";
+import { validatePriceTable } from "../validations/CreatePriceTable.js";
 
 export default class PriceTableController {
   static async create(req, res) {
     const { name, category_id, ranges, plansSelected } = req.body;
 
-    const nameExists = await PriceTable.findOne({ where: { name: name } });
-
+    const nameExists = await PriceTable.findOne({ where: { name } });
     if (nameExists) {
       return res.status(422).json({
         message:
@@ -15,7 +15,6 @@ export default class PriceTableController {
     }
 
     const categoryExists = await VehicleCategory.findByPk(category_id);
-
     if (!categoryExists) {
       return res.status(404).json({
         message: "Categoria de Veículo não encontrada!",
@@ -23,11 +22,19 @@ export default class PriceTableController {
     }
 
     try {
-      const newTable = await PriceTable.create({ name, category_id, ranges, plansSelected });
+      validatePriceTable({ name, category_id, ranges, plansSelected });
+
+      const newTable = await PriceTable.create({
+        name,
+        category_id,
+        ranges,
+        plansSelected,
+      });
+
       res.status(201).json(newTable);
     } catch (error) {
       console.error("Erro ao salvar tabela de preços:", error);
-      res.status(500).json({ error: "Erro ao salvar." });
+      res.status(400).json({ error: error.message });
     }
   }
 
@@ -65,7 +72,7 @@ export default class PriceTableController {
 
   static async editPriceTable(req, res) {
     const id = req.params.id;
-    const {name, ranges } = req.body;
+    const { name, ranges } = req.body;
 
     try {
       const table = await PriceTable.findByPk(id);

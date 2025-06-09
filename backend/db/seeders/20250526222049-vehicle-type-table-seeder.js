@@ -19,7 +19,7 @@ export default {
           name: "Caminhão",
         },
         {
-          id: 3,
+          id: 4,
           name: "Agregado",
         },
       ],

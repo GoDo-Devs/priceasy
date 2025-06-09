@@ -9,12 +9,6 @@ class Plan extends Model {
       otherKey: "service_id",
       as: "services",
     });
-    Plan.belongsToMany(models.PriceTable, {
-      through: models.PriceTablePlan,
-      foreignKey: "plan_id",
-      otherKey: "table_price_id",
-      as: "table_prices",
-    });
   }
 }
 

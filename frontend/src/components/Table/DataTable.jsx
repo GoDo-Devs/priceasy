@@ -12,7 +12,8 @@ function DataTable({
   handleDelete,
   enableEdit = false,
   enableDelete = true,
-  enableRowActions = true
+  enableRowActions = true,
+  handleEdit,
 }) {
   const [alertModal, setAlertModal] = useState(false);
   const [selectedName, setSelectedName] = useState("");
@@ -31,7 +32,16 @@ function DataTable({
           <>
             {enableEdit && (
               <Tooltip title="Editar">
-                <IconButton color="primary" onClick={() => {}}>
+                <IconButton
+                  color="primary"
+                  onClick={() => {
+                    if (typeof handleEdit === "function") {
+                      handleEdit(row.original.id);
+                    } else {
+                      console.error("handleEdit não é função:", handleEdit);
+                    }
+                  }}
+                >
                   <EditIcon />
                 </IconButton>
               </Tooltip>

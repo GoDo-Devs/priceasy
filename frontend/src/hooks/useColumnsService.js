@@ -48,5 +48,11 @@ export function useColumnsService() {
     },
   ];
 
-  return { columns, filteredCoverage, filteredAssistance, handleDelete };
+  return {
+    columns,
+    filteredCoverage,
+    filteredAssistance,
+    services,
+    handleDelete,
+  };
 }
