@@ -83,9 +83,7 @@ export default class ProductController {
 
     try {
       const product = await Product.findByPk(id);
-      res.status(200).json({
-        product,
-      });
+      res.status(200).json(product);
     } catch (error) {
       res.status(404).json({ message: "Produto não encontrado!" });
       return;
@@ -114,7 +112,8 @@ export default class ProductController {
 
   static async updateProductById(req, res) {
     const id = req.params.id;
-    const { name, price, product_group_id, group_name } = req.body;
+    const { name, price, product_group_id, group_name, vehicle_type_ids } =
+      req.body;
     const productById = await Product.findByPk(id);
 
     if (!productById) {
@@ -130,6 +129,13 @@ export default class ProductController {
     );
 
     try {
+      const validIds = await isValidArray(
+        vehicle_type_ids,
+        VehicleType,
+        req,
+        res
+      );
+
       const productUpdate = await Product.update(
         {
           name: name.trim(),
@@ -141,15 +147,28 @@ export default class ProductController {
         }
       );
 
-      if (productUpdate[0] === 0) {
-        return res
-          .status(400)
-          .json({ message: "Nenhuma alteração foi feita." });
+      await ProductVehicleType.destroy({
+        where: { product_id: id },
+      });
+
+      if (validIds.length > 0) {
+        const values = validIds.map((typeId) => ({
+          vehicle_type_id: typeId,
+          product_id: id,
+        }));
+
+        await ProductVehicleType.bulkCreate(values);
       }
 
       return res.status(200).json({
         message: "Produto atualizado com sucesso!",
-        product: productUpdate,
+        product: {
+          id,
+          name,
+          price,
+          product_group_id: finalGroupId,
+          vehicle_type_ids: validIds,
+        },
       });
     } catch (error) {
       return res.status(500).json({
