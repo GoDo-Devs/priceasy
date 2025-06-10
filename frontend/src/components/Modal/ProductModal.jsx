@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
-import SelectInput from "@/components/Form/SelectInput.jsx"
+import SelectInput from "@/components/Form/SelectInput.jsx";
 import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
@@ -40,14 +40,61 @@ function ProductModal({
     }
   }, [open]);
 
+  useEffect(() => {
+    if (open && product.id) {
+      useHttp
+        .get(`/product-vehicle-types/${product.id}`)
+        .then((res) => {
+          const selectedTypes = Array.isArray(res.data) ? res.data : [];
+          setVehicleTypes((prev) => ({
+            ...prev,
+            selected: selectedTypes,
+          }));
+        })
+        .catch((err) => {
+          console.error("Erro ao carregar tipos de veículo selecionados:", err);
+          setVehicleTypes((prev) => ({
+            ...prev,
+            selected: [],
+          }));
+        });
+    } else if (!product.id) {
+      setVehicleTypes((prev) => ({
+        ...prev,
+        selected: [],
+      }));
+    }
+  }, [open, product.id]);
+
+  const handleVehicleTypeChange = (e) => {
+    setVehicleTypes((prev) => ({
+      ...prev,
+      selected: e.target.value,
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const payload = {
+      name: product.name?.trim(),
+      price: Number(product.price),
+      product_group_id: product.product_group_id,
+      vehicle_type_ids: vehicleTypes.selected,
+    };
+
+    if (showNewGroupInput && product.group_name?.trim()) {
+      payload.group_name = product.group_name.trim();
+    }
+
     try {
-      await useHttp.post("/products/create/", {
-        ...product,
-        vehicle_type_ids: vehicleTypes.selected,
-      });
-      console.log("Produto criado:", product);
+      if (product.id) {
+        await useHttp.patch(`/products/${product.id}`, payload);
+        console.log("Produto atualizado:", payload);
+      } else {
+        await useHttp.post("/products/create/", payload);
+        console.log("Produto criado:", payload);
+      }
+
       onClose();
     } catch (error) {
       console.error("Erro ao salvar o produto:", error);
@@ -55,7 +102,13 @@ function ProductModal({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} PaperProps={{sx: {borderRadius: 8, padding: 1.5}}} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      PaperProps={{ sx: { borderRadius: 8, padding: 1.5 } }}
+      fullWidth
+      maxWidth="sm"
+    >
       <DialogContent>
         <TextInput
           label="Nome do Produto"
@@ -107,12 +160,7 @@ function ProductModal({
           label="Selecione um Tipo de Veículo"
           name="vehicle_type_ids"
           value={vehicleTypes.selected}
-          onChange={(e) =>
-            setVehicleTypes((prev) => ({
-              ...prev,
-              selected: e.target.value,
-            }))
-          }
+          onChange={handleVehicleTypeChange}
           options={vehicleTypes.all.map((g) => ({
             value: g.id,
             label: g.name,
@@ -121,7 +169,12 @@ function ProductModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={!product.name || !product.price}>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="secondary"
+          disabled={!product.name || !product.price}
+        >
           Salvar
         </Button>
       </DialogActions>

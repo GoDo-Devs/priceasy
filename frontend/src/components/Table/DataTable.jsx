@@ -12,56 +12,85 @@ function DataTable({
   handleDelete,
   enableEdit = false,
   enableDelete = true,
-  enableRowActions = true,
   handleEdit,
+  paddingTop = "10px",
+  paddingBottom = "8px",
 }) {
   const [alertModal, setAlertModal] = useState(false);
   const [selectedName, setSelectedName] = useState("");
   const [selectRow, setSelectRow] = useState("");
 
+  const columnsWithActions = [
+    ...columns,
+    {
+      id: "actions",
+      header: null,
+      enableSorting: false,
+      enableHiding: false,
+      size: 10,
+      muiTableHeadCellProps: {
+        sx: {
+          textAlign: "right",
+          "& .MuiTableHeadCell-content": {
+            justifyContent: "flex-end",
+          },
+        },
+      },
+      muiTableBodyCellProps: {
+        sx: {
+          textAlign: "right",
+          position: "sticky",
+          right: 0,
+          zIndex: 10,
+          minWidth: "0px",
+        },
+      },
+      Cell: ({ row }) => (
+        <>
+          {enableEdit && (
+            <Tooltip title="Editar">
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  if (typeof handleEdit === "function") {
+                    handleEdit(row.original.id);
+                  } else {
+                    console.error("handleEdit não é função:", handleEdit);
+                  }
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {enableDelete && (
+            <Tooltip title="Excluir">
+              <IconButton
+                color="primary"
+                onClick={() => {
+                  setSelectedName(row.original.name);
+                  setSelectRow(row.original);
+                  setAlertModal(true);
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+        </>
+      ),
+    },
+  ];
+
   return (
     <div>
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
-        columns={columns}
+        columns={columnsWithActions}
         data={data}
         enableFullScreenToggle={false}
-        enableRowActions={enableRowActions}
-        positionActionsColumn="last"
-        renderRowActions={({ row }) => (
-          <>
-            {enableEdit && (
-              <Tooltip title="Editar">
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    if (typeof handleEdit === "function") {
-                      handleEdit(row.original.id);
-                    } else {
-                      console.error("handleEdit não é função:", handleEdit);
-                    }
-                  }}
-                >
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            {enableDelete && (
-              <Tooltip title="Excluir">
-                <IconButton
-                  color="primary"
-                  onClick={() => {
-                    setSelectedName(row.original.name);
-                    setSelectRow(row.original);
-                    setAlertModal(true);
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-          </>
-        )}
+        enableRowActions={false}
+        enableColumnActions={false}
         muiTablePaperProps={{
           sx: { borderRadius: "15px", overflow: "hidden" },
         }}
@@ -70,6 +99,14 @@ function DataTable({
         }}
         muiTableBodyProps={{
           sx: { height: "100%" },
+        }}
+        muiTableBodyRowProps={{
+          sx: {
+            "& > td": {
+              paddingTop: paddingTop,
+              paddingBottom: paddingBottom,
+            },
+          },
         }}
       />
       <AlertModal

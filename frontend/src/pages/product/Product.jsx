@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Box, Fab, Tooltip } from "@mui/material";
+import { Box } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
@@ -10,13 +10,13 @@ import ButtonFab from "../../components/Fab/ButtonFab";
 function Product() {
   const { drawerWidth } = useContext(LayoutContext);
   const { columns, products, handleDelete } = useColumnsProduct();
+
   const [openModal, setOpenModal] = useState(false);
   const [product, setProduct] = useState({});
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
 
   const handleGroupChange = (e) => {
     const selected = e.target.value;
-
     if (selected === "new") {
       setShowNewGroupInput(true);
       setProduct({ ...product, product_group_id: null });
@@ -29,12 +29,27 @@ function Product() {
     }
   };
 
+  const handleEdit = (id) => {
+    const prod = products.find((p) => p.id === id);
+    if (!prod) return;
+
+    setProduct(prod);
+    setShowNewGroupInput(false);
+    setOpenModal(true);
+  };
+
+  const handleCreate = () => {
+    setProduct({});
+    setShowNewGroupInput(false);
+    setOpenModal(true);
+  };
+
   return (
     <Box
       sx={{
         width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
-        padding: "30px"
+        padding: "30px",
       }}
     >
       <DataTable
@@ -42,10 +57,11 @@ function Product() {
         data={products}
         handleDelete={handleDelete}
         enableEdit={true}
+        handleEdit={handleEdit}
       />
       <ButtonFab
         title={"Criar Produto"}
-        onClick={() => setOpenModal(true)}
+        onClick={handleCreate}
         Icon={AddShoppingCartIcon}
       />
       <ProductModal
@@ -57,6 +73,7 @@ function Product() {
         onClose={() => {
           setOpenModal(false);
           setProduct({});
+          setShowNewGroupInput(false);
         }}
       />
     </Box>
