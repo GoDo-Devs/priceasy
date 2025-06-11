@@ -188,7 +188,7 @@ function ProductModal({
           />
         )}
         <CheckBoxInput
-          label="Selecione um Tipo de Veículo"
+          label="Selecione os Tipos de Veículos"
           name="vehicle_type_ids"
           value={vehicleTypes.selected}
           onChange={handleVehicleTypeChange}

@@ -19,6 +19,8 @@ const rangesSchema = Joi.array().items(rangeSchema);
 
 const priceTableSchema = Joi.object({
   name: Joi.string().required(),
+  vehicle_type_id: Joi.number().required(),
+  brands: Joi.array().items(Joi.number()).optional(),
   category_id: Joi.number().required(),
   plansSelected: Joi.array().items(Joi.number()).required(),
   ranges: rangesSchema.required(),

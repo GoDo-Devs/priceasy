@@ -6,16 +6,20 @@ import useHttp from "@/services/useHttp.js";
 
 function GeneralDataPriceTable({ priceTable, setPriceTable }) {
   const [vehicleCategory, setVehicleCategory] = useState([]);
+
   useEffect(() => {
-    if (open) {
+    if (priceTable.vehicle_type_id) {
       useHttp
-        .get("/vehicle-categories")
-        .then((res) => setVehicleCategory(res.data.vehicleCategories))
+        .get(`/vehicle-categories/${priceTable.vehicle_type_id}`)
+        .then((res) => {
+          setVehicleCategory(res.data);
+        })
         .catch((err) =>
-          console.error("Erro ao carregar tipos de veículos:", err)
+          console.error("Erro ao carregar categorias do veículo:", err)
         );
     }
-  }, [open]);
+  }, [priceTable.vehicle_type_id]);
+
   return (
     <Box display="flex" gap={2} mb={3}>
       <TextInput
@@ -37,12 +41,10 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
             category_id: e.target.value,
           })
         }
-        options={[
-          ...vehicleCategory.map((g) => ({
-            value: g.id,
-            label: g.name,
-          })),
-        ]}
+        options={vehicleCategory.map((cat) => ({
+          value: cat.id,
+          label: cat.name,
+        }))}
       />
     </Box>
   );

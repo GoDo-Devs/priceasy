@@ -56,7 +56,7 @@ function StepperForm({
           >
             Voltar
           </Button>
-          {showAddButton && activeStep === 1 && (
+          {showAddButton && steps[activeStep] === "Tabela" && (
             <>
               <Button
                 variant="contained"

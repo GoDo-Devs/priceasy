@@ -14,6 +14,32 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      brands: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      startingYear: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      finalYear: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      plansSelected: {
+        type: Sequelize.JSON,
+        allowNull: false,
+      },
+      vehicle_type_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "vehicle_types",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
+      },
       category_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -23,10 +49,6 @@ export default {
         },
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
-      },
-      plansSelected: {
-        type: Sequelize.JSON,
-        allowNull: false,
       },
       ranges: {
         type: Sequelize.JSON,

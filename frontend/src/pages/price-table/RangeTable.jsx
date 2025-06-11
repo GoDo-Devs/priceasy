@@ -9,7 +9,6 @@ function RangeTable({
   handleDelete,
   priceTable,
   setPriceTable,
-  handleEdit,
 }) {
   const [isRangeModalOpen, setIsRangeModalOpen] = useState(false);
   const [editingRange, setEditingRange] = useState(null);
@@ -20,6 +19,8 @@ function RangeTable({
     setEditingIndex(index);
     setIsRangeModalOpen(true);
   };
+
+  console.log(priceTable)
   return (
     <>
       <Box>

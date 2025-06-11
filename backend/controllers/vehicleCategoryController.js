@@ -52,6 +52,29 @@ export default class VehicleCategoryController {
     }
   }
 
+  static async getVehicleCategoryByIdVehicleTypeId(req, res) {
+    const vehicle_type_id = req.params.id;
+
+    try {
+      const vehicleCategoriesByVehicleTypeId = await VehicleCategory.findAll({
+        where: { vehicle_type_id: vehicle_type_id },
+      });
+
+      if (!vehicleCategoriesByVehicleTypeId) {
+        return res.status(422).json({
+          message: "Categorias não encontradas!",
+        });
+      }
+
+      return res.status(200).json(vehicleCategoriesByVehicleTypeId);
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao obter os serviços do plano.",
+        error: error.message,
+      });
+    }
+  }
+
   static async removeVehicleCategoryById(req, res) {
     const id = req.params.id;
 

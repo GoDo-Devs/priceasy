@@ -1,16 +1,26 @@
 import PriceTable from "../models/PriceTable.js";
+import VehicleType from "../models/VehicleType.js"
 import VehicleCategory from "../models/VehicleCategory.js";
+import FipeTableService from "../services/FipeTableService.js";
 import { validatePriceTable } from "../validations/CreatePriceTable.js";
 
 export default class PriceTableController {
   static async create(req, res) {
-    const { name, category_id, ranges, plansSelected } = req.body;
+    const { name, vehicle_type_id, category_id, ranges, plansSelected } = req.body;
+    const fipeService = new FipeTableService();
 
     const nameExists = await PriceTable.findOne({ where: { name } });
     if (nameExists) {
       return res.status(422).json({
         message:
           "Tabela de Preços já cadastrada, por favor utilize outro nome!",
+      });
+    }
+
+    const vehicleTypeExists = await VehicleType.findByPk(vehicle_type_id);
+    if (!vehicleTypeExists) {
+      return res.status(404).json({
+        message: "Tipo de veículo não encontrado!",
       });
     }
 
@@ -22,10 +32,15 @@ export default class PriceTableController {
     }
 
     try {
-      validatePriceTable({ name, category_id, ranges, plansSelected });
+      await fipeService.setReferenceTable();
+
+      const brands = await fipeService.searchBrands(vehicle_type_id);
+      validatePriceTable({ name, vehicle_type_id, category_id, ranges, plansSelected });
 
       const newTable = await PriceTable.create({
         name,
+        vehicle_type_id,
+        brands: brands,
         category_id,
         ranges,
         plansSelected,

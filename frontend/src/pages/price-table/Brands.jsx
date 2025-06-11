@@ -1,48 +1,89 @@
-import { useState, useEffect } from "react";
-import { Box } from "@mui/material";
-import TextInput from "@/components/Form/TextInput.jsx";
-import SelectInput from "@/components/Form/SelectInput.jsx";
+import { Box, FormControlLabel, Checkbox } from "@mui/material";
+import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
+import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 
 function Brands({ priceTable, setPriceTable }) {
-  const [vehicleCategory, setVehicleCategory] = useState([]);
+  const [brands, setBrands] = useState([]);
+
   useEffect(() => {
-    if (open) {
+    if (priceTable.vehicle_type_id) {
       useHttp
-        .get("/vehicle-categories")
-        .then((res) => setVehicleCategory(res.data.vehicleCategories))
+        .post("/fipe/brands", { vehicleType: priceTable.vehicle_type_id })
+        .then((res) => {
+          const options = res.data.brands.map((brand) => ({
+            value: brand.Value,
+            label: brand.Label,
+          }));
+          setBrands(options);
+          setPriceTable((prev) => {
+            const currentBrandValues = options.map((b) => Number(b.value));
+            const hasInvalidBrands =
+              prev.brands?.some((b) => !currentBrandValues.includes(b)) ?? true;
+
+            if (hasInvalidBrands) {
+              return { ...prev, brands: [] };
+            }
+
+            return prev;
+          });
+        })
         .catch((err) =>
-          console.error("Erro ao carregar tipos de veículos:", err)
+          console.error("Erro ao carregar marcas do veículo:", err)
         );
     }
-  }, [open]);
+  }, [priceTable.vehicle_type_id, setPriceTable]);
+
+  const handleBrandsChange = (event) => {
+    setPriceTable({
+      ...priceTable,
+      brands: event.target.value,
+    });
+  };
+
+  const handleSelectAllChange = (event) => {
+    if (event.target.checked) {
+      const allValues = brands.map((b) => Number(b.value));
+      setPriceTable({
+        ...priceTable,
+        brands: allValues,
+      });
+    } else {
+      setPriceTable({
+        ...priceTable,
+        brands: [],
+      });
+    }
+  };
+
+  const allSelected =
+    brands.length > 0 &&
+    priceTable.brands.length === brands.length &&
+    brands.every((b) => priceTable.brands.includes(Number(b.value)));
+
+  const isIndeterminate =
+    priceTable.brands.length > 0 && priceTable.brands.length < brands.length;
+
+  console.log(priceTable);
+
   return (
-    <Box display="flex" gap={2} mb={3}>
-      <TextInput
-        label="Nome da Tabela"
-        name="name"
-        value={priceTable.name ?? ""}
-        onChange={(e) => setPriceTable({ ...priceTable, name: e.target.value })}
-        required
-        fullWidth
-      />
-      <SelectInput
-        label="Selecione uma Categoria de Veículos"
-        name="category_id"
-        className="mb-5"
-        value={priceTable.category_id ?? ""}
-        onChange={(e) =>
-          setPriceTable({
-            ...priceTable,
-            category_id: e.target.value,
-          })
+    <Box display="flex" flexDirection="column" gap={2} mb={3}>
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={allSelected}
+            indeterminate={isIndeterminate}
+            onChange={handleSelectAllChange}
+          />
         }
-        options={[
-          ...vehicleCategory.map((g) => ({
-            value: g.id,
-            label: g.name,
-          })),
-        ]}
+        label="Selecionar todas"
+      />
+      <CheckBoxInput
+        name="brands"
+        value={priceTable.brands || []}
+        onChange={handleBrandsChange}
+        options={brands}
+        className="brands-checkbox-grid"
       />
     </Box>
   );
