@@ -7,7 +7,7 @@ import { brandsSchema, modelsSchema, modelYearSchema, priceSchema } from "../val
 const router = express.Router();
 const validator = createValidator({});
 
-router.get("/brands", validator.body(brandsSchema), [checkToken], FipeController.getBrands);
+router.post("/brands", validator.body(brandsSchema), [checkToken], FipeController.getBrands);
 router.get("/models", validator.body(modelsSchema), [checkToken], FipeController.getModels);
 router.get("/years", validator.body(modelYearSchema), [checkToken], FipeController.getModelYear);
 router.get("/price", validator.body(priceSchema), [checkToken], FipeController.getPrice);

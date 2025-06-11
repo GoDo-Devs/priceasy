@@ -29,7 +29,7 @@ VehicleType.init(
     modelName: "VehicleType",
     tableName: "vehicle_types",
     timestamps: true,
-    createdAt: "created_at", 
+    createdAt: "created_at",
     updatedAt: "updated_at",
   }
 );

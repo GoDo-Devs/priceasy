@@ -1,7 +1,19 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class PriceTable extends Model {}
+class PriceTable extends Model {
+  static associate(models) {
+    PriceTable.belongsTo(models.VehicleType, {
+      foreignKey: "vehicle_type_id",
+      as: "vehicle_types",
+    });
+
+    PriceTable.belongsTo(models.VehicleCategory, {
+      foreignKey: "category_id",
+      as: "vehicle_categories",
+    });
+  }
+}
 
 PriceTable.init(
   {
@@ -14,9 +26,29 @@ PriceTable.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    brands: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    startingYear: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    finalYear: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     plansSelected: {
       type: DataTypes.JSON,
       allowNull: false,
+    },
+    vehicle_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: "vehicle_types",
+        key: "id",
+      },
     },
     category_id: {
       type: DataTypes.INTEGER,

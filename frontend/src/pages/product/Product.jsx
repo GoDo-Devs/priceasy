@@ -5,7 +5,7 @@ import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
-import ButtonFab from "../../components/Fab/ButtonFab";
+import ButtonFab from "@/components/Fab/ButtonFab";
 
 function Product() {
   const { drawerWidth } = useContext(LayoutContext);
