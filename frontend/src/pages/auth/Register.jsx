@@ -19,7 +19,7 @@ function Register() {
       name: "",
       email: "",
       password: "",
-      confirmpassword: ""
+      confirmpassword: "",
     },
     registerValidator
   );
@@ -55,7 +55,12 @@ function Register() {
           variant="outlined"
           sx={{ width: "400px", borderRadius: "20px" }}
         >
-          <Typography sx={{marginTop: 5}} variant="h5" align="center" gutterBottom>
+          <Typography
+            sx={{ marginTop: 5 }}
+            variant="h5"
+            align="center"
+            gutterBottom
+          >
             Cadastro
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>

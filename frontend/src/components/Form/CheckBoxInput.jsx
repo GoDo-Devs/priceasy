@@ -41,7 +41,6 @@ function CheckBoxInput({
         sx={{
           flexDirection: "row", 
           flexWrap: "wrap",
-          marginLeft: "10px"
         }}
       >
         {options.map((option) => (

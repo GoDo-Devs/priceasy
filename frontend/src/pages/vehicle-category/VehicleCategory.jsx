@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useContext, useState } from "react";
-import { Box} from "@mui/material";
+import { Box } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -15,15 +15,26 @@ import ButtonFab from "../../components/Fab/ButtonFab";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import TwoWheelerIcon from "@mui/icons-material/TwoWheeler";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import AgricultureIcon from '@mui/icons-material/Agriculture';
+import AgricultureIcon from "@mui/icons-material/Agriculture";
 
 function VehicleCategory() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, filteredCar, filteredMotorcycle, filteredTruck, filteredAggregate, handleDelete } = useColumnsVehicleCategory();
+  const {
+    columns,
+    filteredCar,
+    filteredMotorcycle,
+    filteredTruck,
+    filteredAggregate,
+    setVehicleCategories,
+    handleDelete,
+  } = useColumnsVehicleCategory();
   const [openModal, setOpenModal] = useState(false);
-  const [vehicleCategory, setVehicleCategory] = useState({name: "", vehicle_type_id:""});
+  const [vehicleCategory, setVehicleCategory] = useState({
+    name: "",
+    vehicle_type_id: "",
+  });
   const [value, setValue] = React.useState("1");
-  
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -33,7 +44,7 @@ function VehicleCategory() {
       sx={{
         width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
         transition: "width 0.1s ease",
-        padding: "30px"
+        padding: "30px",
       }}
     >
       <ButtonFab
@@ -45,6 +56,7 @@ function VehicleCategory() {
         open={openModal}
         vehicleCategory={vehicleCategory}
         setVehicleCategory={setVehicleCategory}
+        setVehicleCategories={setVehicleCategories}
         onClose={() => {
           setOpenModal(false);
           setVehicleCategory({});

@@ -37,10 +37,25 @@ export function useColumnsService() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome" },
+    {
+      accessorKey: "name",
+      header: "Nome",
+      muiTableHeadCellProps: {
+        style: { width: "65%" },
+      },
+      muiTableBodyCellProps: {
+        style: { width: "65%" },
+      },
+    },
     {
       accessorKey: "category_id",
       header: "Categoria de Serviços",
+      muiTableHeadCellProps: {
+        style: { width: "35%" },
+      },
+      muiTableBodyCellProps: {
+        style: { width: "35%" },
+      },
       Cell: ({ cell }) => {
         const category = categories.find((c) => c.id === cell.getValue());
         return category ? category.name : "Nenhum";

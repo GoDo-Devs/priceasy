@@ -6,7 +6,7 @@ import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx"
 import VehicleCategory from "@/pages/vehicle-category/VehicleCategory.jsx";
 import Implement from "@/pages/implement/Implement.jsx";
-import Price from "@/pages/price/Price.jsx"
+import Simulation from "@/pages/simulation/Simulation.jsx"
 import Service from "@/pages/service/Service.jsx"
 import Plan from "@/pages/plan/Plan.jsx"
 import PlanAdd from "@/pages/plan/PlanAdd.jsx"
@@ -42,7 +42,7 @@ export const guardedAuthenticatedRoutes = [
         path: "/cotacao",
         label: "Cotação",
         icon: RequestQuoteIcon,
-        Component: Price,
+        Component: Simulation,
       },
       {
         label: "Administrativo",

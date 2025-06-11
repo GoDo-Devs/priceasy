@@ -24,10 +24,8 @@ function PriceTableAdd() {
       .catch((err) => console.error("Erro ao carregar planos:", err));
   }, []);
 
-  const { columnsRange, dataRange, handleDelete } = useColumnsRanges(
-    priceTable,
-    setPriceTable
-  );
+  const { columnsRange, dataRange, handleDelete } =
+    useColumnsRanges(priceTable, setPriceTable);
 
   const { columnsPlan, dataPlan } = useColumnsPriceOfPlans(
     priceTable,
@@ -37,7 +35,7 @@ function PriceTableAdd() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const formattedRanges = priceTable.ranges.map((range) => {
       return {
         ...range,
@@ -51,8 +49,6 @@ function PriceTableAdd() {
       };
     });
 
-    console.log(priceTable)
-    console.log(formattedRanges)
     const payload = {
       ...priceTable,
       ranges: formattedRanges,
@@ -87,6 +83,16 @@ function PriceTableAdd() {
           />
         );
       case 2:
+        return (
+          <PriceOfPlans
+            priceTable={priceTable}
+            setPriceTable={setPriceTable}
+            columns={columnsPlan}
+            data={dataPlan}
+            plansAll={plansAll}
+          />
+        );
+      case 3:
         return (
           <PriceOfPlans
             priceTable={priceTable}

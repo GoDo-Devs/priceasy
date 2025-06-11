@@ -4,7 +4,7 @@ import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
 
-function GeneralDataPriceTable({ priceTable, setPriceTable }) {
+function Brands({ priceTable, setPriceTable }) {
   const [vehicleCategory, setVehicleCategory] = useState([]);
   useEffect(() => {
     if (open) {
@@ -48,4 +48,4 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
   );
 }
 
-export default GeneralDataPriceTable;
+export default Brands;
