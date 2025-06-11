@@ -9,7 +9,7 @@ import ButtonFab from "../../components/Fab/ButtonFab";
 
 function User() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, users, handleDelete } = useColumnsUser();
+  const { columns, users, setUsers, handleDelete } = useColumnsUser();
   const navigate = useNavigate();
 
   return (

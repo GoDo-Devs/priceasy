@@ -53,7 +53,7 @@ function DataTable({
                 color="primary"
                 onClick={() => {
                   if (typeof handleEdit === "function") {
-                    handleEdit(row.original.id);
+                    handleEdit(row.original.id ?? row.index);
                   } else {
                     console.error("handleEdit não é função:", handleEdit);
                   }
@@ -95,7 +95,7 @@ function DataTable({
           sx: { borderRadius: "15px", overflow: "hidden" },
         }}
         muiTableContainerProps={{
-          sx: { height: `100vh`, padding: "30px" },
+          sx: { minHeight: `100vh`, padding: "30px" },
         }}
         muiTableBodyProps={{
           sx: { height: "100%" },

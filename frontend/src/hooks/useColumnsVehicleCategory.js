@@ -6,31 +6,39 @@ export function useColumnsVehicleCategory() {
   const [vehicleTypes, setVehicleTypes] = useState([]);
 
   useEffect(() => {
-    fetchVehicleCategory();
-    fetchVehicleType();
+    fetchVehicleCategories();
+    fetchVehicleTypes();
   }, []);
 
-  const fetchVehicleCategory = () => {
+  const fetchVehicleCategories = () => {
     useHttp.get("/vehicle-categories").then((response) => {
       setVehicleCategories(response.data.vehicleCategories || []);
     });
   };
 
-  const fetchVehicleType = () => {
+  const fetchVehicleTypes = () => {
     useHttp.get("/vehicle-types").then((response) => {
       setVehicleTypes(response.data.vehicleTypes || []);
     });
   };
 
-  const filteredCar = vehicleCategories.filter((item) => item.vehicle_type_id === 1);
-  const filteredMotorcycle = vehicleCategories.filter((item) => item.vehicle_type_id === 2);
-  const filteredTruck = vehicleCategories.filter((item) => item.vehicle_type_id === 3);
-  const filteredAggregate = vehicleCategories.filter((item) => item.vehicle_type_id === 4);
+  const filteredCar = vehicleCategories.filter(
+    (item) => item.vehicle_type_id === 1
+  );
+  const filteredMotorcycle = vehicleCategories.filter(
+    (item) => item.vehicle_type_id === 2
+  );
+  const filteredTruck = vehicleCategories.filter(
+    (item) => item.vehicle_type_id === 3
+  );
+  const filteredAggregate = vehicleCategories.filter(
+    (item) => item.vehicle_type_id === 4
+  );
 
-  const handleDelete = (vehiclesType) => {
-    useHttp.delete(`/vehicle-types/${vehiclesType.id}`).then(() => {
+  const handleDelete = (vehicleCategory) => {
+    useHttp.delete(`/vehicle-categories/${vehicleCategory.id}`).then(() => {
       setVehicleCategories((prev) =>
-        prev.filter((p) => p.id !== vehiclesType.id)
+        prev.filter((item) => item.id !== vehicleCategory.id)
       );
     });
   };
@@ -41,11 +49,19 @@ export function useColumnsVehicleCategory() {
       accessorKey: "vehicle_type_id",
       header: "Tipo de Veículo",
       Cell: ({ cell }) => {
-        const group = vehicleTypes.find((g) => g.id === cell.getValue());
-        return group ? group.name : "Nenhum";
+        const type = vehicleTypes.find((t) => t.id === cell.getValue());
+        return type ? type.name : "Nenhum";
       },
     },
   ];
 
-  return { columns, filteredCar, filteredMotorcycle, filteredTruck, filteredAggregate,  handleDelete };
+  return {
+    columns,
+    filteredCar,
+    filteredMotorcycle,
+    filteredTruck,
+    filteredAggregate,
+    setVehicleCategories,
+    handleDelete,
+  };
 }

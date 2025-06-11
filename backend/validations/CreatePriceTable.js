@@ -11,6 +11,7 @@ const rangeSchema = Joi.object({
   quota: Joi.number().required(),
   accession: Joi.number().required(),
   basePrice: Joi.number().required(),
+  installationPrice: Joi.number().optional(),
   pricePlanId: Joi.array().items(pricePlanIdSchema).required(),
 });
 

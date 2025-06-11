@@ -1,14 +1,24 @@
-import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  InputLabel,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 import useHttp from "@/services/useHttp.js";
+import Paper from "@mui/material/Paper";
+import { NumericFormat } from "react-number-format";
+import TextField from "@mui/material/TextField";
 
 function ProductModal({
   open,
   product,
   setProduct,
+  setProducts,
   showNewGroupInput,
   handleGroupChange,
   onClose,
@@ -89,9 +99,15 @@ function ProductModal({
     try {
       if (product.id) {
         await useHttp.patch(`/products/${product.id}`, payload);
-        console.log("Produto atualizado:", payload);
+        const updatedProduct = { ...payload, id: product.id };
+        setProducts((prev) =>
+          prev.map((p) => (p.id === product.id ? updatedProduct : p))
+        );
+
+        console.log("Produto atualizado:", updatedProduct);
       } else {
         await useHttp.post("/products/create/", payload);
+        setProducts((prev) => [...prev, payload]);
         console.log("Produto criado:", payload);
       }
 
@@ -105,28 +121,43 @@ function ProductModal({
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: 8, padding: 1.5 } }}
+      disableEnforceFocus={false}
+      disableAutoFocus={false}
       fullWidth
       maxWidth="sm"
+      slots={{ paper: Paper }}
+      slotProps={{
+        paper: {
+          sx: { borderRadius: 8, p: 2 },
+        },
+      }}
     >
       <DialogContent>
         <TextInput
           label="Nome do Produto"
           name="name"
           className="mb-5"
-          value={product.name}
+          value={product.name ?? ""}
           onChange={(e) => setProduct({ ...product, name: e.target.value })}
           required
         ></TextInput>
-        <TextInput
-          label="Preço"
-          name="price"
-          className="mb-5"
-          type="number"
-          value={product.price || ""}
-          onChange={(e) => setProduct({ ...product, price: e.target.value })}
+        <InputLabel className="text-white mb-1">Preço</InputLabel>
+        <NumericFormat
+          size="small"
+          sx={{ marginBottom: "15px" }}
+          customInput={TextField}
+          value={product.price ?? ""}
+          onValueChange={(values) =>
+            setProduct({ ...product, price: values.floatValue })
+          }
+          thousandSeparator="."
+          decimalSeparator=","
+          prefix="R$ "
+          decimalScale={2}
+          fixedDecimalScale
+          fullWidth
           required
-        ></TextInput>
+        />
         <SelectInput
           label="Selecione um Grupo de Produtos"
           name="product_group_id"

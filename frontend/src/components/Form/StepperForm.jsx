@@ -40,9 +40,7 @@ function StepperForm({
           </Step>
         ))}
       </Stepper>
-
       <Box sx={{ mt: 4, mb: 2 }}>{renderStepContent(activeStep)}</Box>
-
       <Box
         sx={{
           display: "flex",
@@ -58,7 +56,6 @@ function StepperForm({
           >
             Voltar
           </Button>
-
           {showAddButton && activeStep === 1 && (
             <>
               <Button
@@ -72,7 +69,6 @@ function StepperForm({
             </>
           )}
         </Box>
-
         {activeStep < steps.length - 1 ? (
           <Button onClick={handleNext} variant="contained">
             Avançar

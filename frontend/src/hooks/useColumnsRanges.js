@@ -1,47 +1,103 @@
 import { useMemo } from "react";
 
-
 export function useColumnsRanges(priceTable, setPriceTable) {
-  const columnsRange = useMemo(() => [
-    {
-      accessorKey: "quota",
-      header: "Cota",
-      Cell: ({ cell }) =>
-        `${Number(cell.getValue()).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })}`,
-    },
-    {
-      accessorKey: "intervalo",
-      header: "Intervalo",
-      Cell: ({ row }) => {
-        const min = row.original.min;
-        const max = row.original.max;
+  const parseNumber = (value) => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  };
 
-        return `R$ ${Number(min).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })} a R$ ${Number(max).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })}`;
+  const columnsRange = useMemo(
+    () => [
+      {
+        accessorKey: "quota",
+        header: "Cota",
+        muiTableHeadCellProps: {
+          style: { width: "10%" },
+        },
+        muiTableBodyCellProps: {
+          style: { width: "10%" },
+        },
+        Cell: ({ cell }) => {
+          const value = parseNumber(cell.getValue());
+          return `R$ ${value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}`;
+        },
       },
-    },
-    {
-      accessorKey: "basePrice",
-      header: "Preço Base",
-      Cell: ({ cell }) =>
-        `R$ ${Number(cell.getValue()).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })}`
-    },
-    {
-      accessorKey: "accession",
-      header: "Adesão",
-      Cell: ({ cell }) =>
-        `R$ ${Number(cell.getValue()).toLocaleString("pt-BR", {
-          minimumFractionDigits: 2,
-        })}`,
-    },
-  ], []);
+      {
+        accessorKey: "intervalo",
+        header: "Intervalo",
+        muiTableHeadCellProps: {
+          style: { width: "25%" },
+        },
+        muiTableBodyCellProps: {
+          style: { width: "25%" },
+        },
+        Cell: ({ row }) => {
+          const min = parseNumber(row.original.min);
+          const max = parseNumber(row.original.max);
+
+          return `R$ ${min.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })} a R$ ${max.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}`;
+        },
+      },
+      {
+        accessorKey: "basePrice",
+        header: "Preço Base",
+        muiTableHeadCellProps: {
+          style: { width: "10%" },
+        },
+        muiTableBodyCellProps: {
+          style: { width: "10%" },
+        },
+        Cell: ({ cell }) => {
+          const value = parseNumber(cell.getValue());
+          return `R$ ${value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}`;
+        },
+      },
+      {
+        accessorKey: "accession",
+        header: "Adesão",
+        muiTableHeadCellProps: {
+          style: { width: "10%" },
+        },
+        muiTableBodyCellProps: {
+          style: { width: "10%" },
+        },
+        Cell: ({ cell }) => {
+          const value = parseNumber(cell.getValue());
+          return `R$ ${value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })}`;
+        },
+      },
+      {
+        accessorKey: "installationPrice",
+        header: "Rastreador",
+        muiTableHeadCellProps: {
+          style: { width: "10%" },
+        },
+        muiTableBodyCellProps: {
+          style: { width: "10%" },
+        },
+        Cell: ({ cell }) => {
+          const value = parseNumber(cell.getValue());
+          if (value === 0) {
+            return "Não";
+          }
+          return `Sim (R$ ${value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+          })})`;
+        },
+      },
+    ],
+    []
+  );
 
   const handleDelete = (rangeToDelete) => {
     setPriceTable((prev) => ({
@@ -50,6 +106,9 @@ export function useColumnsRanges(priceTable, setPriceTable) {
     }));
   };
 
-  return { columnsRange, dataRange: priceTable.ranges || [], handleDelete };
+  return {
+    columnsRange,
+    dataRange: priceTable.ranges || [],
+    handleDelete,
+  };
 }
-

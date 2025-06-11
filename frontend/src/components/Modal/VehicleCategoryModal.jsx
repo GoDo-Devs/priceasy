@@ -3,12 +3,14 @@ import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
+import Paper from "@mui/material/Paper";
 
 function VehicleCategoryModal({
   open,
   onClose,
-  vehicleCategory,
+  vehicleCategory={},
   setVehicleCategory,
+  setVehicleCategories,
 }) {
   const [vehicleType, setVehicleType] = useState([]);
   useEffect(() => {
@@ -16,7 +18,9 @@ function VehicleCategoryModal({
       useHttp
         .get("/vehicle-types")
         .then((res) => setVehicleType(res.data.vehicleTypes))
-        .catch((err) => console.error("Erro ao carregar tipos de veículos:", err));
+        .catch((err) =>
+          console.error("Erro ao carregar tipos de veículos:", err)
+        );
     }
   }, [open]);
 
@@ -25,6 +29,7 @@ function VehicleCategoryModal({
     try {
       await useHttp.post("/vehicle-categories/create/", vehicleCategory);
       console.log("Categoria de veículos criada:", vehicleCategory);
+      setVehicleCategories((prev) => [...prev, vehicleCategory]);
       onClose();
     } catch (error) {
       console.error("Erro ao salvar a categoria de veículos:", error);
@@ -35,16 +40,26 @@ function VehicleCategoryModal({
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: 8, padding: 2 } }}
       fullWidth
-      maxWidth="sm"
+      slots={{ paper: Paper }}
+      slotProps={{
+        paper: {
+          sx: {
+            textAlign: "justify",
+            width: "450px",
+            maxWidth: "100%",
+            borderRadius: 8,
+            p: 2,
+          },
+        },
+      }}
     >
       <DialogContent>
         <TextInput
           label="Nome da Categoria de Veículos"
           name="name"
           className="mb-5"
-          value={vehicleCategory.name || ""}
+          value={vehicleCategory.name ?? ""}
           onChange={(e) =>
             setVehicleCategory({ ...vehicleCategory, name: e.target.value })
           }
@@ -54,8 +69,13 @@ function VehicleCategoryModal({
           label="Selecione um Tipo de Veículo"
           name="vehicle_type_id"
           className="mb-5"
-          value={vehicleCategory.vehicle_type_id}
-          onChange={(e) => setVehicleCategory({ ...vehicleCategory, vehicle_type_id: e.target.value })}
+          value={vehicleCategory.vehicle_type_id ?? ""}
+          onChange={(e) =>
+            setVehicleCategory({
+              ...vehicleCategory,
+              vehicle_type_id: e.target.value,
+            })
+          }
           options={[
             ...vehicleType.map((g) => ({
               value: g.id,
@@ -66,7 +86,12 @@ function VehicleCategoryModal({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained" color="secondary" disabled={!vehicleCategory.name || !vehicleCategory.vehicle_type_id}>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="secondary"
+          disabled={!vehicleCategory.name || !vehicleCategory.vehicle_type_id}
+        >
           Salvar
         </Button>
       </DialogActions>

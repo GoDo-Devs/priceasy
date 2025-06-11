@@ -9,7 +9,7 @@ import ButtonFab from "../../components/Fab/ButtonFab";
 
 function Product() {
   const { drawerWidth } = useContext(LayoutContext);
-  const { columns, products, handleDelete } = useColumnsProduct();
+  const { columns, products, setProducts, handleDelete } = useColumnsProduct();
 
   const [openModal, setOpenModal] = useState(false);
   const [product, setProduct] = useState({});
@@ -68,6 +68,7 @@ function Product() {
         open={openModal}
         product={product}
         setProduct={setProduct}
+        setProducts={setProducts}
         showNewGroupInput={showNewGroupInput}
         handleGroupChange={handleGroupChange}
         onClose={() => {

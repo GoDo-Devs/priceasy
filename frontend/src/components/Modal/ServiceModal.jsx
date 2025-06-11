@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
+import Paper from "@mui/material/Paper";
 
 function ServiceModal({ open, service, setService, onClose }) {
   const [categories, setCategories] = useState([]);
@@ -23,26 +24,37 @@ function ServiceModal({ open, service, setService, onClose }) {
         ...service,
       });
       console.log("Serviço criado:", service);
-      onClose();
     } catch (error) {
       console.error("Erro ao salvar o seviço:", error);
     }
+    
+    onClose();
   };
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { borderRadius: 8, padding: 1.5 } }}
       fullWidth
-      maxWidth="sm"
+      slots={{ paper: Paper }}
+      slotProps={{
+        paper: {
+          sx: {
+            textAlign: "justify",
+            width: "450px",
+            maxWidth: "100%",
+            borderRadius: 8,
+            p: 2,
+          },
+        },
+      }}
     >
       <DialogContent>
         <TextInput
           label="Nome do Serviço"
           name="name"
           className="mb-5"
-          value={service.name}
+          value={service.name ?? ""}
           onChange={(e) => setService({ ...service, name: e.target.value })}
           required
         ></TextInput>
