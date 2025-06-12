@@ -1,24 +1,22 @@
 import * as React from "react";
 import { useContext, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import AddIcon from "@mui/icons-material/Add";
-import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsVehicleCategory } from "@/hooks/useColumnsVehicleCategory.js";
 import VehicleCategoryModal from "@/components/Modal/VehicleCategoryModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
-import ButtonFab from "../../components/Fab/ButtonFab";
 
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import TwoWheelerIcon from "@mui/icons-material/TwoWheeler";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
+import PageTitle from "../../components/PageTitle/PageTitle";
 
 function VehicleCategory() {
-  const { drawerWidth } = useContext(LayoutContext);
   const {
     columns,
     filteredCar,
@@ -40,18 +38,26 @@ function VehicleCategory() {
   };
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
-      }}
-    >
-      <ButtonFab
-        title={"Criar Tipo de Veículo"}
-        onClick={() => setOpenModal(true)}
-        Icon={AddIcon}
-      />
+    <Box padding={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <PageTitle title="Veículos" />
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+          }}
+          variant="contained"
+          color="primary"
+        >
+          Nova Categoria
+          <AddIcon sx={{ ml: 1 }} />
+        </Button>
+      </Stack>
+
       <VehicleCategoryModal
         open={openModal}
         vehicleCategory={vehicleCategory}

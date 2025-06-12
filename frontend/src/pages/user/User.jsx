@@ -1,35 +1,48 @@
-import { useContext } from "react";
-import { Box, Fab, Tooltip } from "@mui/material";
+import { useContext, useState } from "react";
+import { Box, Button, Dialog, Fab, Stack, Tooltip } from "@mui/material";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsUser } from "@/hooks/useColumnsUser.js";
 import { useNavigate } from "react-router";
 import DataTable from "@/components/Table/DataTable.jsx";
-import ButtonFab from "../../components/Fab/ButtonFab";
+import Register from "../auth/Register";
+import PageTitle from "../../components/PageTitle/PageTitle";
 
 function User() {
-  const { drawerWidth } = useContext(LayoutContext);
-  const { columns, users, setUsers, handleDelete } = useColumnsUser();
-  const navigate = useNavigate();
+  const [openModal, setOpenModal] = useState(false);
+  const { columns, users, handleDelete } = useColumnsUser();
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px"
-      }}
-    >
+    <Box padding={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <PageTitle title="Usuários" />
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+          }}
+          variant="contained"
+          color="primary"
+          size="small"
+        >
+          Criar Usuário
+          <PersonAddIcon sx={{ ml: 1 }} />
+        </Button>
+      </Stack>
+
       <DataTable
         columns={columns}
         data={users}
         handleDelete={handleDelete}
       />
-      <ButtonFab
-        title={"Criar Usuário"}
-        onClick={() => navigate("/auth/register")}
-        Icon={PersonAddIcon}
-      />
+
+      <Dialog  open={openModal} onClose={() => setOpenModal(false)}>
+        <Register onCreate={() => setOpenModal(false) } />
+      </Dialog>
     </Box>
   );
 }

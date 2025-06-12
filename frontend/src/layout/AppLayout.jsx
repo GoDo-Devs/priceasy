@@ -17,7 +17,7 @@ function AppLayout() {
   }, [location.pathname]);
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", height: "100vh" }}>
       <LayoutAppBar openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
       <AppDrawer
         open={openDrawer}
@@ -26,7 +26,18 @@ function AppLayout() {
         setDrawerWidth={setDrawerWidth}
         setOpenDrawer={setOpenDrawer}
       />
-      <Box component="main" className="mt-16">
+      <Box
+        component="main"
+        sx={{
+          mt: 8,
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          overflow: "hidden",
+          transition: "width 0.5s ease",
+        }}
+      >
         <Outlet />
       </Box>
     </Box>

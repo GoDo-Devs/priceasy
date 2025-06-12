@@ -93,13 +93,7 @@ function PlanAdd() {
   };
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
-      }}
-    >
+    <Box padding={3}>
       <Box display="flex" gap={2} mb={3}>
         <TextInput
           label="Nome do Plano"

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useContext, useState } from "react";
-import { Box} from "@mui/material";
+import { Box, Button, Stack} from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -11,9 +11,9 @@ import { useColumnsService } from "@/hooks/useColumnsService.js";
 import ServiceModal from "@/components/Modal/ServiceModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
 import ButtonFab from "../../components/Fab/ButtonFab";
+import PageTitle from "../../components/PageTitle/PageTitle";
 
 function Service() {
-  const { drawerWidth } = useContext(LayoutContext);
   const { columns, filteredCoverage, filteredAssistance,  handleDelete } = useColumnsService();
   const [openModal, setOpenModal] = useState(false);
   const [service, setService] = useState({ name: "", category_id: "" });
@@ -32,18 +32,20 @@ function Service() {
   };
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
-      }}
-    >
-      <ButtonFab
-        title={"Criar Serviço"}
-        onClick={() => setOpenModal(true)}
-        Icon={AddIcon}
-      />
+    <Box padding={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <PageTitle title="Serviços" />
+        <Button size="small" variant="contained" color="primary" onClick={() => setOpenModal(true)}>
+          Criar Serviço
+          <AddIcon sx={{ ml: 1 }} />
+        </Button>
+      </Stack>
+
       <ServiceModal
         open={openModal}
         service={service}

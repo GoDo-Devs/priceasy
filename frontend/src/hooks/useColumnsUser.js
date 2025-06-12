@@ -33,5 +33,5 @@ export function useColumnsUser() {
     },
   ];
 
-  return { columns, users, handleDelete };
+  return { columns, users, handleDelete, fetchUser };
 }

@@ -19,7 +19,7 @@ export default class AuthController {
     const userExists = await User.findOne({ where: { email: email } });
 
     if (userExists) {
-      res.status(422).json({ message: "Por favor, utilize outro e-mail!" });
+      res.status(422).json({ message: "E-mail já cadastrado!" });
       return;
     }
 
@@ -33,7 +33,10 @@ export default class AuthController {
         password: passwordHash,
       });
 
-      await createUserToken(user, req, res);
+      res.status(201).json({
+        message: "Usuário criado com sucesso!",
+        user: user,
+      });
     } catch (error) {
       return res.status(500).json({ message: "Erro interno do servidor." });
     }

@@ -58,7 +58,7 @@ class FipeTableService {
         anoModelo: year,
         tipoCombustivel: fuel
       }
-    })
+    });
 
     return yearWithFuel;
   }

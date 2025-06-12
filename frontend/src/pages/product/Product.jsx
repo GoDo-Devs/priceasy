@@ -1,14 +1,14 @@
 import { useContext, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Button, Icon, Stack } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
 import ButtonFab from "@/components/Fab/ButtonFab";
+import PageTitle from "../../components/PageTitle/PageTitle";
 
 function Product() {
-  const { drawerWidth } = useContext(LayoutContext);
   const { columns, products, setProducts, handleDelete } = useColumnsProduct();
 
   const [openModal, setOpenModal] = useState(false);
@@ -47,11 +47,26 @@ function Product() {
   return (
     <Box
       sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+        padding: 3,
       }}
     >
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <PageTitle title={"Produtos"} />
+        <Button size="small" variant="contained" color="primary" onClick={handleCreate}>
+          Criar Produto
+          <AddShoppingCartIcon sx={{ ml: 1 }} />
+        </Button>
+      </Stack>
+
       <DataTable
         columns={columns}
         data={products}
@@ -59,11 +74,7 @@ function Product() {
         enableEdit={true}
         handleEdit={handleEdit}
       />
-      <ButtonFab
-        title={"Criar Produto"}
-        onClick={handleCreate}
-        Icon={AddShoppingCartIcon}
-      />
+
       <ProductModal
         open={openModal}
         product={product}

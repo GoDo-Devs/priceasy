@@ -1,14 +1,14 @@
 import { useContext, useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsImplement } from "@/hooks/useColumnsImplement.js";
 import ImplementModal from "@/components/Modal/ImplementModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
 import ButtonFab from "@/components/Fab/ButtonFab";
+import PageTitle from "../../components/PageTitle/PageTitle";
 
 function Implement() {
-  const { drawerWidth } = useContext(LayoutContext);
   const { columns, implementsList, setImplementsList, handleDelete } =
     useColumnsImplement();
 
@@ -16,23 +16,31 @@ function Implement() {
   const [implement, setImplement] = useState({ name: "" });
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
-      }}
-    >
+    <Box padding={3}>
+      <Stack
+        direction="row"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
+        <PageTitle title="Implementos" />
+        <Button
+          onClick={() => {
+            setOpenModal(true);
+          }}
+          variant="contained"
+          color="primary"
+          size="small"
+        >
+          Adicionar Implemento
+          <AddIcon sx={{ ml: 1 }} />
+        </Button>
+      </Stack>
+
       <DataTable
         columns={columns}
         data={implementsList}
         handleDelete={handleDelete}
-      />
-
-      <ButtonFab
-        title={"Criar Implemento"}
-        onClick={() => setOpenModal(true)}
-        Icon={AddIcon}
       />
 
       <ImplementModal

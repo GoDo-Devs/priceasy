@@ -1,6 +1,6 @@
 import { MaterialReactTable } from "material-react-table";
 import { MRT_Localization_PT_BR } from "material-react-table/locales/pt-BR";
-import { IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip, Box } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AlertModal from "@/components/Modal/AlertModal.jsx";
@@ -83,7 +83,7 @@ function DataTable({
   ];
 
   return (
-    <div>
+    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
         columns={columnsWithActions}
@@ -92,10 +92,20 @@ function DataTable({
         enableRowActions={false}
         enableColumnActions={false}
         muiTablePaperProps={{
-          sx: { borderRadius: "15px", overflow: "hidden" },
+          sx: {
+            borderRadius: "15px",
+            display: "flex",
+            flex: 1,
+            flexDirection: "column",
+            overflow: "hidden",
+          },
         }}
         muiTableContainerProps={{
-          sx: { minHeight: `100vh`, padding: "30px" },
+          sx: {
+            flex: 1,
+            overflow: "auto",
+            padding: "30px",
+          },
         }}
         muiTableBodyProps={{
           sx: { height: "100%" },
@@ -121,7 +131,7 @@ function DataTable({
           setSelectedName("");
         }}
       />
-    </div>
+    </Box>
   );
 }
 

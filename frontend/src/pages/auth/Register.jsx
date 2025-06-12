@@ -9,10 +9,11 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { useNavigate } from "react-router";
 import LoginIcon from "@mui/icons-material/Login";
 
-function Register() {
+function Register({ onCreate = () => {} }) {
   const { handleRegister } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const { fields, handleChange, validate, errors } = useForm(
     {
@@ -23,7 +24,6 @@ function Register() {
     },
     registerValidator
   );
-  const navigate = useNavigate();
 
   function togglePasswordVisibility() {
     setShowPassword(!showPassword);
@@ -36,25 +36,17 @@ function Register() {
       if (await validate()) {
         await handleRegister(fields);
       }
-      navigate("/");
+      onCreate();
+    } catch (e) {
+      console.log(e);
+      setError(e.response?.data?.message ?? "Erro ao cadastrar usuário");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <Grid
-      container
-      justifyContent="center"
-      alignItems="center"
-      minHeight="100vh"
-    >
-      <Grid item xs={11} sm={8} md={6} lg={4}>
-        <Card
-          className="px-8 pb-8 d-flex"
-          variant="outlined"
-          sx={{ width: "400px", borderRadius: "20px" }}
-        >
+        <div className="p-5" >
           <Typography
             sx={{ marginTop: 5 }}
             variant="h5"
@@ -125,6 +117,16 @@ function Register() {
               onChange={handleChange}
               errors={errors}
             />
+            {error && (
+              <Typography
+                variant="body2"
+                color="error"
+                align="center"
+                gutterBottom
+              >
+                {error}
+              </Typography>
+            )}
             <Button
               onClick={handleSubmit}
               variant="contained"
@@ -137,9 +139,7 @@ function Register() {
               Cadastrar
             </Button>
           </Box>
-        </Card>
-      </Grid>
-    </Grid>
+        </div>
   );
 }
 

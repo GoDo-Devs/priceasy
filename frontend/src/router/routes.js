@@ -116,10 +116,6 @@ const guestRoutes = [
     path: "/auth/login",
     Component: LoginPage,
   },
-  {
-    path: "/auth/register",
-    Component: RegisterPage,
-  },
 ];
 
 
