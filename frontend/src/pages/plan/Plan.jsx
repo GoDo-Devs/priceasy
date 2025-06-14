@@ -23,7 +23,6 @@ function Plan() {
           Adicionar Plano
         </Button>
       </Stack>
-
       <DataTable
         columns={columns}
         data={plans}

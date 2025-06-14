@@ -4,11 +4,25 @@ import {
   DialogActions,
   Button,
   Paper,
+  Box,
+  Card,
+  CardActionArea,
+  Typography,
 } from "@mui/material";
+import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
+import TwoWheelerIcon from "@mui/icons-material/TwoWheeler";
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import AgricultureIcon from "@mui/icons-material/Agriculture";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 import useHttp from "@/services/useHttp.js";
+
+const iconsMap = {
+  1: <DirectionsCarIcon sx={{ fontSize: 40 }} />,
+  2: <TwoWheelerIcon sx={{ fontSize: 40 }} />,
+  3: <LocalShippingIcon sx={{ fontSize: 40 }} />,
+  4: <AgricultureIcon sx={{ fontSize: 40 }} />,
+};
 
 function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
   const [vehicleType, setVehicleType] = useState([]);
@@ -23,12 +37,17 @@ function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
     }
   }, [open]);
 
+  const handleSelect = (value) => {
+    setPriceTable((prev) => ({
+      ...prev,
+      vehicle_type_id: value,
+    }));
+  };
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      disableEnforceFocus={false}
-      disableAutoFocus={false}
       fullWidth
       maxWidth="sm"
       slots={{ paper: Paper }}
@@ -39,25 +58,46 @@ function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
       }}
     >
       <DialogContent>
-        <CheckBoxInput
-          label="Selecione um Tipo de Veículo"
-          name="vehicle_type_id"
-          value={
-            priceTable?.vehicle_type_id ? [priceTable.vehicle_type_id] : []
-          }
-          options={vehicleType.map((g) => ({
-            value: Number(g.id),
-            label: g.name,
-          }))}
-          onChange={(event) => {
-            const selectedArray = event.target.value;
-            const selected = selectedArray.length > 0 ? selectedArray[0] : null;
-            setPriceTable((prev) => ({
-              ...prev,
-              vehicle_type_id: selected,
-            }));
+        <Typography variant="h6" mb={2}>
+          Selecione um Tipo de Veículo
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-around",
+            gap: 2,
+            flexWrap: "wrap",
           }}
-        />
+        >
+          {vehicleType.map(({ id, name }) => {
+            const isSelected = priceTable.vehicle_type_id === Number(id);
+            return (
+              <Card
+                key={id}
+                sx={{
+                  width: 100,
+                  boxShadow: isSelected ? 6 : 1,
+                  bgcolor: isSelected ? "primary.main" : "background.paper",
+                }}
+              >
+                <CardActionArea
+                  onClick={() => handleSelect(Number(id))}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    p: 2,
+                  }}
+                >
+                  {iconsMap[id] || null}
+                  <Typography mt={1} variant="body2" textAlign="center">
+                    {name}
+                  </Typography>
+                </CardActionArea>
+              </Card>
+            );
+          })}
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button

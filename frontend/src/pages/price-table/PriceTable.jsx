@@ -1,6 +1,5 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Stack } from "@mui/material";
-import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsPriceTable } from "@/hooks/useColumnsPriceTable.js";
 import DataTable from "@/components/Table/DataTable.jsx";
 import VehicleTypeModal from "@/components/Modal/VehicleTypeModal.jsx";
@@ -32,14 +31,12 @@ function PriceTable() {
           Adicionar Tabela
         </Button>
       </Stack>
-
       <DataTable
         columns={columns}
         data={priceTables}
         handleDelete={handleDelete}
         enableEdit={true}
       />
- 
       <VehicleTypeModal
         open={openModal}
         priceTable={priceTable}

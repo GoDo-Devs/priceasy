@@ -30,12 +30,8 @@ PriceTable.init(
       type: DataTypes.JSON,
       allowNull: true,
     },
-    startingYear: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-    finalYear: {
-      type: DataTypes.STRING,
+    models: {
+      type: DataTypes.JSON,
       allowNull: true,
     },
     plansSelected: {

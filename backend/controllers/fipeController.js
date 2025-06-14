@@ -57,7 +57,7 @@ class FipeController {
   }
 
   static async getPrice(req, res) {
-    const { vehicleType, brandCode, modelCode, year, fuelType } = req.body;
+    const { vehicleType, brandCode, modelCode, modelYear, fuelType } = req.body;
     const fipeService = new FipeTableService();
 
     try {
@@ -67,8 +67,8 @@ class FipeController {
         vehicleType,
         brandCode,
         modelCode,
-        year,
-        fuelType
+        Number(modelYear),
+        Number(fuelType)
       );
 
       return res.status(200).json({

@@ -1,11 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Icon, Stack } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
-import { LayoutContext } from "@/contexts/layoutContext";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";
 import DataTable from "@/components/Table/DataTable.jsx";
-import ButtonFab from "@/components/Fab/ButtonFab";
 import PageTitle from "../../components/PageTitle/PageTitle";
 
 function Product() {
@@ -66,7 +64,6 @@ function Product() {
           <AddShoppingCartIcon sx={{ ml: 1 }} />
         </Button>
       </Stack>
-
       <DataTable
         columns={columns}
         data={products}
@@ -74,7 +71,6 @@ function Product() {
         enableEdit={true}
         handleEdit={handleEdit}
       />
-
       <ProductModal
         open={openModal}
         product={product}

@@ -29,6 +29,7 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
         onChange={(e) => setPriceTable({ ...priceTable, name: e.target.value })}
         required
         fullWidth
+        style={{ width: "600px" }}
       />
       <SelectInput
         label="Selecione uma Categoria de Veículos"
