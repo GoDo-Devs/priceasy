@@ -21,6 +21,8 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
       )
       .catch((err) => console.error("Erro ao carregar planos:", err));
   }, []);
+
+  console.log(priceTable)
   return (
     <>
       <Box

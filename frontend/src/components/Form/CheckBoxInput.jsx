@@ -1,4 +1,4 @@
-import { 
+import {
   InputLabel,
   FormGroup,
   FormControlLabel,
@@ -34,12 +34,10 @@ function CheckBoxInput({
 
   return (
     <div className={className}>
-      <InputLabel className="text-white">
-        {label}
-      </InputLabel>
+      <InputLabel className="text-white">{label}</InputLabel>
       <FormGroup
         sx={{
-          flexDirection: "row", 
+          flexDirection: "row",
           flexWrap: "wrap",
         }}
       >
@@ -49,7 +47,7 @@ function CheckBoxInput({
             control={
               <Checkbox
                 value={option.value}
-                checked={value.includes(Number(option.value))}
+                checked={value.some((v) => Number(v) === Number(option.value))}
                 onChange={handleCheckboxChange}
               />
             }

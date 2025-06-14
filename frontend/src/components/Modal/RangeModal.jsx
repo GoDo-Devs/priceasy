@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,12 +6,10 @@ import {
   Button,
   Box,
   InputLabel,
+  Paper,
 } from "@mui/material";
-import { NumericFormat } from "react-number-format";
-import { useEffect } from "react";
-import TextField from "@mui/material/TextField";
+import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
-import Paper from "@mui/material/Paper";
 
 function RangeModal({
   open,
@@ -29,19 +27,22 @@ function RangeModal({
   const [trackerValue, setTrackerValue] = useState("");
   const [installationPrice, setInstallationPrice] = useState("");
   const [showNewGroupInput, setShowNewGroupInput] = useState(false);
+  const [franchiseValue, setFranchiseValue] = useState("");
+  const [isFranchisePercentage, setIsFranchisePercentage] = useState(false);
+  const [rangeError, setRangeError] = useState("");
 
   useEffect(() => {
     if (editingRange) {
-      setMin(editingRange.min?.toString().replace(".", ",") || "");
-      setMax(editingRange.max?.toString().replace(".", ",") || "");
-      setAccession(editingRange.accession?.toString().replace(".", ",") || "");
-      setQuota(editingRange.quota?.toString().replace(".", ",") || "");
-      setBasePrice(editingRange.basePrice?.toString().replace(".", ",") || "");
+      setMin(editingRange.min || "");
+      setMax(editingRange.max || "");
+      setAccession(editingRange.accession || "");
+      setQuota(editingRange.quota || "");
+      setBasePrice(editingRange.basePrice || "");
       setTrackerValue(editingRange.installationPrice !== null ? "Sim" : "Não");
-      setInstallationPrice(
-        editingRange.installationPrice?.toString().replace(".", ",") || ""
-      );
+      setInstallationPrice(editingRange.installationPrice || "");
       setShowNewGroupInput(editingRange.installationPrice !== null);
+      setFranchiseValue(editingRange.franchiseValue || "");
+      setIsFranchisePercentage(editingRange.isFranchisePercentage || false);
     } else {
       setMin("");
       setMax("");
@@ -51,6 +52,8 @@ function RangeModal({
       setTrackerValue("");
       setInstallationPrice("");
       setShowNewGroupInput(false);
+      setFranchiseValue("");
+      setIsFranchisePercentage(false);
     }
   }, [editingRange, open]);
 
@@ -61,15 +64,38 @@ function RangeModal({
   };
 
   const handleSubmit = () => {
+    const minValue = Number(min);
+    const maxValue = Number(max);
+
+    if (minValue >= maxValue) {
+      setRangeError("O valor mínimo deve ser menor que o valor máximo");
+      return;
+    }
+
+    const hasConflict = (priceTable.ranges || []).some((range, index) => {
+      if (typeof editingIndex === "number" && index === editingIndex)
+        return false;
+      return minValue <= Number(range.max) && maxValue >= Number(range.min);
+    });
+
+    if (hasConflict) {
+      setRangeError(
+        "Verifique se o intervalo não está em conflito com outro intervalo"
+      );
+      return;
+    }
+
+    setRangeError("");
+
     const newRange = {
-      min: parseFloat(min.replace(",", ".")),
-      max: parseFloat(max.replace(",", ".")),
-      accession: parseFloat(accession.replace(",", ".")),
-      quota: parseFloat(quota.replace(",", ".")),
-      basePrice: parseFloat(basePrice.replace(",", ".")),
-      installationPrice: showNewGroupInput
-        ? parseFloat(installationPrice.replace(",", "."))
-        : null,
+      min: minValue,
+      max: maxValue,
+      accession,
+      quota,
+      basePrice,
+      installationPrice: showNewGroupInput ? installationPrice : null,
+      franchiseValue,
+      isFranchisePercentage,
     };
 
     setPriceTable((prev) => {
@@ -80,150 +106,125 @@ function RangeModal({
         updatedRanges.push(newRange);
       }
 
-      const updated = {
-        ...prev,
-        ranges: updatedRanges,
-      };
-
-      console.log("Atualizado:", updated);
-      return updated;
+      return { ...prev, ranges: updatedRanges };
     });
 
+    onClose();
+  };
+
+  const handleClose = () => {
+    setRangeError("");
     onClose();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       fullWidth
       maxWidth="sm"
       slots={{ paper: Paper }}
-      slotProps={{
-        paper: {
-          sx: { borderRadius: 8, p: 2 },
-        },
-      }}
+      slotProps={{ paper: { sx: { borderRadius: 8, p: 2 } } }}
     >
       <DialogContent>
-        <InputLabel className="text-white mb-1">Intervalo</InputLabel>
+        {rangeError && (
+          <Box
+            sx={{ textAlign: "center" }}
+            mb={2}
+            color="error.main"
+            fontSize={12}
+          >
+            {rangeError}
+          </Box>
+        )}
+        <InputLabel className="text-white">Intervalo</InputLabel>
         <Box display="flex" gap={2} mb={2}>
-          <NumericFormat
-            size="small"
-            customInput={TextField}
+          <CurrencyInput
             placeholder="Valor Mínimo"
             value={min}
-            onValueChange={(values) => setMin(values.value)}
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            fullWidth
+            onChange={setMin}
           />
-          <NumericFormat
-            size="small"
-            customInput={TextField}
+          <CurrencyInput
             placeholder="Valor Máximo"
             value={max}
-            onValueChange={(values) => setMax(values.value)}
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            fullWidth
+            onChange={setMax}
           />
         </Box>
-        <InputLabel className="text-white mb-1">Cota</InputLabel>
+        <InputLabel className="text-white">Cota</InputLabel>
         <Box display="flex" gap={2} mb={2}>
-          <NumericFormat
-            size="small"
-            customInput={TextField}
-            value={quota}
-            onValueChange={(values) => setQuota(values.value)}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale={2}
-            fixedDecimalScale
-            fullWidth
-          />
+          <CurrencyInput value={quota} onChange={setQuota} prefix="" />
         </Box>
-        <InputLabel className="text-white mb-1">Adesão</InputLabel>
+        <InputLabel className="text-white">Adesão</InputLabel>
         <Box display="flex" gap={2} mb={2}>
-          <NumericFormat
-            size="small"
-            customInput={TextField}
-            value={accession}
-            onValueChange={(values) => setAccession(values.value)}
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            fullWidth
-          />
+          <CurrencyInput value={accession} onChange={setAccession} />
         </Box>
-        <InputLabel className="text-white mb-1">
+        <InputLabel className="text-white">
           Preço base da Mensalidade
         </InputLabel>
         <Box display="flex" gap={2} mb={2}>
-          <NumericFormat
-            size="small"
-            customInput={TextField}
-            value={basePrice}
-            onValueChange={(values) => setBasePrice(values.value)}
-            thousandSeparator="."
-            decimalSeparator=","
-            prefix="R$ "
-            decimalScale={2}
-            fixedDecimalScale
-            fullWidth
-          />
+          <CurrencyInput value={basePrice} onChange={setBasePrice} />
         </Box>
-        <InputLabel className="text-white mb-1">
-          Rastreador Obrigatório/Incluído
-        </InputLabel>
-        <SelectInput
-          name="tracker"
-          className="mb-3"
-          value={trackerValue}
-          onChange={handleTrackerChange}
-          options={[
-            { value: "Sim", label: "Sim" },
-            { value: "Não", label: "Não" },
-          ]}
-        />
-        {showNewGroupInput && (
+        {priceTable?.vehicle_type_id !== 4 && (
           <>
-            <InputLabel className="text-white mb-1">
-              Preço base da Instalação
+            <InputLabel className="text-white">
+              Rastreador Obrigatório/Incluído
             </InputLabel>
-            <Box display="flex" gap={2} mb={2}>
-              <NumericFormat
-                size="small"
-                customInput={TextField}
-                value={installationPrice}
-                onValueChange={(values) => setInstallationPrice(values.value)}
-                thousandSeparator="."
-                decimalSeparator=","
-                prefix="R$ "
-                decimalScale={2}
-                fixedDecimalScale
-                fullWidth
-              />
-            </Box>
+            <SelectInput
+              name="tracker"
+              className="mb-3"
+              value={trackerValue}
+              onChange={handleTrackerChange}
+              options={[
+                { value: "Sim", label: "Sim" },
+                { value: "Não", label: "Não" },
+              ]}
+            />
+            {showNewGroupInput && (
+              <>
+                <InputLabel className="text-white">
+                  Preço base da Instalação
+                </InputLabel>
+                <Box display="flex" gap={2} mb={2}>
+                  <CurrencyInput
+                    value={installationPrice}
+                    onChange={setInstallationPrice}
+                  />
+                </Box>
+              </>
+            )}
           </>
         )}
+        <InputLabel className="text-white ">Valor da Franquia</InputLabel>
+        <Box display="flex" gap={1} mb={1}>
+          <Button
+            variant={isFranchisePercentage ? "outlined" : "contained"}
+            color="secondary"
+            onClick={() => setIsFranchisePercentage(false)}
+            size="small"
+          >
+            R$
+          </Button>
+          <Button
+            variant={isFranchisePercentage ? "contained" : "outlined"}
+            color="secondary"
+            onClick={() => setIsFranchisePercentage(true)}
+            size="small"
+          >
+            %
+          </Button>
+        </Box>
+        <Box display="flex">
+          <CurrencyInput
+            value={franchiseValue}
+            onChange={setFranchiseValue}
+            prefix={isFranchisePercentage ? "" : "R$ "}
+            suffix={isFranchisePercentage ? "%" : ""}
+          />
+        </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="secondary"
-          disabled={!min || !max}
-        >
+        <Button onClick={handleClose}>Cancelar</Button>
+        <Button onClick={handleSubmit} variant="contained" color="secondary">
           Salvar
         </Button>
       </DialogActions>

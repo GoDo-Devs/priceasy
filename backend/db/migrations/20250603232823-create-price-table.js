@@ -18,12 +18,8 @@ export default {
         type: Sequelize.JSON,
         allowNull: true,
       },
-      startingYear: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      finalYear: {
-        type: Sequelize.STRING,
+      models: {
+        type: Sequelize.JSON,
         allowNull: true,
       },
       plansSelected: {

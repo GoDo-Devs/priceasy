@@ -27,7 +27,7 @@ function DataTable({
       header: null,
       enableSorting: false,
       enableHiding: false,
-      size: 10,
+      size: "10%",
       muiTableHeadCellProps: {
         sx: {
           textAlign: "right",

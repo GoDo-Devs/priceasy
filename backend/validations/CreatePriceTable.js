@@ -9,9 +9,11 @@ const rangeSchema = Joi.object({
   min: Joi.number().required(),
   max: Joi.number().greater(Joi.ref("min")).required(),
   quota: Joi.number().required(),
-  accession: Joi.number().required(),
-  basePrice: Joi.number().required(),
+  accession: Joi.number().optional(),
+  basePrice: Joi.number().optional(),
   installationPrice: Joi.number().optional(),
+  franchiseValue: Joi.number().optional(),
+  isFranchisePercentage: Joi.boolean().optional(),
   pricePlanId: Joi.array().items(pricePlanIdSchema).required(),
 });
 
@@ -21,9 +23,10 @@ const priceTableSchema = Joi.object({
   name: Joi.string().required(),
   vehicle_type_id: Joi.number().required(),
   brands: Joi.array().items(Joi.number()).optional(),
+  models: Joi.array().items(Joi.number()).optional(),
   category_id: Joi.number().required(),
-  plansSelected: Joi.array().items(Joi.number()).required(),
-  ranges: rangesSchema.required(),
+  plansSelected: Joi.array().items(Joi.number()).optional(),
+  ranges: rangesSchema.optional(),
 });
 
 function checkRangeConflicts(ranges) {

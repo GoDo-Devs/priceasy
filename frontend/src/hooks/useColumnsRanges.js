@@ -6,17 +6,13 @@ export function useColumnsRanges(priceTable, setPriceTable) {
     return isNaN(num) ? 0 : num;
   };
 
-  const columnsRange = useMemo(
-    () => [
+  const columnsRange = useMemo(() => {
+    const commonColumns = [
       {
         accessorKey: "quota",
         header: "Cota",
-        muiTableHeadCellProps: {
-          style: { width: "10%" },
-        },
-        muiTableBodyCellProps: {
-          style: { width: "10%" },
-        },
+        muiTableHeadCellProps: { style: { width: "5%" } },
+        muiTableBodyCellProps: { style: { width: "5%" } },
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -27,16 +23,11 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "intervalo",
         header: "Intervalo",
-        muiTableHeadCellProps: {
-          style: { width: "25%" },
-        },
-        muiTableBodyCellProps: {
-          style: { width: "25%" },
-        },
+        muiTableHeadCellProps: { style: { width: "25%" } },
+        muiTableBodyCellProps: { style: { width: "25%" } },
         Cell: ({ row }) => {
           const min = parseNumber(row.original.min);
           const max = parseNumber(row.original.max);
-
           return `R$ ${min.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
           })} a R$ ${max.toLocaleString("pt-BR", {
@@ -47,12 +38,8 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "basePrice",
         header: "Preço Base",
-        muiTableHeadCellProps: {
-          style: { width: "10%" },
-        },
-        muiTableBodyCellProps: {
-          style: { width: "10%" },
-        },
+        muiTableHeadCellProps: { style: { width: "5%" } },
+        muiTableBodyCellProps: { style: { width: "5%" } },
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -63,12 +50,8 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "accession",
         header: "Adesão",
-        muiTableHeadCellProps: {
-          style: { width: "10%" },
-        },
-        muiTableBodyCellProps: {
-          style: { width: "10%" },
-        },
+        muiTableHeadCellProps: { style: { width: "5%" } },
+        muiTableBodyCellProps: { style: { width: "5%" } },
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -77,27 +60,45 @@ export function useColumnsRanges(priceTable, setPriceTable) {
         },
       },
       {
-        accessorKey: "installationPrice",
-        header: "Rastreador",
-        muiTableHeadCellProps: {
-          style: { width: "10%" },
-        },
-        muiTableBodyCellProps: {
-          style: { width: "10%" },
-        },
-        Cell: ({ cell }) => {
-          const value = parseNumber(cell.getValue());
-          if (value === 0) {
-            return "Não";
+        accessorKey: "franchiseValue",
+        header: "Cota de Participação",
+        muiTableHeadCellProps: { style: { width: "5%" } },
+        muiTableBodyCellProps: { style: { width: "5%" } },
+        Cell: ({ row }) => {
+          const value = parseNumber(row.original.franchiseValue);
+          const isPercentage = row.original.isFranchisePercentage;
+          if (isPercentage) {
+            return `${value.toLocaleString("pt-BR", {
+              minimumFractionDigits: 2,
+            })}%`;
           }
-          return `Sim (R$ ${value.toLocaleString("pt-BR", {
+          return `R$ ${value.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
-          })})`;
+          })}`;
         },
       },
-    ],
-    []
-  );
+    ];
+
+    const trackerColumn = {
+      accessorKey: "installationPrice",
+      header: "Rastreador",
+      muiTableHeadCellProps: { style: { width: "5%" } },
+      muiTableBodyCellProps: { style: { width: "5%" } },
+      Cell: ({ cell }) => {
+        const value = parseNumber(cell.getValue());
+        if (value === 0) return "Não";
+        return `Sim (R$ ${value.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+        })})`;
+      },
+    };
+
+    if (priceTable.vehicle_type_id !== 4) {
+      commonColumns.push(trackerColumn);
+    }
+
+    return commonColumns;
+  }, [priceTable.vehicle_type_id]);
 
   const handleDelete = (rangeToDelete) => {
     setPriceTable((prev) => ({

@@ -50,6 +50,22 @@ function PriceTableAdd() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const brandsStrings = priceTable.brands.map((b) =>
+      typeof b === "number"
+        ? b
+        : Number(b.Value || b.value || b.Label || b.label || JSON.stringify(b))
+    );
+
+    const modelsStrings = priceTable.models
+      ? priceTable.models.map((m) =>
+          typeof m === "number"
+            ? m
+            : Number(
+                m.Value || m.value || m.Label || m.label || JSON.stringify(m)
+              )
+        )
+      : [];
+
     const formattedRanges = priceTable.ranges.map((range) => {
       return {
         ...range,
@@ -64,8 +80,13 @@ function PriceTableAdd() {
     });
 
     const payload = {
-      ...priceTable,
+      vehicle_type_id: priceTable.vehicle_type_id,
+      name: priceTable.name,
+      category_id: priceTable.category_id,
+      brands: brandsStrings || [],
+      models: modelsStrings || [],
       ranges: formattedRanges,
+      plansSelected: priceTable.plansSelected || [],
     };
 
     try {
@@ -73,7 +94,10 @@ function PriceTableAdd() {
       navigate("/tabelas");
       console.log("Tabela criada:", payload);
     } catch (error) {
-      console.error("Erro ao salvar a tabela:", payload);
+      console.error(
+        "Erro ao salvar a tabela:",
+        error.response?.data || error.message || error
+      );
     }
   };
 
@@ -165,6 +189,7 @@ function PriceTableAdd() {
       drawerWidth={drawerWidth}
       onAddItem={renderModal}
       showAddButton={true}
+      priceTable={priceTable}
     />
   );
 }

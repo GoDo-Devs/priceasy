@@ -1,4 +1,10 @@
-import { Box, Button, Stepper, Step, StepLabel } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+} from "@mui/material";
 import { useState } from "react";
 
 function StepperForm({
@@ -8,11 +14,29 @@ function StepperForm({
   drawerWidth = 0,
   onAddItem,
   showAddButton = false,
+  priceTable,
 }) {
   const [activeStep, setActiveStep] = useState(0);
   const [openModal, setOpenModal] = useState(false);
+  const [error, setError] = useState("");
 
   const handleNext = () => {
+    if (activeStep === 0) {
+      if (!priceTable.name) {
+        setError(
+          "Insira o nome que deseja utilizar para identificar a tabela de preços"
+        );
+        return;
+      }
+
+      if (!priceTable.category_id) {
+        setError(
+          "Selecione uma categoria de veículos para identificar a tabela de preços"
+        );
+        return;
+      }
+    }
+    setError("");
     setActiveStep((prevStep) => prevStep + 1);
   };
 
@@ -40,7 +64,8 @@ function StepperForm({
           </Step>
         ))}
       </Stepper>
-      <Box sx={{ mt: 4, mb: 2 }}>{renderStepContent(activeStep)}</Box>
+      {error && <Box sx={{ color: "red", mt: 2 }}>{error}</Box>}
+      <Box sx={{ mt: 3, mb: 2 }}>{renderStepContent(activeStep)}</Box>
       <Box
         sx={{
           display: "flex",

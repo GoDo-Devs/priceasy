@@ -52,12 +52,13 @@ class FipeTableService {
     this.checkErrors(response.data);
 
     const yearWithFuel = response.data.map((yearFuel) => {
-      const [year, fuel] = yearFuel['Value'].split('-');
+      const [year, fuel] = yearFuel["Value"].split("-");
 
       return {
-        anoModelo: year,
-        tipoCombustivel: fuel
-      }
+        value: yearFuel["Value"],
+        anoModelo: Number(year),
+        tipoCombustivel: Number(fuel)
+      };
     });
 
     return yearWithFuel;

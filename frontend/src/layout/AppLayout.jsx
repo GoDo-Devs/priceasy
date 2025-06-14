@@ -17,7 +17,7 @@ function AppLayout() {
   }, [location.pathname]);
 
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
+    <Box sx={{ display: "flex", /* height: "100vh" */ }}>
       <LayoutAppBar openDrawer={openDrawer} setOpenDrawer={setOpenDrawer} />
       <AppDrawer
         open={openDrawer}

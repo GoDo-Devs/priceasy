@@ -1,6 +1,6 @@
-import React from "react";
 import { useMemo } from "react";
 import TextField from "@mui/material/TextField";
+import { NumericFormat } from "react-number-format";
 
 export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
   const columnsPlan = useMemo(() => {
@@ -39,8 +39,8 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
             const value = row.original.planPrices
               ? row.original.planPrices[planId] || ""
               : "";
-            const handleChange = (e) => {
-              const newValue = e.target.value;
+            const handleChange = (values) => {
+              const newValue = values.floatValue || 0;
               setPriceTable((prev) => {
                 const newRanges = prev.ranges.map((range, idx) => {
                   if (idx === row.index) {
@@ -65,19 +65,23 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
               });
             };
             return (
-              <TextField
-                sx={{ width: "100px" }}
+              <NumericFormat
+                value={value}
+                onValueChange={handleChange}
+                thousandSeparator="."
+                decimalSeparator=","
+                prefix="R$ "
+                decimalScale={2}
+                fixedDecimalScale
+                customInput={TextField}
                 variant="outlined"
                 size="small"
-                value={value}
-                onChange={handleChange}
-                slotProps={{
-                  input: {
-                    style: {
-                      height: "32px",
-                      fontSize: "0.875rem",
-                      boxSizing: "border-box",
-                    },
+                sx={{ width: "100px" }}
+                inputProps={{
+                  style: {
+                    height: "32px",
+                    fontSize: "0.875rem",
+                    boxSizing: "border-box",
                   },
                 }}
               />

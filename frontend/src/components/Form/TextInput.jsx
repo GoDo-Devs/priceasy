@@ -12,10 +12,11 @@ function TextInput({
   disabled,
   className,
   errors = [],
-  error = false
+  error = false,
+  style
 }) {
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <InputLabel className="text-white mb-1">{label}</InputLabel>
       <TextField
         fullWidth

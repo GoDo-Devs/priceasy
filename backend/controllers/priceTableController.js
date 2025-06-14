@@ -1,12 +1,21 @@
 import PriceTable from "../models/PriceTable.js";
-import VehicleType from "../models/VehicleType.js"
+import VehicleType from "../models/VehicleType.js";
 import VehicleCategory from "../models/VehicleCategory.js";
 import FipeTableService from "../services/FipeTableService.js";
 import { validatePriceTable } from "../validations/CreatePriceTable.js";
 
 export default class PriceTableController {
   static async create(req, res) {
-    const { name, vehicle_type_id, category_id, ranges, plansSelected } = req.body;
+    const {
+      name,
+      vehicle_type_id,
+      category_id,
+      ranges,
+      plansSelected,
+      brands: receivedBrands,
+      models: receivedModels,
+    } = req.body;
+
     const fipeService = new FipeTableService();
 
     const nameExists = await PriceTable.findOne({ where: { name } });
@@ -19,37 +28,70 @@ export default class PriceTableController {
 
     const vehicleTypeExists = await VehicleType.findByPk(vehicle_type_id);
     if (!vehicleTypeExists) {
-      return res.status(404).json({
-        message: "Tipo de veículo não encontrado!",
-      });
+      return res
+        .status(404)
+        .json({ message: "Tipo de veículo não encontrado!" });
     }
 
     const categoryExists = await VehicleCategory.findByPk(category_id);
     if (!categoryExists) {
-      return res.status(404).json({
-        message: "Categoria de Veículo não encontrada!",
-      });
+      return res
+        .status(404)
+        .json({ message: "Categoria de Veículo não encontrada!" });
     }
 
     try {
-      await fipeService.setReferenceTable();
+      let brands = receivedBrands || [];
+      let reducedModels = receivedModels || [];
 
-      const brands = await fipeService.searchBrands(vehicle_type_id);
-      validatePriceTable({ name, vehicle_type_id, category_id, ranges, plansSelected });
+      if ((!brands.length || !reducedModels.length) && vehicle_type_id !== 4) {
+        await fipeService.setReferenceTable();
+        brands = await fipeService.searchBrands(vehicle_type_id);
 
-      const newTable = await PriceTable.create({
+        const allModels = [];
+        for (const brand of brands) {
+          const modelsResponse = await fipeService.searchModels(
+            vehicle_type_id,
+            brand.Value || brand.value || brand
+          );
+          const modelos = modelsResponse.Modelos || [];
+
+          for (const model of modelos) {
+            allModels.push(model.Value || model.value || model);
+          }
+
+          await new Promise((res) => setTimeout(res, 500));
+        }
+
+        reducedModels = reducedModels.map((model) =>
+          typeof model === "number" ? model : Number(model)
+        );
+      }
+
+      validatePriceTable({
         name,
         vehicle_type_id,
-        brands: brands,
+        brands,
+        models: reducedModels,
         category_id,
         ranges,
         plansSelected,
       });
 
-      res.status(201).json(newTable);
+      const newTable = await PriceTable.create({
+        name,
+        vehicle_type_id,
+        brands,
+        models: reducedModels,
+        category_id,
+        ranges,
+        plansSelected,
+      });
+
+      return res.status(201).json(newTable);
     } catch (error) {
       console.error("Erro ao salvar tabela de preços:", error);
-      res.status(400).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
   }
 

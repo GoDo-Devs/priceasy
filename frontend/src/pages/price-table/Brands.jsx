@@ -1,13 +1,20 @@
-import { Box, FormControlLabel, Checkbox } from "@mui/material";
-import { useEffect, useState } from "react";
+import {
+  Box,
+  FormControlLabel,
+  Checkbox,
+  CircularProgress,
+} from "@mui/material";
+import { useEffect, useState, useCallback } from "react";
 import useHttp from "@/services/useHttp.js";
 import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
 
 function Brands({ priceTable, setPriceTable }) {
   const [brands, setBrands] = useState([]);
+  const [loadingBrands, setLoadingBrands] = useState(false);
 
-  useEffect(() => {
+  const fetchBrands = useCallback(() => {
     if (priceTable.vehicle_type_id) {
+      setLoadingBrands(true);
       useHttp
         .post("/fipe/brands", { vehicleType: priceTable.vehicle_type_id })
         .then((res) => {
@@ -16,16 +23,15 @@ function Brands({ priceTable, setPriceTable }) {
             label: brand.Label,
           }));
           setBrands(options);
+          setLoadingBrands(false);
           setPriceTable((prev) => {
             const currentBrandValues = options.map((b) => Number(b.value));
-            const hasInvalidBrands =
-              prev.brands?.some((b) => !currentBrandValues.includes(b)) ?? true;
 
-            if (hasInvalidBrands) {
-              return { ...prev, brands: [] };
-            }
+            const filteredBrands = (prev.brands || []).filter((b) =>
+              currentBrandValues.includes(Number(b.value))
+            );
 
-            return prev;
+            return { ...prev, brands: filteredBrands };
           });
         })
         .catch((err) =>
@@ -34,19 +40,28 @@ function Brands({ priceTable, setPriceTable }) {
     }
   }, [priceTable.vehicle_type_id, setPriceTable]);
 
+  useEffect(() => {
+    fetchBrands();
+  }, [fetchBrands]);
+
   const handleBrandsChange = (event) => {
-    setPriceTable({
-      ...priceTable,
-      brands: event.target.value,
-    });
+    const selectedValues = event.target.value;
+
+    const selectedBrands = brands.filter((brand) =>
+      selectedValues.includes(Number(brand.value))
+    );
+
+    setPriceTable((prev) => ({
+      ...prev,
+      brands: selectedBrands,
+    }));
   };
 
   const handleSelectAllChange = (event) => {
     if (event.target.checked) {
-      const allValues = brands.map((b) => Number(b.value));
       setPriceTable({
         ...priceTable,
-        brands: allValues,
+        brands: brands,
       });
     } else {
       setPriceTable({
@@ -55,36 +70,48 @@ function Brands({ priceTable, setPriceTable }) {
       });
     }
   };
+  const brandValues = priceTable.brands.map((b) => Number(b.value));
 
   const allSelected =
     brands.length > 0 &&
     priceTable.brands.length === brands.length &&
-    brands.every((b) => priceTable.brands.includes(Number(b.value)));
+    brands.every((b) => priceTable.brands.some((pb) => pb.value === b.value));
 
   const isIndeterminate =
     priceTable.brands.length > 0 && priceTable.brands.length < brands.length;
 
-  console.log(priceTable);
-
   return (
     <Box display="flex" flexDirection="column" gap={2} mb={3}>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={allSelected}
-            indeterminate={isIndeterminate}
-            onChange={handleSelectAllChange}
+      {loadingBrands ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight="75vh"
+        >
+          <CircularProgress size={100} />
+        </Box>
+      ) : (
+        <>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={allSelected}
+                indeterminate={isIndeterminate}
+                onChange={handleSelectAllChange}
+              />
+            }
+            label="Selecionar todas"
           />
-        }
-        label="Selecionar todas"
-      />
-      <CheckBoxInput
-        name="brands"
-        value={priceTable.brands || []}
-        onChange={handleBrandsChange}
-        options={brands}
-        className="brands-checkbox-grid"
-      />
+          <CheckBoxInput
+            name="brands"
+            value={brandValues}
+            onChange={handleBrandsChange}
+            options={brands}
+            className="brands-checkbox-grid"
+          />
+        </>
+      )}
     </Box>
   );
 }
