@@ -7,12 +7,13 @@ const router = express.Router();
 
 router.post("/create", [checkToken, isAdmin], PriceTableController.create);
 router.get("/", [checkToken], PriceTableController.getAll);
+router.get('/:id', [checkToken], PriceTableController.getPriceTableId)
 router.delete(
   "/:id",
   [checkToken, isAdmin],
   PriceTableController.removePriceTableById
 );
-router.put(
+router.patch(
   "/edit/:id",
   [checkToken, isAdmin],
   PriceTableController.editPriceTable

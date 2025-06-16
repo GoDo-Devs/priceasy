@@ -40,22 +40,12 @@ export function useColumnsService() {
     {
       accessorKey: "name",
       header: "Nome",
-      muiTableHeadCellProps: {
-        style: { width: "65%" },
-      },
-      muiTableBodyCellProps: {
-        style: { width: "65%" },
-      },
+      size: 90,
     },
     {
       accessorKey: "category_id",
       header: "Categoria de Serviços",
-      muiTableHeadCellProps: {
-        style: { width: "35%" },
-      },
-      muiTableBodyCellProps: {
-        style: { width: "35%" },
-      },
+      size: 10,
       Cell: ({ cell }) => {
         const category = categories.find((c) => c.id === cell.getValue());
         return category ? category.name : "Nenhum";

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Box } from "@mui/material";
 import DataTable from "@/components/Table/DataTable";
 import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
-import useHttp from "@/services/useHttp.js";
 
 function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
   const [plans, setPlans] = useState({
@@ -11,18 +10,21 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
   });
 
   useEffect(() => {
-    useHttp
-      .get("/plans")
-      .then((res) =>
-        setPlans({
-          all: res.data.plans,
-          selected: [],
-        })
-      )
-      .catch((err) => console.error("Erro ao carregar planos:", err));
-  }, []);
+    if (!priceTable.plansSelected || priceTable.plansSelected.length === 0) {
+      const planosSelecionados = (priceTable.ranges || [])
+        .flatMap((range) => (range.pricePlanId || []).map((p) => p.plan_id))
+        .filter((v, i, a) => a.indexOf(v) === i);
 
-  console.log(priceTable)
+      if (planosSelecionados.length > 0) {
+        setPriceTable((prev) => ({
+          ...prev,
+          plansSelected: planosSelecionados,
+        }));
+      }
+    }
+  }, [priceTable.ranges, priceTable.plansSelected, setPriceTable]);
+
+  console.log(priceTable);
   return (
     <>
       <Box
@@ -37,24 +39,32 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
           value={priceTable.plansSelected}
           onChange={(e) => {
             const selectedPlans = e.target.value;
+
             setPriceTable((prev) => {
               const updatedRanges = prev.ranges.map((range) => {
                 const currentPlanPrices = { ...(range.planPrices || {}) };
+
                 selectedPlans.forEach((planId) => {
                   if (!(planId in currentPlanPrices)) {
                     currentPlanPrices[planId] = "";
                   }
                 });
+
                 Object.keys(currentPlanPrices).forEach((planId) => {
-                  if (!selectedPlans.includes(parseInt(planId))) {
+                  if (!selectedPlans.includes(Number(planId))) {
                     delete currentPlanPrices[planId];
                   }
                 });
+
                 return {
                   ...range,
                   planPrices: currentPlanPrices,
+                  pricePlanId: (range.pricePlanId || []).filter((p) =>
+                    selectedPlans.includes(p.plan_id)
+                  ),
                 };
               });
+
               return {
                 ...prev,
                 plansSelected: selectedPlans,

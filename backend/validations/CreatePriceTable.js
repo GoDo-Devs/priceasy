@@ -8,7 +8,7 @@ const pricePlanIdSchema = Joi.object({
 const rangeSchema = Joi.object({
   min: Joi.number().required(),
   max: Joi.number().greater(Joi.ref("min")).required(),
-  quota: Joi.number().required(),
+  quota: Joi.number().optional(),
   accession: Joi.number().optional(),
   basePrice: Joi.number().optional(),
   installationPrice: Joi.number().optional(),

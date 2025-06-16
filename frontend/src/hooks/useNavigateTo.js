@@ -4,11 +4,10 @@ import { guardedAuthenticatedRoutes } from "../router/routes";
 import { AuthContext } from "../contexts/authContext";
 
 function getAllPathGuards(path, routes, parentGuards = []) {
-  const selectRoute = routes.filter((route) => route.path === path)[0];
+  const selectRoute = routes.find((route) => route.path === path);
 
   if (selectRoute) {
     const selectRouteGuards = selectRoute.guard ?? [];
-
     return [...parentGuards, ...selectRouteGuards];
   } else {
     let allGuards;
@@ -19,7 +18,7 @@ function getAllPathGuards(path, routes, parentGuards = []) {
 
         allGuards = getAllPathGuards(childPath, route.children, [
           ...parentGuards,
-          ...route.guard,
+          ...(route.guard ?? []),
         ]);
       }
     });
@@ -35,6 +34,11 @@ function useNavigateTo() {
   async function runGuards(path) {
     const guards = getAllPathGuards(path, guardedAuthenticatedRoutes);
 
+    if (!Array.isArray(guards)) {
+      console.warn("Guards inválidos para path:", path, guards);
+      return true; 
+    }
+
     for (const guard of guards) {
       const result = await guard(path, user);
 
@@ -48,7 +52,7 @@ function useNavigateTo() {
   }
 
   async function redirect(path) {
-    if (runGuards(path)) {
+    if (await runGuards(path)) {
       navigate(path);
     }
   }

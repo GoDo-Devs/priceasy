@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Box, Button, Stack } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -57,17 +57,6 @@ function VehicleCategory() {
           <AddIcon sx={{ ml: 1 }} />
         </Button>
       </Stack>
-
-      <VehicleCategoryModal
-        open={openModal}
-        vehicleCategory={vehicleCategory}
-        setVehicleCategory={setVehicleCategory}
-        setVehicleCategories={setVehicleCategories}
-        onClose={() => {
-          setOpenModal(false);
-          setVehicleCategory({});
-        }}
-      />
       <TabContext value={value}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }} className="mb-3">
           <TabList onChange={handleChange}>
@@ -106,6 +95,16 @@ function VehicleCategory() {
           />
         </TabPanel>
       </TabContext>
+      <VehicleCategoryModal
+        open={openModal}
+        vehicleCategory={vehicleCategory}
+        setVehicleCategory={setVehicleCategory}
+        setVehicleCategories={setVehicleCategories}
+        onClose={() => {
+          setOpenModal(false);
+          setVehicleCategory({});
+        }}
+      />
     </Box>
   );
 }
