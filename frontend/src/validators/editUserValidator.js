@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-const registerValidator = yup.object({
+const editUserValidator = yup.object({
   name: yup
     .string()
     .required("O nome é obrigatório!")
@@ -15,23 +15,21 @@ const registerValidator = yup.object({
 
   password: yup
     .string()
-    .required("A senha é obrigatória!")
-    .min(6, "A senha deve ter no mínimo 6 caracteres.")
-    .max(30)
-    .matches(
-      /^[a-zA-Z0-9@#$%!]+$/,
-      "A senha pode conter apenas letras, números e @#$%!"
+    .notRequired()
+    .test(
+      "password-validation",
+      "A senha deve ter entre 6 e 30 caracteres e conter apenas letras, números e @#$%!",
+      (value) => {
+        if (!value || value.trim() === "") return true;
+        const regex = /^[a-zA-Z0-9@#$%!]+$/;
+        return regex.test(value) && value.length >= 6 && value.length <= 30;
+      }
     ),
-
-  confirmpassword: yup
-    .string()
-    .oneOf([yup.ref("password")], "As senhas não conferem!")
-    .required("A confirmação de senha é obrigatória!"),
 
   is_admin: yup
     .boolean()
-    .optional()
+    .required("O campo administrador deve ser verdadeiro ou falso.")
     .typeError("O campo administrador deve ser verdadeiro ou falso."),
 });
 
-export default registerValidator;
+export default editUserValidator;

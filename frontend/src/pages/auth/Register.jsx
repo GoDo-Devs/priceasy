@@ -1,72 +1,107 @@
 import { useContext, useState } from "react";
-import { Button, Grid, Typography, Box, Card } from "@mui/material";
+import {
+  Button,
+  Typography,
+  Box,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 import { AuthContext } from "@/contexts/authContext.jsx";
 import TextInput from "@/components/Form/TextInput.jsx";
 import useForm from "@/hooks/useForm.js";
 import registerValidator from "@/validators/registerValidator";
+import editUserValidator from "@/validators/editUserValidator";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 
-function Register({ onCreate = () => {} }) {
-  const { handleRegister } = useContext(AuthContext);
+function Register({ user = {}, onCreate = () => {} }) {
+  const isEditing = Boolean(user?.id);
+  const validator = isEditing ? editUserValidator : registerValidator;
+  const { handleRegister, updateUser, setUser } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { fields, handleChange, validate, errors } = useForm(
-    {
-      name: "",
-      email: "",
+  function getInitialFields(user) {
+    return {
+      name: user.name || "",
+      email: user.email || "",
       password: "",
-      confirmpassword: "",
-    },
-    registerValidator
+      confirmpassword: user.id ? undefined : "",
+      is_admin: user.is_admin || false,
+    };
+  }
+
+  const { fields, handleChange, validate, errors } = useForm(
+    getInitialFields(user),
+    validator
   );
 
   function togglePasswordVisibility() {
     setShowPassword(!showPassword);
   }
 
-  async function handleSubmit() {
-    try {
-      setLoading(true);
+  async function handleSubmit(event) {
+    event.preventDefault();
+    setError("");
+    setLoading(true);
 
-      if (await validate()) {
-        await handleRegister(fields);
+    try {
+      if (!(await validate())) {
+        setLoading(false);
+        return;
       }
+
+      const payload = {
+        name: fields.name,
+        email: fields.email,
+        is_admin: fields.is_admin,
+      };
+
+      if (fields.password?.trim().length > 0) {
+        payload.password = fields.password;
+      }
+
+      if (user.id) {
+        await updateUser(user.id, payload);
+        setUser((prev) => ({ ...prev, ...payload }));
+      } else {
+        await handleRegister({
+          ...payload,
+          confirmpassword: fields.confirmpassword,
+        });
+      }
+
       onCreate();
     } catch (e) {
-      console.log(e);
-      setError(e.response?.data?.message ?? "Erro ao cadastrar usuário");
+      console.error(e);
+      setError(e.response?.data?.message || "Erro ao salvar usuário");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="p-5">
-      <Typography
-        variant="h5"
-        align="center"
-        gutterBottom
-      >
-        Cadastro
+    <Box className="p-5">
+      <Typography variant="h5" align="center" gutterBottom>
+        {user.id ? "Editar Usuário" : "Cadastro"}
       </Typography>
       <Box component="form" onSubmit={handleSubmit} p={1}>
         <TextInput
-          label="Name"
+          label="Nome"
           name="name"
-          type="text"
           className="mb-5"
-          disabled={loading}
+          value={fields.name}
           onChange={handleChange}
           errors={errors}
+          disabled={loading}
         />
         <TextInput
           label="Email"
           name="email"
           className="mb-5"
+          value={fields.email}
           disabled={loading}
           onChange={handleChange}
           errors={errors}
@@ -76,6 +111,7 @@ function Register({ onCreate = () => {} }) {
           name="password"
           type={showPassword ? "text" : "password"}
           className="mb-5"
+          value={fields.password}
           disabled={loading}
           endAdornment={
             showPassword ? (
@@ -91,29 +127,53 @@ function Register({ onCreate = () => {} }) {
             )
           }
           onChange={handleChange}
+          placeholder={isEditing ? "Só preencha se for trocar a senha" : ""}
           errors={errors}
         />
-        <TextInput
-          label="Confirmação de Senha"
-          name="confirmpassword"
-          type={showPassword ? "text" : "password"}
-          className="mb-10"
-          disabled={loading}
-          endAdornment={
-            showPassword ? (
-              <VisibilityIcon
-                sx={{ cursor: "pointer" }}
-                onClick={togglePasswordVisibility}
-              />
-            ) : (
-              <VisibilityOffIcon
-                sx={{ cursor: "pointer" }}
-                onClick={togglePasswordVisibility}
-              />
-            )
+
+        {!isEditing && (
+          <TextInput
+            label="Confirmação de Senha"
+            name="confirmpassword"
+            type={showPassword ? "text" : "password"}
+            className="mb-1"
+            disabled={loading}
+            endAdornment={
+              showPassword ? (
+                <VisibilityIcon
+                  sx={{ cursor: "pointer" }}
+                  onClick={togglePasswordVisibility}
+                />
+              ) : (
+                <VisibilityOffIcon
+                  sx={{ cursor: "pointer" }}
+                  onClick={togglePasswordVisibility}
+                />
+              )
+            }
+            onChange={handleChange}
+            errors={errors}
+          />
+        )}
+
+        <FormControlLabel
+          className="mb-2"
+          control={
+            <Checkbox
+              name="is_admin"
+              checked={fields.is_admin}
+              onChange={(e) =>
+                handleChange({
+                  target: {
+                    name: "is_admin",
+                    value: e.target.checked,
+                  },
+                })
+              }
+              disabled={loading}
+            />
           }
-          onChange={handleChange}
-          errors={errors}
+          label="Administrador"
         />
         {error && (
           <Typography variant="body2" color="error" align="center" gutterBottom>
@@ -121,18 +181,18 @@ function Register({ onCreate = () => {} }) {
           </Typography>
         )}
         <Button
-          onClick={handleSubmit}
+          type="submit"
           variant="contained"
           className="mt-5"
           size="large"
           fullWidth
-          loading={loading}
+          disabled={loading}
           endIcon={<LoginIcon />}
         >
-          Cadastrar
+          Salvar
         </Button>
       </Box>
-    </div>
+    </Box>
   );
 }
 

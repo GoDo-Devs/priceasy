@@ -18,6 +18,10 @@ const authService = {
   register(data) {
     return useHttp.post("/auth/register", data);
   },
+
+  update(token, data) {
+    return useHttp.patch(`/auth/edit/${token}`, data);
+  },
 };
 
 export default authService;

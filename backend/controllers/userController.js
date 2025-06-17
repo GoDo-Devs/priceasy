@@ -1,15 +1,22 @@
 import User from "../models/User.js";
+import { Op } from "sequelize"; // 👈 Importante
 
 export default class UserController {
   static async getAll(req, res) {
     try {
       const users = await User.findAll({
+        where: {
+          email: {
+            [Op.not]: "admin@gmail.com",
+          },
+        },
         order: [["name", "ASC"]],
       });
+
       return res.status(200).json({ users });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao obter os Grupo de Produtos.",
+        message: "Erro ao obter os Usuários.",
         error: error.message,
       });
     }
