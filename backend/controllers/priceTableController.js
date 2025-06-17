@@ -107,6 +107,24 @@ export default class PriceTableController {
     }
   }
 
+  static async getPriceTableId(req, res) {
+    const id = req.params.id;
+
+    try {
+      const priceTableId = await PriceTable.findByPk(id);
+
+      if (!priceTableId) {
+        return res.status(404).json({ message: "Tabela não encontrada!" });
+      }
+
+      return res.status(200).json(priceTableId);
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Erro ao obter a tabela.", error: error.message });
+    }
+  }
+
   static async removePriceTableById(req, res) {
     const id = req.params.id;
 
@@ -129,21 +147,24 @@ export default class PriceTableController {
 
   static async editPriceTable(req, res) {
     const id = req.params.id;
-    const { name, ranges } = req.body;
+    const { name, ranges, brands, models } = req.body;
 
     try {
       const table = await PriceTable.findByPk(id);
       if (!table)
         return res.status(404).json({ error: "Tabela não encontrada" });
 
-      table.name = name;
-      table.ranges = ranges;
+      if (name) table.name = name;
+      if (ranges) table.ranges = ranges;
+      if (brands) table.brands = brands;
+      if (models) table.models = models;
+
       await table.save();
 
       res.json({ message: "Tabela atualizada com sucesso", table });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: "Tabela atualizada intervalos" });
+      res.status(500).json({ error: "Erro ao atualizar a Tabela" });
     }
   }
 }

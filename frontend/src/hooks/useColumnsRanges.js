@@ -11,8 +11,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "quota",
         header: "Cota",
-        muiTableHeadCellProps: { style: { width: "5%" } },
-        muiTableBodyCellProps: { style: { width: "5%" } },
+        size: 10,
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -23,8 +22,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "intervalo",
         header: "Intervalo",
-        muiTableHeadCellProps: { style: { width: "25%" } },
-        muiTableBodyCellProps: { style: { width: "25%" } },
+        size: 70,
         Cell: ({ row }) => {
           const min = parseNumber(row.original.min);
           const max = parseNumber(row.original.max);
@@ -38,8 +36,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "basePrice",
         header: "Preço Base",
-        muiTableHeadCellProps: { style: { width: "5%" } },
-        muiTableBodyCellProps: { style: { width: "5%" } },
+        size: 40,
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -50,8 +47,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "accession",
         header: "Adesão",
-        muiTableHeadCellProps: { style: { width: "5%" } },
-        muiTableBodyCellProps: { style: { width: "5%" } },
+        size: 50,
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
           return `R$ ${value.toLocaleString("pt-BR", {
@@ -62,8 +58,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       {
         accessorKey: "franchiseValue",
         header: "Cota de Participação",
-        muiTableHeadCellProps: { style: { width: "5%" } },
-        muiTableBodyCellProps: { style: { width: "5%" } },
+        size: 50,
         Cell: ({ row }) => {
           const value = parseNumber(row.original.franchiseValue);
           const isPercentage = row.original.isFranchisePercentage;
@@ -82,8 +77,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
     const trackerColumn = {
       accessorKey: "installationPrice",
       header: "Rastreador",
-      muiTableHeadCellProps: { style: { width: "5%" } },
-      muiTableBodyCellProps: { style: { width: "5%" } },
+      size: 50,
       Cell: ({ cell }) => {
         const value = parseNumber(cell.getValue());
         if (value === 0) return "Não";

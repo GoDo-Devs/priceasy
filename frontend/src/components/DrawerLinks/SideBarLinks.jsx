@@ -29,6 +29,7 @@ function SidebarLinks({ options = [], onSelect }) {
               key={item.value}
               onClick={() => handleSelect(item)}
               sx={{
+                height: "25px",
                 backgroundColor: isSelected ? "primary.main" : "transparent",
                 pointerEvents: isSelected ? "none" : "auto",
                 borderRadius: isSelected ? "20px 0px 0px 20px" : "20px 0px 0px 20px",

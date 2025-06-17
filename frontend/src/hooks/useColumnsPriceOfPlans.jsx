@@ -3,6 +3,10 @@ import TextField from "@mui/material/TextField";
 import { NumericFormat } from "react-number-format";
 
 export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
+  const parseNumber = (value) => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  };
   const columnsPlan = useMemo(() => {
     const baseColumns = [
       {
@@ -22,39 +26,55 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
       {
         accessorKey: "basePrice",
         header: "Preço Base",
-        Cell: ({ cell }) =>
-          `R$ ${Number(cell.getValue()).toLocaleString("pt-BR", {
+        Cell: ({ cell }) => {
+          const value = parseNumber(cell.getValue());
+          return `R$ ${value.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
-          })}`,
+          })}`;
+        },
       },
     ];
 
     const dynamicPlanColumns = (priceTable.plansSelected || []).map(
       (planId) => {
         const plan = plansAll.find((p) => p.id === planId);
+
         return {
           accessorKey: `plan_${planId}`,
           header: plan ? plan.name : `Plano ${planId}`,
           Cell: ({ row }) => {
-            const value = row.original.planPrices
-              ? row.original.planPrices[planId] || ""
-              : "";
+            const planPriceObj = row.original.pricePlanId?.find(
+              (p) => p.plan_id === planId
+            );
+            const value = planPriceObj ? planPriceObj.basePrice ?? 0 : 0;
+
             const handleChange = (values) => {
-              const newValue = values.floatValue || 0;
+              const newValue = values.floatValue ?? 0;
+
               setPriceTable((prev) => {
                 const newRanges = prev.ranges.map((range, idx) => {
                   if (idx === row.index) {
-                    const updatedPlanPrices = {
-                      ...(range.planPrices || {}),
-                      [planId]: newValue,
-                    };
+                    let pricePlanIdArray = range.pricePlanId || [];
+                    const hasPlan = pricePlanIdArray.some(
+                      (p) => p.plan_id === planId
+                    );
+
+                    if (!hasPlan) {
+                      pricePlanIdArray = [
+                        ...pricePlanIdArray,
+                        { plan_id: planId, basePrice: newValue },
+                      ];
+                    } else {
+                      pricePlanIdArray = pricePlanIdArray.map((p) =>
+                        p.plan_id === planId ? { ...p, basePrice: newValue } : p
+                      );
+                    }
 
                     return {
                       ...range,
-                      planPrices: updatedPlanPrices,
+                      pricePlanId: pricePlanIdArray,
                     };
                   }
-
                   return range;
                 });
 
@@ -64,6 +84,7 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
                 };
               });
             };
+
             return (
               <NumericFormat
                 value={value}
@@ -76,7 +97,7 @@ export function useColumnsPriceOfPlans(priceTable, setPriceTable, plansAll) {
                 customInput={TextField}
                 variant="outlined"
                 size="small"
-                sx={{ width: "100px" }}
+                sx={{ width: "130px" }}
                 inputProps={{
                   style: {
                     height: "32px",

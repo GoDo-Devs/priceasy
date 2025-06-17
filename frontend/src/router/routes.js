@@ -3,13 +3,13 @@ import Home from "@/pages/Home.jsx";
 import LoginPage from "@/pages/auth/Login.jsx";
 import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
-import User from "@/pages/user/User.jsx"
+import User from "@/pages/user/User.jsx";
 import VehicleCategory from "@/pages/vehicle-category/VehicleCategory.jsx";
 import Implement from "@/pages/implement/Implement.jsx";
-import Simulation from "@/pages/simulation/Simulation.jsx"
-import Service from "@/pages/service/Service.jsx"
-import Plan from "@/pages/plan/Plan.jsx"
-import PlanAdd from "@/pages/plan/PlanAdd.jsx"
+import Simulation from "@/pages/simulation/Simulation.jsx";
+import Service from "@/pages/service/Service.jsx";
+import Plan from "@/pages/plan/Plan.jsx";
+import PlanAdd from "@/pages/plan/PlanAdd.jsx";
 import PriceTable from "../pages/price-table/PriceTable";
 
 import HomeIcon from "@mui/icons-material/Home";
@@ -17,14 +17,14 @@ import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonIcon from "@mui/icons-material/Person";
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
-import MiscellaneousServicesIcon from '@mui/icons-material/MiscellaneousServices';
-import DiscountIcon from '@mui/icons-material/Discount';
-import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices";
+import DiscountIcon from "@mui/icons-material/Discount";
+import PriceChangeIcon from "@mui/icons-material/PriceChange";
 import PriceTableAdd from "../pages/price-table/PriceTableAdd";
 
 export const guardedAuthenticatedRoutes = [
@@ -66,7 +66,7 @@ export const guardedAuthenticatedRoutes = [
             label: "Planos",
             icon: DiscountIcon,
             Component: PlanAdd,
-            hidden: true
+            hidden: true,
           },
           {
             path: "/tabelas",
@@ -79,7 +79,7 @@ export const guardedAuthenticatedRoutes = [
             label: "Tabela de Preços",
             icon: DiscountIcon,
             Component: PriceTableAdd,
-            hidden: true
+            hidden: true,
           },
           {
             path: "/produtos",
@@ -108,7 +108,7 @@ export const guardedAuthenticatedRoutes = [
         ],
       },
     ],
-  }
+  },
 ];
 
 const guestRoutes = [
@@ -118,7 +118,6 @@ const guestRoutes = [
   },
 ];
 
-
 const router = createBrowserRouter([
   {
     Component: RootLayout,
@@ -126,8 +125,9 @@ const router = createBrowserRouter([
   },
 ]);
 
-function checkIfAdmin(next, user) {
-  return user.is_admin ? true : "/";
+function checkIfAdmin(user) {
+  if (!user) return false;
+  return user.is_admin === true;
 }
 
 async function checkIfLoggedIn(next) {

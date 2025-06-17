@@ -32,16 +32,21 @@ function RangeModal({
   const [rangeError, setRangeError] = useState("");
 
   useEffect(() => {
+    const safeValue = (v) => (v !== undefined && v !== null ? v : "");
+
     if (editingRange) {
-      setMin(editingRange.min || "");
-      setMax(editingRange.max || "");
-      setAccession(editingRange.accession || "");
-      setQuota(editingRange.quota || "");
-      setBasePrice(editingRange.basePrice || "");
-      setTrackerValue(editingRange.installationPrice !== null ? "Sim" : "Não");
-      setInstallationPrice(editingRange.installationPrice || "");
-      setShowNewGroupInput(editingRange.installationPrice !== null);
-      setFranchiseValue(editingRange.franchiseValue || "");
+      setMin(safeValue(editingRange.min));
+      setMax(safeValue(editingRange.max));
+      setAccession(safeValue(editingRange.accession));
+      setQuota(safeValue(editingRange.quota));
+      setBasePrice(safeValue(editingRange.basePrice));
+      const hasTracker =
+        editingRange.installationPrice !== undefined &&
+        editingRange.installationPrice !== null;
+      setTrackerValue(hasTracker ? "Sim" : "Não");
+      setInstallationPrice(hasTracker ? editingRange.installationPrice : "");
+      setShowNewGroupInput(hasTracker);
+      setFranchiseValue(safeValue(editingRange.franchiseValue));
       setIsFranchisePercentage(editingRange.isFranchisePercentage || false);
     } else {
       setMin("");
@@ -60,7 +65,11 @@ function RangeModal({
   const handleTrackerChange = (e) => {
     const selected = e.target.value;
     setTrackerValue(selected);
-    setShowNewGroupInput(selected === "Sim");
+    const isYes = selected === "Sim";
+    setShowNewGroupInput(isYes);
+    if (!isYes) {
+      setInstallationPrice("");
+    }
   };
 
   const handleSubmit = () => {
@@ -87,14 +96,21 @@ function RangeModal({
 
     setRangeError("");
 
+    const toNumberOrUndefined = (value) =>
+      value === "" || value === null || value === undefined
+        ? undefined
+        : Number(value);
+
     const newRange = {
       min: minValue,
       max: maxValue,
-      accession,
-      quota,
-      basePrice,
-      installationPrice: showNewGroupInput ? installationPrice : null,
-      franchiseValue,
+      accession: toNumberOrUndefined(accession),
+      quota: toNumberOrUndefined(quota),
+      basePrice: toNumberOrUndefined(basePrice),
+      installationPrice: showNewGroupInput
+        ? toNumberOrUndefined(installationPrice)
+        : undefined,
+      franchiseValue: toNumberOrUndefined(franchiseValue),
       isFranchisePercentage,
     };
 
@@ -132,7 +148,7 @@ function RangeModal({
             sx={{ textAlign: "center" }}
             mb={2}
             color="error.main"
-            fontSize={12}
+            fontSize={14}
           >
             {rangeError}
           </Box>

@@ -20,7 +20,6 @@ function RangeTable({
     setIsRangeModalOpen(true);
   };
 
-  console.log(priceTable)
   return (
     <>
       <Box>

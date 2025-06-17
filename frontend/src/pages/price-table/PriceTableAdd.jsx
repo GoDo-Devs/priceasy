@@ -3,7 +3,7 @@ import { LayoutContext } from "@/contexts/layoutContext.jsx";
 import { useColumnsRanges } from "@/hooks/useColumnsRanges.js";
 import { useColumnsPriceOfPlans } from "@/hooks/useColumnsPriceOfPlans.jsx";
 import useHttp from "@/services/useHttp.js";
-import { useNavigate, useLocation } from "react-router";
+import { useSearchParams, useNavigate, useLocation } from "react-router";
 import GeneralDataPriceTable from "./GeneralDataPriceTable.jsx";
 import RangeTable from "./RangeTable.jsx";
 import PriceOfPlans from "./PriceOfPlans.jsx";
@@ -23,6 +23,53 @@ function PriceTableAdd() {
   });
   const { drawerWidth } = useContext(LayoutContext);
   const [plansAll, setPlansAll] = useState([]);
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+
+  useEffect(() => {
+    if (!id) return;
+    const fetchPriceTable = async () => {
+      try {
+        const res = await useHttp.get(`/price-tables/${id}`);
+
+        const planosSelecionados = (res.data.ranges || [])
+          .flatMap((range) => (range.pricePlanId || []).map((p) => p.plan_id))
+          .filter((v, i, a) => a.indexOf(v) === i);
+
+        setPriceTable((prev) => ({
+          ...prev,
+          ...res.data,
+          brands: Array.isArray(res.data.brands)
+            ? res.data.brands.map((b) =>
+                typeof b === "object"
+                  ? {
+                      Label: b.Label ?? b.label ?? "",
+                      value: b.Value ?? b.value ?? b.id ?? b,
+                    }
+                  : { value: b }
+              )
+            : [],
+
+          models: Array.isArray(res.data.models)
+            ? res.data.models.map((m) =>
+                typeof m === "object"
+                  ? {
+                      Label: m.Label ?? m.label ?? "",
+                      Value: m.Value ?? m.value ?? m.id ?? m,
+                    }
+                  : { Value: m }
+              )
+            : [],
+
+          plansSelected: planosSelecionados,
+        }));
+      } catch (error) {
+        console.error("Erro ao carregar a tabela:", error);
+      }
+    };
+
+    fetchPriceTable();
+  }, [id]);
 
   const steps =
     priceTable.vehicle_type_id && priceTable.vehicle_type_id !== 4
@@ -50,49 +97,46 @@ function PriceTableAdd() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const brandsStrings = priceTable.brands.map((b) =>
-      typeof b === "number"
-        ? b
-        : Number(b.Value || b.value || b.Label || b.label || JSON.stringify(b))
-    );
+    function normalizeToIds(array) {
+      return (array || [])
+        .map((item) => {
+          if (typeof item === "number") return item;
+          if (typeof item === "object") {
+            return Number(item.value ?? item.Value ?? item.id ?? item.ID);
+          }
+          return Number(item);
+        })
+        .filter((id) => !isNaN(id));
+    }
 
-    const modelsStrings = priceTable.models
-      ? priceTable.models.map((m) =>
-          typeof m === "number"
-            ? m
-            : Number(
-                m.Value || m.value || m.Label || m.label || JSON.stringify(m)
-              )
-        )
-      : [];
+    const brandsIds = normalizeToIds(priceTable.brands);
+    const modelsIds = normalizeToIds(priceTable.models);
 
-    const formattedRanges = priceTable.ranges.map((range) => {
-      return {
-        ...range,
-        pricePlanId: Object.entries(range.planPrices || {}).map(
-          ([planId, basePrice]) => ({
-            plan_id: parseInt(planId),
-            basePrice: parseFloat(basePrice),
-          })
-        ),
-        planPrices: undefined,
-      };
-    });
+    const formattedRanges = priceTable.ranges.map((range) => ({
+      ...range,
+      pricePlanId: (range.pricePlanId || []).map(({ plan_id, basePrice }) => ({
+        plan_id,
+        basePrice: Number(basePrice) || 0,
+      })),
+    }));
 
     const payload = {
       vehicle_type_id: priceTable.vehicle_type_id,
       name: priceTable.name,
       category_id: priceTable.category_id,
-      brands: brandsStrings || [],
-      models: modelsStrings || [],
+      brands: brandsIds,
+      models: modelsIds,
       ranges: formattedRanges,
       plansSelected: priceTable.plansSelected || [],
     };
 
     try {
-      await useHttp.post("/price-tables/create/", payload);
+      if (id) {
+        await useHttp.patch(`/price-tables/edit/${id}`, payload);
+      } else {
+        await useHttp.post("/price-tables/create/", payload);
+      }
       navigate("/tabelas");
-      console.log("Tabela criada:", payload);
     } catch (error) {
       console.error(
         "Erro ao salvar a tabela:",

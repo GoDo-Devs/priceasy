@@ -25,13 +25,18 @@ function Brands({ priceTable, setPriceTable }) {
           setBrands(options);
           setLoadingBrands(false);
           setPriceTable((prev) => {
-            const currentBrandValues = options.map((b) => Number(b.value));
-
-            const filteredBrands = (prev.brands || []).filter((b) =>
-              currentBrandValues.includes(Number(b.value))
+            const savedBrandIds = (prev.brands || []).map((b) =>
+              typeof b === "object" ? Number(b.value) : Number(b)
             );
 
-            return { ...prev, brands: filteredBrands };
+            const selectedBrands = options.filter((option) =>
+              savedBrandIds.includes(Number(option.value))
+            );
+
+            return {
+              ...prev,
+              brands: selectedBrands,
+            };
           });
         })
         .catch((err) =>

@@ -2,7 +2,13 @@ import useHttp from "./useHttp.js";
 
 const authService = {
   login(data) {
-    return useHttp.post("/auth/login", data);
+    return useHttp.post("/auth/login", data).then((res) => {
+      const token = res.data.token;
+      if (token) {
+        localStorage.setItem("access-token", token);
+      }
+      return res;
+    });
   },
 
   me() {

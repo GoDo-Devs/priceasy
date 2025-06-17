@@ -83,7 +83,14 @@ function DataTable({
   ];
 
   return (
-    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       <MaterialReactTable
         localization={MRT_Localization_PT_BR}
         columns={columnsWithActions}
@@ -91,6 +98,11 @@ function DataTable({
         enableFullScreenToggle={false}
         enableRowActions={false}
         enableColumnActions={false}
+        muiTableProps={{
+          sx: {
+            tableLayout: "fixed",
+          },
+        }}
         muiTablePaperProps={{
           sx: {
             borderRadius: "15px",
