@@ -1,5 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt";
+import { Op } from "sequelize";
 
 import createUserToken from "../helpers/createUserToken.js";
 import getToken from "../helpers/getToken.js";
@@ -7,7 +8,7 @@ import getUserByToken from "../helpers/getUserByToken.js";
 
 export default class AuthController {
   static async register(req, res) {
-    const { name, email, password, confirmpassword } = req.body;
+    const { name, email, password, confirmpassword, is_admin } = req.body;
 
     if (password != confirmpassword) {
       res
@@ -31,6 +32,7 @@ export default class AuthController {
         name: name.trim(),
         email: email.trim(),
         password: passwordHash,
+        is_admin: is_admin,
       });
 
       res.status(201).json({
@@ -92,22 +94,46 @@ export default class AuthController {
 
   static async editUser(req, res) {
     const token = getToken(req);
-    const user = await getUserByToken(token);
+    const loggedUser = await getUserByToken(token);
+    const userIdToEdit = req.params.id;
 
-    const { name, email, password, confirmpassword } = req.body;
-
-    const userExists = await User.findOne({ where: { email } });
-
-    if (user.email !== email && userExists) {
-      res.status(422).json({ message: "Por favor, utilize outro e-mail!" });
-      return;
-    }
+    const { name, email, password, is_admin } = req.body;
 
     try {
+      if (loggedUser.id !== userIdToEdit && !loggedUser.is_admin) {
+        return res.status(403).json({ message: "Acesso negado!" });
+      }
+
+      const user = await User.findByPk(userIdToEdit);
+
+      if (!user) {
+        return res.status(404).json({ message: "Usuário não encontrado." });
+      }
+
+      const userExists = await User.findOne({
+        where: {
+          email,
+          id: { [Op.ne]: userIdToEdit },
+        },
+      });
+
+      if (userExists) {
+        return res
+          .status(422)
+          .json({ message: "Por favor, utilize outro e-mail!" });
+      }
+
       user.name = name;
       user.email = email;
+      user.is_admin = is_admin;
 
-      if (password && password === confirmpassword) {
+      if (password) {
+        if (password.length < 6) {
+          return res
+            .status(422)
+            .json({ message: "A senha deve ter no mínimo 6 caracteres." });
+        }
+
         const salt = await bcrypt.genSalt(12);
         const passwordHash = await bcrypt.hash(password, salt);
         user.password = passwordHash;
@@ -115,7 +141,7 @@ export default class AuthController {
 
       await user.save();
 
-      res.status(200).json({
+      return res.status(200).json({
         message: "Usuário atualizado com sucesso!",
         data: {
           name: user.name,
@@ -123,8 +149,8 @@ export default class AuthController {
         },
       });
     } catch (err) {
-      res.status(500).json({ message: err });
-      return;
+      console.error(err);
+      return res.status(500).json({ message: "Erro ao atualizar usuário." });
     }
   }
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Icon, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { useColumnsProduct } from "@/hooks/useColumnsProduct.js";
 import ProductModal from "@/components/Modal/ProductModal.jsx";

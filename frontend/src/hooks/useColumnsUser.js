@@ -21,14 +21,16 @@ export function useColumnsUser() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome" },
+    { accessorKey: "name", header: "Nome", size: 60},
     {
       accessorKey: "email",
       header: "E-mail",
+      size: 70
     },
     {
       accessorKey: "is_admin",
       header: "Administrador",
+      size: 50,
       Cell: ({ cell }) => (cell.getValue() ? "Sim" : "Não"),
     },
   ];

@@ -19,17 +19,21 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function handleLogin(loginFields) {
-      const response = await authService.login(loginFields);
-      afterConfirmLogin(response.data);
+  async function updateUser(id, data) {
+    return await authService.update(id, data);
+  }
 
-      return response;
+  async function handleLogin(loginFields) {
+    const response = await authService.login(loginFields);
+    afterConfirmLogin(response.data);
+
+    return response;
   }
 
   async function handleRegister(registerFields) {
-      const response = await authService.register(registerFields);
+    const response = await authService.register(registerFields);
 
-      return response;
+    return response;
   }
 
   function afterConfirmLogin(data) {
@@ -62,6 +66,7 @@ export function AuthProvider({ children }) {
         handleLogin,
         handleRegister,
         handleLogout,
+        updateUser,
       }}
     >
       {children}
