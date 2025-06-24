@@ -2,13 +2,30 @@ import {
   Box,
   FormControlLabel,
   Checkbox,
-  FormGroup,
   CircularProgress,
+  Typography,
+  IconButton,
+  Collapse,
 } from "@mui/material";
+import { useState } from "react";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import useGroupedModels from "@/hooks/useGroupedModels";
 
 function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
+  const groupedModels = useGroupedModels(models);
   const modelsFromTable = priceTable.models || [];
   const modelsValue = modelsFromTable.map((b) => Number(b.Value));
+  const [openGroups, setOpenGroups] = useState({});
+
+  const toggleGroup = (groupName) => {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupName]: !prev[groupName],
+    }));
+  };
+
+  const isModelSelected = (value) => modelsValue.includes(Number(value));
 
   const handleCheckboxChange = (event) => {
     const checkboxValue = Number(event.target.value);
@@ -36,18 +53,18 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
     }));
   };
 
-  const handleSelectAllChange = (event) => {
+  const handleSelectGroupChange = (groupName, groupModels, checked) => {
     let updatedModels;
 
-    if (event.target.checked) {
-      updatedModels = [...modelsFromTable, ...models].filter(
+    if (checked) {
+      updatedModels = [...modelsFromTable, ...groupModels].filter(
         (model, index, self) =>
           index === self.findIndex((m) => m.Value === model.Value)
       );
     } else {
-      const currentModelValues = models.map((m) => m.Value);
+      const groupValues = groupModels.map((m) => m.Value);
       updatedModels = modelsFromTable.filter(
-        (model) => !currentModelValues.includes(model.Value)
+        (model) => !groupValues.includes(model.Value)
       );
     }
 
@@ -57,29 +74,15 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
     }));
   };
 
-  const allSelected =
-    models.length > 0 &&
-    models.every((model) =>
-      modelsFromTable.some((m) => m.Value === model.Value)
-    );
-
-  const isIndeterminate =
-    models.length > 0 &&
-    models.some((model) =>
-      modelsFromTable.some((m) => m.Value === model.Value)
-    ) &&
-    !allSelected;
-
   return (
     <Box
       sx={{
         width: "100%",
         height: "65vh",
         borderRadius: "8px",
-        overflowY: "scroll",
+        overflowY: "auto",
         bgcolor: "transparent",
-        left: "50vw",
-        top: 200,
+        paddingRight: 1,
       }}
     >
       {loading ? (
@@ -94,34 +97,95 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
           <CircularProgress size={100} />
         </Box>
       ) : (
-        <>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={allSelected}
-                indeterminate={isIndeterminate}
-                onChange={handleSelectAllChange}
-              />
-            }
-            label="Selecionar todos"
-          />
-          <FormGroup sx={{ flexDirection: "column" }}>
-            {models.map((model) => (
-              <FormControlLabel
-                key={model.Value}
-                control={
-                  <Checkbox
-                    value={model.Value}
-                    checked={modelsValue.includes(Number(model.Value))}
-                    onChange={handleCheckboxChange}
-                  />
-                }
-                label={model.Label}
-                sx={{ width: "100%" }}
-              />
-            ))}
-          </FormGroup>
-        </>
+        Object.entries(groupedModels).map(([groupName, groupModels]) => {
+          const total = groupModels.length;
+          const selectedCount = groupModels.filter((model) =>
+            isModelSelected(model.Value)
+          ).length;
+
+          const allGroupSelected = selectedCount === total;
+          const someSelected = selectedCount > 0 && selectedCount < total;
+
+          return (
+            <Box
+              key={groupName}
+              sx={{
+                mb: 1,
+                border: "1px solid",
+                borderColor: "primary.main",
+                borderRadius: 2,
+                padding: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <Box
+                  onClick={() => toggleGroup(groupName)}
+                  sx={{ display: "flex", alignItems: "center" }}
+                >
+                  <IconButton size="small">
+                    {openGroups[groupName] ? (
+                      <ExpandLessIcon />
+                    ) : (
+                      <ExpandMoreIcon />
+                    )}
+                  </IconButton>
+                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                    {groupName} ({selectedCount}/{total})
+                  </Typography>
+                </Box>
+
+                <Checkbox
+                  checked={allGroupSelected}
+                  indeterminate={someSelected}
+                  onChange={(e) =>
+                    handleSelectGroupChange(
+                      groupName,
+                      groupModels,
+                      e.target.checked
+                    )
+                  }
+                />
+              </Box>
+
+              <Collapse in={openGroups[groupName]}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  {groupModels.map((model) => (
+                    <FormControlLabel
+                      key={model.Value}
+                      control={
+                        <Checkbox
+                          value={model.Value}
+                          checked={isModelSelected(model.Value)}
+                          onChange={handleCheckboxChange}
+                        />
+                      }
+                      label={model.Label}
+                      sx={{
+                        width: "48%",
+                        ml: 0,
+                        "& .MuiFormControlLabel-label": {
+                          fontSize: "0.85rem",
+                        },
+                      }}
+                    />
+                  ))}
+                </Box>
+              </Collapse>
+            </Box>
+          );
+        })
       )}
     </Box>
   );
