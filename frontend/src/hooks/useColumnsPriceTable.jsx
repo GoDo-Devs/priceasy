@@ -15,12 +15,24 @@ const vehicleTypeIcons = {
 
 export function useColumnsPriceTable() {
   const [priceTables, setPriceTables] = useState([]);
+  const [vehicleCategories, setVehicleCategories] = useState([]);
 
   useEffect(() => {
+    fetchVehicleCategories();
+    fetchPriceTables();
+  }, []);
+
+  const fetchPriceTables = () => {
     useHttp.get("/price-tables").then((res) => {
       setPriceTables(res.data.priceTables || []);
     });
-  }, []);
+  };
+
+  const fetchVehicleCategories = () => {
+    useHttp.get("/vehicle-categories").then((response) => {
+      setVehicleCategories(response.data.vehicleCategories || []);
+    });
+  };
 
   const handleDelete = (priceTable) => {
     useHttp
@@ -48,6 +60,7 @@ export function useColumnsPriceTable() {
     {
       accessorKey: "name",
       header: "Nome",
+      size: 70,
       Cell: ({ row }) => {
         const { vehicle_type_id, name } = row.original;
         const Icon = vehicleTypeIcons[vehicle_type_id];
@@ -66,6 +79,15 @@ export function useColumnsPriceTable() {
             {name}
           </Box>
         );
+      },
+    },
+    {
+      accessorKey: "category_id",
+      size: 50,
+      header: "Categoria de Veículo",
+      Cell: ({ cell }) => {
+        const type = vehicleCategories.find((t) => t.id === cell.getValue());
+        return type ? type.name : "Nenhum";
       },
     },
   ];

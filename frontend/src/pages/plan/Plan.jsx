@@ -26,7 +26,7 @@ function Plan() {
         data={plans}
         handleDelete={handleDelete}
         enableEdit={true}
-        handleEdit={(id) => navigate(`/plano?id=${id}`)}
+        handleEdit={(id) => navigate(`/plano/?id=${id}`)}
       />
     </Box>
   );
