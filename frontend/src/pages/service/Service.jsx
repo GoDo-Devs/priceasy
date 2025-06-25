@@ -43,7 +43,6 @@ function Service() {
           <AddIcon sx={{ ml: 1 }} />
         </Button>
       </Stack>
-
       <ServiceModal
         open={openModal}
         service={service}

@@ -9,7 +9,7 @@ const validator = createValidator({});
 
 router.post("/brands", validator.body(brandsSchema), [checkToken], FipeController.getBrands);
 router.post("/models", validator.body(modelsSchema), [checkToken], FipeController.getModels);
-router.get("/years", validator.body(modelYearSchema), [checkToken], FipeController.getModelYear);
-router.get("/price", validator.body(priceSchema), [checkToken], FipeController.getPrice);
+router.post("/years", validator.body(modelYearSchema), [checkToken], FipeController.getModelYear);
+router.post("/price", validator.body(priceSchema), [checkToken], FipeController.getPrice);
 
 export default router;

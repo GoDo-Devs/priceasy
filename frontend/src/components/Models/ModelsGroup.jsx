@@ -140,7 +140,6 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
                     {groupName} ({selectedCount}/{total})
                   </Typography>
                 </Box>
-
                 <Checkbox
                   checked={allGroupSelected}
                   indeterminate={someSelected}
@@ -153,7 +152,6 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
                   }
                 />
               </Box>
-
               <Collapse in={openGroups[groupName]}>
                 <Box
                   sx={{

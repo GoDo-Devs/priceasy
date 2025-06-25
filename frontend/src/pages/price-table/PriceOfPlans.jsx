@@ -24,7 +24,6 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
     }
   }, [priceTable.ranges, priceTable.plansSelected, setPriceTable]);
 
-  console.log(priceTable);
   return (
     <>
       <Box
@@ -41,29 +40,12 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
             const selectedPlans = e.target.value;
 
             setPriceTable((prev) => {
-              const updatedRanges = prev.ranges.map((range) => {
-                const currentPlanPrices = { ...(range.planPrices || {}) };
-
-                selectedPlans.forEach((planId) => {
-                  if (!(planId in currentPlanPrices)) {
-                    currentPlanPrices[planId] = "";
-                  }
-                });
-
-                Object.keys(currentPlanPrices).forEach((planId) => {
-                  if (!selectedPlans.includes(Number(planId))) {
-                    delete currentPlanPrices[planId];
-                  }
-                });
-
-                return {
-                  ...range,
-                  planPrices: currentPlanPrices,
-                  pricePlanId: (range.pricePlanId || []).filter((p) =>
-                    selectedPlans.includes(p.plan_id)
-                  ),
-                };
-              });
+              const updatedRanges = prev.ranges.map((range) => ({
+                ...range,
+                pricePlanId: (range.pricePlanId || []).filter((p) =>
+                  selectedPlans.includes(p.plan_id)
+                ),
+              }));
 
               return {
                 ...prev,

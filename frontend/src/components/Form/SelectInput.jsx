@@ -7,9 +7,10 @@ function SelectInput({
   label,
   options = [],
   className,
+  style
 }) {
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <InputLabel className="text-white mb-1">{label}</InputLabel>
       <TextField
         select
