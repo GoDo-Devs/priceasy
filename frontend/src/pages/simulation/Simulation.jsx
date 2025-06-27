@@ -1,27 +1,20 @@
 import { Box } from "@mui/material";
-import { useState } from "react";
-import SimulationContent from "@/components/Simulation/SimulationContent";
-import SimulationSideBar from "@/components/Simulation/SimulationSideBar";
+import SimulationContent from "@/components/Simulation/SimulationContent.jsx";
+import SimulationSideBar from "@/components/Simulation/SimulationSideBar.jsx";
+import { SimulationProvider } from "@/contexts/SimulationContext.jsx";
+import PageTitle from "@/components/PageTitle/PageTitle.jsx";
 
 function Simulation() {
-  const [simulation, setSimulation] = useState({});
-  const [client, setClient] = useState({});
-  const [priceTable, setPriceTable] = useState({});
-
   return (
-    <Box sx={{ display: "flex", gap: 2 }}>
-      <SimulationContent
-        client={client}
-        setClient={setClient}
-        simulation={simulation}
-        setSimulation={setSimulation}
-        priceTable={priceTable}
-      />
-      <SimulationSideBar
-        simulation={simulation}
-        setSimulation={setSimulation}
-      />
-    </Box>
+    <SimulationProvider>
+      <Box padding={3}>
+        <PageTitle title="Cotação" />
+        <Box mt={2} sx={{ display: "flex", gap: 2 }}>
+          <SimulationContent />
+          <SimulationSideBar />
+        </Box>
+      </Box>
+    </SimulationProvider>
   );
 }
 

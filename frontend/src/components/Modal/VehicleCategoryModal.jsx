@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
@@ -8,7 +14,7 @@ import Paper from "@mui/material/Paper";
 function VehicleCategoryModal({
   open,
   onClose,
-  vehicleCategory={},
+  vehicleCategory = {},
   setVehicleCategory,
   setVehicleCategories,
 }) {
@@ -55,8 +61,11 @@ function VehicleCategoryModal({
       }}
     >
       <DialogContent>
+        <Typography variant="h5" mb={3} align="center" gutterBottom>
+          {"Criar Categoria"}
+        </Typography>
         <TextInput
-          label="Nome da Categoria de Veículos"
+          label="Nome da Categoria de Veículo"
           name="name"
           className="mb-5"
           value={vehicleCategory.name ?? ""}

@@ -7,7 +7,9 @@ const router = express.Router();
 
 router.post("/create", [checkToken, isAdmin], PriceTableController.create);
 router.get("/", [checkToken], PriceTableController.getAll);
-router.get('/:id', [checkToken], PriceTableController.getPriceTableId)
+router.get("/:id", [checkToken], PriceTableController.getPriceTableId);
+router.post("/model", PriceTableController.getPriceTablesByModelValue);
+router.post("/plans", PriceTableController.getPlansByPriceTableModelValue);
 router.delete(
   "/:id",
   [checkToken, isAdmin],

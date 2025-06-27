@@ -4,6 +4,7 @@ import {
   DialogActions,
   Button,
   InputLabel,
+  Typography
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -133,6 +134,9 @@ function ProductModal({
       }}
     >
       <DialogContent>
+        <Typography variant="h5" mb={3} align="center" gutterBottom>
+          {product.id ? "Editar Produto" : "Criar Produto"}
+        </Typography>
         <TextInput
           label="Nome do Produto"
           name="name"

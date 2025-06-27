@@ -2,6 +2,8 @@ import PriceTable from "../models/PriceTable.js";
 import VehicleType from "../models/VehicleType.js";
 import VehicleCategory from "../models/VehicleCategory.js";
 import FipeTableService from "../services/FipeTableService.js";
+import Plan from "../models/Plan.js";
+import parsePriceString from "../helpers/parsePriceString.js";
 import { validatePriceTable } from "../validations/CreatePriceTable.js";
 
 export default class PriceTableController {
@@ -102,6 +104,103 @@ export default class PriceTableController {
     } catch (error) {
       return res.status(500).json({
         message: "Erro ao obter as Tabelas de Preços.",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getPriceTablesByModelValue(req, res) {
+    const { model } = req.body;
+
+    if (!model || typeof model !== "number") {
+      return res
+        .status(400)
+        .json({ message: "Modelo inválido ou não informado." });
+    }
+
+    try {
+      const allTables = await PriceTable.findAll();
+
+      const filteredTables = allTables.filter((table) => {
+        return Array.isArray(table.models) && table.models.includes(model);
+      });
+
+      return res.status(200).json({ priceTables: filteredTables });
+    } catch (error) {
+      console.error("Erro ao buscar tabelas por modelo:", error);
+      return res.status(500).json({
+        message: "Erro ao buscar tabelas de preço pelo modelo.",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getPlansByPriceTableModelValue(req, res) {
+    const { price_table_id, vehiclePrice, model_id } = req.body;
+
+    if (
+      !price_table_id ||
+      typeof price_table_id !== "number" ||
+      !vehiclePrice ||
+      !model_id
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Dados inválidos ou incompletos." });
+    }
+
+    const vehiclePriceNumber = parsePriceString(vehiclePrice);
+    if (vehiclePriceNumber === null) {
+      return res.status(400).json({ message: "Valor do veículo inválido." });
+    }
+
+    try {
+      const priceTable = await PriceTable.findByPk(price_table_id);
+
+      if (!priceTable) {
+        return res
+          .status(404)
+          .json({ message: "Tabela de preço não encontrada." });
+      }
+
+      if (!priceTable.models.includes(model_id)) {
+        return res.status(404).json({
+          message:
+            "O modelo informado não pertence à tabela de preço selecionada.",
+        });
+      }
+
+      const selectedRange = priceTable.ranges.find((range) => {
+        return (
+          vehiclePriceNumber >= range.min && vehiclePriceNumber <= range.max
+        );
+      });
+
+      if (!selectedRange) {
+        return res.status(404).json({
+          message: "Nenhum intervalo encontrado para o valor informado.",
+        });
+      }
+
+      const planIdsInRange = selectedRange.pricePlanId.map((p) => p.plan_id);
+      const plans = await Plan.findAll({ where: { id: planIdsInRange } });
+
+      const result = plans.map((plan) => {
+        const priceInfo = selectedRange.pricePlanId.find(
+          (p) => p.plan_id === plan.id
+        );
+        return {
+          id: plan.id,
+          name: plan.name,
+          basePrice: priceInfo?.basePrice ?? null,
+        };
+      });
+
+      return res.status(200).json({ plans: result });
+    } catch (error) {
+      console.error("Erro ao buscar planos:", error);
+      return res.status(500).json({
+        message: "Erro ao buscar planos para a tabela de preço.",
         error: error.message,
       });
     }

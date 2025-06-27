@@ -1,7 +1,14 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class PlanService extends Model {}
+class PlanService extends Model {
+  static associate(models) {
+    PlanService.belongsTo(models.Service, {
+      foreignKey: "service_id",
+      as: "services",
+    });
+  }
+}
 
 PlanService.init(
   {

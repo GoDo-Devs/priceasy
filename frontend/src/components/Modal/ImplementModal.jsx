@@ -1,4 +1,10 @@
-import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
 import TextInput from "@/components/Form/TextInput.jsx";
 import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
@@ -41,6 +47,9 @@ function ImplementModal({
       }}
     >
       <DialogContent>
+        <Typography variant="h5" mb={3} align="center" gutterBottom>
+          {"Criar Implemento"}
+        </Typography>
         <TextInput
           label="Nome do Implemento"
           name="name"

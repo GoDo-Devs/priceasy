@@ -155,7 +155,6 @@ function Register({ user = {}, onCreate = () => {} }) {
             errors={errors}
           />
         )}
-
         <FormControlLabel
           className="mb-2"
           control={
