@@ -1,20 +1,20 @@
+import { useSimulation } from "@/contexts/SimulationContext.jsx";
 import { Box } from "@mui/material";
 
-function SimulatioSideBar() {
+function SimulationSideBar() {
+  const { simulation, setSimulation } = useSimulation();
+
   return (
     <Box
-      padding={3}
       sx={{
         width: "30%",
-        height: "90vh",
+        height: "auto",
         borderRadius: "8px",
         overflowY: "auto",
-        border: "1px solid #ccc",
-        paddingRight: 1,
+        background:"#1D1420",
       }}
-    >
-    </Box>
+    ></Box>
   );
 }
 
-export default SimulatioSideBar;
+export default SimulationSideBar;

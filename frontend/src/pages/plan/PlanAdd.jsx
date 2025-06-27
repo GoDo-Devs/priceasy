@@ -38,13 +38,14 @@ function PlanAdd() {
         const selectedCoverage = {};
         const selectedAssistance = {};
 
-        responsePlanServices.data.forEach((serviceId) => {
-          const service = services.find((s) => s.id === serviceId);
-          if (!service) return;
-          if (service.category_id === 1) {
-            selectedCoverage[serviceId.toString()] = true;
-          } else if (service.category_id === 2) {
-            selectedAssistance[serviceId.toString()] = true;
+        responsePlanServices.data.forEach((planService) => {
+          const fullService = services.find((s) => s.id === planService.id);
+          if (!fullService) return;
+
+          if (fullService.category_id === 1) {
+            selectedCoverage[fullService.id.toString()] = true;
+          } else if (fullService.category_id === 2) {
+            selectedAssistance[fullService.id.toString()] = true;
           }
         });
 

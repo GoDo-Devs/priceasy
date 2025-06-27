@@ -1,4 +1,10 @@
-import { Dialog, DialogContent, DialogActions, Button } from "@mui/material";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
@@ -27,7 +33,7 @@ function ServiceModal({ open, service, setService, onClose }) {
     } catch (error) {
       console.error("Erro ao salvar o seviço:", error);
     }
-    
+
     onClose();
   };
 
@@ -50,6 +56,9 @@ function ServiceModal({ open, service, setService, onClose }) {
       }}
     >
       <DialogContent>
+        <Typography variant="h5" mb={3} align="center" gutterBottom>
+          {"Criar Serviço"}
+        </Typography>
         <TextInput
           label="Nome do Serviço"
           name="name"
