@@ -75,6 +75,8 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
                 setSimulation((prev) => ({
                   ...prev,
                   plan_id: plan.id,
+                  monthlyFee: plan.basePrice,
+                  selectedProducts: {},
                 }))
               }
             >
