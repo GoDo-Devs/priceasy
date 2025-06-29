@@ -5,7 +5,6 @@ const SimulationContext = createContext();
 export function SimulationProvider({ children }) {
   const [simulation, setSimulation] = useState({});
   const [client, setClient] = useState({});
-  const [priceTable, setPriceTable] = useState({});
 
   return (
     <SimulationContext.Provider
@@ -13,9 +12,7 @@ export function SimulationProvider({ children }) {
         simulation,
         setSimulation,
         client,
-        setClient,
-        priceTable,
-        setPriceTable,
+        setClient
       }}
     >
       {children}

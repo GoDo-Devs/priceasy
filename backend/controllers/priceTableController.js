@@ -196,7 +196,16 @@ export default class PriceTableController {
         };
       });
 
-      return res.status(200).json({ plans: result });
+      return res.status(200).json({
+        plans: result,
+        rangeDetails: {
+          accession: selectedRange.accession,
+          quota: selectedRange.quota,
+          installationPrice: selectedRange.installationPrice,
+          franchiseValue: selectedRange.franchiseValue,
+          isFranchisePercentage: selectedRange.isFranchisePercentage,
+        },
+      });
     } catch (error) {
       console.error("Erro ao buscar planos:", error);
       return res.status(500).json({

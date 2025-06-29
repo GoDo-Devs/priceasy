@@ -24,14 +24,14 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   useEffect(() => {
     if (!open || !plan?.id) return;
 
-    const isSamePlan = simulation?.planId === plan.id;
+    const isSamePlan = simulation?.plan_id === plan.id;
 
     if (isSamePlan && simulation?.selectedProducts) {
       setSelectedProducts(simulation.selectedProducts);
     } else {
       setSelectedProducts({});
     }
-  }, [open, plan?.id, simulation]);
+  }, [open, plan?.id, simulation.plan_id, simulation.selectedProducts]);
 
   useEffect(() => {
     if (!open) {
