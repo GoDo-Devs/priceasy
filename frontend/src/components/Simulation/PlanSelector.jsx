@@ -5,7 +5,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
   const noTable = !simulation.price_table_id;
   const noPlans = plans.length === 0;
 
-  if (noTable) {
+  if (noTable || noPlans) {
     return (
       <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
         <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
@@ -21,30 +21,6 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
         >
           <SubtitlesIcon fontSize="small" sx={{ color: "white" }} />
           <Typography fontStyle="italic" color="text.secondary">
-            Nenhum plano encontrado para este veículo
-          </Typography>
-        </Box>
-      </Box>
-    );
-  }
-
-  if (noPlans) {
-    return (
-      <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
-        <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-          Planos
-        </Typography>
-        <Box
-          display="flex"
-          alignItems="center"
-          gap={1}
-          mt={1}
-          bgcolor="#f8d7da"
-          borderRadius={2}
-          padding={1.5}
-        >
-          <SubtitlesIcon fontSize="small" color="error" />
-          <Typography fontStyle="italic" color="error">
             Nenhum plano encontrado para este veículo
           </Typography>
         </Box>
@@ -80,22 +56,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
                 }))
               }
             >
-              <Typography ml={2}>
-                {plan.name} - R$ {plan.basePrice.toFixed(2)}
-              </Typography>
-              <Box display="flex" alignItems="center" gap={1}>
-                {isSelected && (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDetails(plan);
-                    }}
-                  >
-                    Detalhes
-                  </Button>
-                )}
+              <Box display="flex" alignItems="center" flexGrow={1}>
                 <Radio
                   checked={isSelected}
                   onChange={() =>
@@ -105,8 +66,24 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
                     }))
                   }
                   color="primary"
+                  onClick={(e) => e.stopPropagation()}
                 />
+                <Typography>
+                  {plan.name} - R$ {plan.basePrice.toFixed(2)}
+                </Typography>
               </Box>
+              {isSelected && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDetails(plan);
+                  }}
+                >
+                  Detalhes
+                </Button>
+              )}
             </Box>
           );
         })}

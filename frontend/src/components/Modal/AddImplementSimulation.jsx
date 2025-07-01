@@ -12,11 +12,15 @@ import SelectInput from "@/components/Form/SelectInput.jsx";
 import CurrencyInput from "../Form/CurrencyInput";
 import useHttp from "@/services/useHttp.js";
 
-function AddImplementSimulation({ open, onClose, simulation, setSimulation }) {
+function AddImplementSimulation({
+  open,
+  onClose,
+  simulation,
+  setSimulation,
+  editingItem = null,
+}) {
   const [implementsList, setImplementsList] = useState([]);
-  const [selectedImplement, setSelectedImplement] = useState(
-    simulation.implements ?? ""
-  );
+  const [selectedImplement, setSelectedImplement] = useState("");
   const [price, setPrice] = useState("");
 
   useEffect(() => {
@@ -28,10 +32,15 @@ function AddImplementSimulation({ open, onClose, simulation, setSimulation }) {
           console.error("Erro ao carregar tipos de veículos:", err)
         );
 
-      setSelectedImplement("");
-      setPrice("");
+      if (editingItem) {
+        setSelectedImplement(editingItem.id);
+        setPrice(editingItem.price);
+      } else {
+        setSelectedImplement("");
+        setPrice("");
+      }
     }
-  }, [open]);
+  }, [open, editingItem]);
 
   const handleSave = () => {
     const implementData = implementsList.find(
@@ -39,13 +48,17 @@ function AddImplementSimulation({ open, onClose, simulation, setSimulation }) {
     );
     if (!implementData) return;
 
-    const newImplement = {
+    const newItem = {
       id: selectedImplement,
       name: implementData.name,
       price,
     };
 
-    const updatedList = [...(simulation.implementList ?? []), newImplement];
+    const updatedList = editingItem
+      ? simulation.implementList.map((item) =>
+          item.id === editingItem.id ? newItem : item
+        )
+      : [...(simulation.implementList ?? []), newItem];
 
     setSimulation({
       ...simulation,
@@ -54,8 +67,6 @@ function AddImplementSimulation({ open, onClose, simulation, setSimulation }) {
 
     onClose();
   };
-
-  console.log(simulation);
 
   return (
     <Dialog
@@ -77,18 +88,19 @@ function AddImplementSimulation({ open, onClose, simulation, setSimulation }) {
     >
       <DialogContent>
         <Typography variant="h5" mb={3} align="center" gutterBottom>
-          {"Adicionar Implemento"}
+          {editingItem ? "Editar Implemento" : "Adicionar Implemento"}
         </Typography>
         <SelectInput
           label="Selecione um Implemento"
           name="implements_id"
-          className="mb-2"
+          className="mb-3"
           value={selectedImplement}
           onChange={(e) => setSelectedImplement(e.target.value)}
           options={implementsList.map((g) => ({
             value: g.id,
             label: g.name,
           }))}
+          disabled={!!editingItem}
         />
         <InputLabel className="text-white mb-1">Valor Protegido</InputLabel>
         <CurrencyInput value={price} onChange={setPrice} />

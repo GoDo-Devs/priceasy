@@ -1,4 +1,6 @@
 import { Box, Grid, InputLabel } from "@mui/material";
+import { useEffect, useState } from "react";
+import useHttp from "@/services/useHttp.js";
 import TextInput from "@/components/Form/TextInput.jsx";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
@@ -10,13 +12,61 @@ function ClientVehicleForm() {
   const { client, setClient, simulation, setSimulation } = useSimulation();
   const { vehicleType, brand, model, year, priceTableNames } =
     useSimulationEffects();
+  const [cpfOptions, setCpfOptions] = useState([]);
 
-    console.log(simulation)
+  useEffect(() => {
+    if (client.cpf && client.cpf.length >= 3) {
+      useHttp
+        .post("/clients/search", { cpf: client.cpf })
+        .then((res) => {
+          const options = res.data.map((item) => ({
+            value: item.cpf,
+            label: item.cpf,
+          }));
+          setCpfOptions(options);
+        })
+        .catch((err) => {
+          console.error("Erro ao buscar CPFs:", err);
+        });
+    } else {
+      setCpfOptions([]);
+    }
+  }, [client.cpf]);
+
+  const fetchClientData = async (cpf) => {
+    if (cpf.length !== 11) return;
+    try {
+      const res = await useHttp.post("/clients/cpf", { cpf });
+      const { name, phone } = res.data;
+      setClient((prev) => ({ ...prev, name, phone }));
+    } catch (err) {
+      if (err.response?.status === 404) {
+      } else {
+        console.error("Erro ao buscar cliente:", err);
+      }
+    }
+  };
+
+  function formatCPF(value) {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+
+  function formatPhone(value) {
+    return value
+      .replace(/\D/g, "")
+      .replace(/^(\d{2})(\d)/, "($1) $2")
+      .replace(/(\d{5})(\d{1,4})$/, "$1-$2")
+      .slice(0, 15);
+  }
 
   return (
     <Box bgcolor="#1D1420" borderRadius={2} padding={2.5}>
       <Grid container spacing={2}>
-        <Grid item size={3.2}>
+        <Grid item size={3.6}>
           <TextInput
             fullWidth
             label="Nome"
@@ -26,23 +76,43 @@ function ClientVehicleForm() {
             required
           />
         </Grid>
-        <Grid item size={2}>
-          <TextInput
+        <Grid item size={2.1}>
+          <AutoCompleteInput
+            freeSolo
             fullWidth
             label="CPF"
-            name="cpf"
-            value={client.cpf ?? ""}
-            onChange={(e) => setClient({ ...client, cpf: e.target.value })}
+            options={cpfOptions}
+            value={formatCPF(client.cpf ?? "")}
+            onInputChange={(val) => {
+              const raw = val.replace(/\D/g, "");
+              setClient((prev) => ({ ...prev, cpf: raw }));
+
+              if (raw.length === 11) {
+                fetchClientData(raw);
+              }
+            }}
+            onChange={(val) => {
+              const raw = val.replace(/\D/g, "");
+              setClient((prev) => ({ ...prev, cpf: raw }));
+
+              if (raw.length === 11) {
+                fetchClientData(raw);
+              }
+            }}
             required
           />
         </Grid>
+
         <Grid item size={2}>
           <TextInput
             fullWidth
             label="Celular"
             name="phone"
-            value={client.phone ?? ""}
-            onChange={(e) => setClient({ ...client, phone: e.target.value })}
+            value={formatPhone(client.phone ?? "")}
+            onChange={(e) => {
+              const raw = e.target.value.replace(/\D/g, "");
+              setClient((prev) => ({ ...prev, phone: raw }));
+            }}
             required
           />
         </Grid>
@@ -67,7 +137,7 @@ function ClientVehicleForm() {
             }))}
           />
         </Grid>
-        <Grid item size={2.8}>
+        <Grid item size={2.3}>
           <AutoCompleteInput
             fullWidth
             label="Marca"

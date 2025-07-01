@@ -17,6 +17,7 @@ import planServiceRoutes from "./routes/planServiceRoutes.js"
 import vehicleCategoryRoutes from "./routes/vehicleCategoryRoutes.js"
 import priceTableRoutes from "./routes/priceTableRoutes.js"
 import fipeRoutes from "./routes/fipeRoutes.js";
+import simulationRoutes from "./routes/simulationRoutes.js";
 
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
@@ -37,6 +38,7 @@ app.use("/plan-services", planServiceRoutes);
 app.use("/vehicle-categories", vehicleCategoryRoutes);
 app.use("/price-tables", priceTableRoutes);
 app.use("/fipe", fipeRoutes);
+app.use("/simulations", simulationRoutes);
 
 app.listen(4000, "0.0.0.0", () => {
   console.log("Backend running on port 4000");

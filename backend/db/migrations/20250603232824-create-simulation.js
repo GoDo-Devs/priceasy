@@ -6,33 +6,15 @@ export default {
     await queryInterface.createTable("simulations", {
       id: {
         allowNull: false,
+        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4,
+        type: Sequelize.INTEGER,
       },
       user_id: {
         type: Sequelize.UUID,
         allowNull: false,
         references: {
           model: "users",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET DEFAULT",
-      },
-      download_link: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      price: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-      },
-      vehicle_type_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "vehicle_types",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -48,14 +30,72 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
       },
+      vehicle_type_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "vehicle_types",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
+      },
+      brand_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      model_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      year: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      price_table_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "price_tables",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
+      },
+      protectedValue: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      plan_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "plans",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "SET DEFAULT",
+      },
+      monthlyFee: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false,
+      },
+      implementList: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
+      selectedProducts: {
+        type: Sequelize.JSON,
+        allowNull: false,
+      },
       created_at: {
         allowNull: false,
-        type: "TIMESTAMP",
+        type: Sequelize.DATE,
         defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updated_at: {
         allowNull: false,
-        type: "TIMESTAMP",
+        type: Sequelize.DATE,
         defaultValue: Sequelize.literal(
           "CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"
         ),

@@ -1,5 +1,5 @@
 import User from "../models/User.js";
-import { Op } from "sequelize"; // 👈 Importante
+import { Op } from "sequelize";
 
 export default class UserController {
   static async getAll(req, res) {

@@ -7,11 +7,20 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  IconButton,
 } from "@mui/material";
 import SubtitlesIcon from "@mui/icons-material/Subtitles";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-function ImplementTable({ implementList, onAdd }) {
+function ImplementTable({ implementList, onAdd, onEdit, onDelete }) {
   const isEmpty = !implementList || implementList.length === 0;
+
+  const formatBRL = (value) => {
+    const num = Number(value);
+    if (isNaN(num)) return "-";
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
 
   return (
     <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
@@ -54,13 +63,37 @@ function ImplementTable({ implementList, onAdd }) {
                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                   Valor Protegido
                 </TableCell>
+                <TableCell
+                  sx={{ color: "white", fontWeight: "bold" }}
+                  align="right"
+                >
+                  Ações
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {implementList.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell sx={{ color: "white" }}>{item.name}</TableCell>
-                  <TableCell sx={{ color: "white" }}>R$ {item.price}</TableCell>
+                  <TableCell sx={{ color: "white" }}>
+                    {formatBRL(item.price)}
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton
+                      size="small"
+                      onClick={() => onEdit?.(item)}
+                      sx={{ color: "primary.main" }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => onDelete?.(item)}
+                      sx={{ color: "primary.main" }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
