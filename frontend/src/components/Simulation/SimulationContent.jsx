@@ -15,6 +15,7 @@ function SimulationContent() {
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [implementModalOpen, setImplementModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
 
   const handleSavePlanDetails = (monthlyFee, selectedProducts, planId) => {
     setSimulation((prev) => ({
@@ -23,6 +24,18 @@ function SimulationContent() {
       selectedProducts,
       monthlyFee,
     }));
+  };
+
+  const handleEditImplement = (item) => {
+    setEditingItem(item);
+    setImplementModalOpen(true);
+  };
+
+  const handleDeleteImplement = (item) => {
+    const updatedList = simulation.implementList.filter(
+      (i) => i.id !== item.id
+    );
+    setSimulation({ ...simulation, implementList: updatedList });
   };
 
   return (
@@ -46,13 +59,22 @@ function SimulationContent() {
       />
       <ImplementTable
         implementList={simulation.implementList}
-        onAdd={() => setImplementModalOpen(true)}
+        onAdd={() => {
+          setEditingItem(null);
+          setImplementModalOpen(true);
+        }}
+        onEdit={handleEditImplement}
+        onDelete={handleDeleteImplement}
       />
       <AddImplementSimulation
         open={implementModalOpen}
-        onClose={() => setImplementModalOpen(false)}
+        onClose={() => {
+          setImplementModalOpen(false);
+          setEditingItem(null);
+        }}
         simulation={simulation}
         setSimulation={setSimulation}
+        editingItem={editingItem}
       />
       <PlanDetailsModal
         open={modalOpen}

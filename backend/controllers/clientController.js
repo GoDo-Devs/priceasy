@@ -1,4 +1,5 @@
 import Client from "../models/Client.js";
+import { Op } from "sequelize";
 
 export default class ClientController {
   static async create(req, res) {
@@ -46,6 +47,50 @@ export default class ClientController {
     } catch (error) {
       return res.status(500).json({
         message: "Erro ao obter os Clientes.",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getByCpf(req, res) {
+    const { cpf } = req.body;
+
+    try {
+      const client = await Client.findOne({
+        where: { cpf },
+      });
+
+      if (!client) {
+        return res.status(404).json({ message: "Cliente não encontrado." });
+      }
+
+      return res.status(200).json(client);
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao buscar o Cliente.",
+        error: error.message,
+      });
+    }
+  }
+
+  static async searchCpfs(req, res) {
+    const { cpf } = req.body;
+
+    try {
+      const clients = await Client.findAll({
+        where: {
+          cpf: {
+            [Op.like]: `%${cpf}%`,
+          },
+        },
+        attributes: ["cpf"],
+        limit: 10,
+      });
+
+      return res.status(200).json(clients);
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao buscar CPFs.",
         error: error.message,
       });
     }

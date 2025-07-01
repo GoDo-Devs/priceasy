@@ -3,7 +3,7 @@ import useHttp from "@/services/useHttp.js";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
 
 export default function useSimulationEffects() {
-  const { simulation, setSimulation, setClient } = useSimulation();
+  const { simulation, setSimulation, client, setClient } = useSimulation();
 
   const [vehicleType, setVehicleType] = useState([]);
   const [brand, setBrand] = useState([]);
@@ -223,6 +223,74 @@ export default function useSimulationEffects() {
     simulation.plan_id,
   ]);
 
+  console.log(simulation);
+
+  const saveSimulation = async () => {
+    try {
+      let clientId = null;
+
+      console.log("Buscando cliente pelo CPF:", client.cpf);
+
+      try {
+        const clientRes = await useHttp.post("/clients/cpf", {
+          cpf: client.cpf,
+        });
+        clientId = clientRes.data.id;
+        console.log("Cliente encontrado, ID:", clientId);
+      } catch (err) {
+        if (err.response?.status === 404) {
+          console.log("Cliente não encontrado, criando novo cliente...");
+          const createRes = await useHttp.post("/clients/create", {
+            name: client.name,
+            cpf: client.cpf,
+            phone: client.phone,
+          });
+          clientId = clientId = createRes.data.client.id;
+          console.log("Cliente criado, ID:", clientId);
+
+          await new Promise((r) => setTimeout(r, 200));
+        } else {
+          throw err;
+        }
+      }
+
+      if (!client.name || !client.cpf || !client.phone) {
+        throw new Error(
+          "Dados do cliente incompletos. Preencha nome, CPF e telefone."
+        );
+      }
+
+      const selectedProductsArray = Object.entries(
+        simulation.selectedProducts || {}
+      ).map(([product_id, quantity]) => ({
+        product_id: Number(product_id),
+        quantity,
+      }));
+
+      const simulationPayload = {
+        client_id: clientId,
+        vehicle_type_id: simulation.vehicle_type_id,
+        brand_id: Number(simulation.brand_id),
+        model_id: simulation.model_id,
+        year: simulation.year,
+        price_table_id: simulation.price_table_id,
+        protectedValue: simulation.protectedValue,
+        selectedProducts: selectedProductsArray,
+        plan_id: simulation.plan_id,
+        monthlyFee: simulation.monthlyFee,
+        implementList: simulation.implementList ?? [],
+      };
+
+      console.log("Payload da simulação:", simulationPayload);
+
+      await useHttp.post("/simulations/create", simulationPayload);
+
+      console.log("Cotação salva com sucesso!");
+    } catch (err) {
+      console.error("Erro ao salvar a simulação:", err);
+    }
+  };
+
   return {
     vehicleType,
     brand,
@@ -231,5 +299,6 @@ export default function useSimulationEffects() {
     priceTableNames,
     plans,
     rangeDetails,
+    saveSimulation,
   };
 }
