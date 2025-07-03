@@ -15,8 +15,8 @@ router.post(
   ClientController.create
 );
 router.get("/", [checkToken], ClientController.getAll);
+router.get("/:id", [checkToken], ClientController.getClientById);
 router.post("/cpf", [checkToken], ClientController.getByCpf);
 router.post("/search", [checkToken], ClientController.searchCpfs);
-
 
 export default router;

@@ -32,7 +32,7 @@ export default {
       },
       vehicle_type_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "vehicle_types",
           key: "id",
@@ -42,19 +42,19 @@ export default {
       },
       brand_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       model_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       year: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       price_table_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "price_tables",
           key: "id",
@@ -64,11 +64,11 @@ export default {
       },
       protectedValue: {
         type: Sequelize.DECIMAL(10, 2),
-        allowNull: false,
+        allowNull: true,
       },
       plan_id: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
         references: {
           model: "plans",
           key: "id",
@@ -78,7 +78,7 @@ export default {
       },
       monthlyFee: {
         type: Sequelize.DECIMAL(10, 2),
-        allowNull: false,
+        allowNull: true,
       },
       implementList: {
         type: Sequelize.JSON,
@@ -86,7 +86,7 @@ export default {
       },
       selectedProducts: {
         type: Sequelize.JSON,
-        allowNull: false,
+        allowNull: true,
       },
       created_at: {
         allowNull: false,

@@ -1,5 +1,6 @@
-import { Box } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import { useState } from "react";
+import { useSearchParams, useNavigate } from "react-router";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import PlanDetailsModal from "@/components/Modal/PlanDetailsModal.jsx";
@@ -11,7 +12,9 @@ import PlanSelector from "@/components/Simulation/PlanSelector.jsx";
 
 function SimulationContent() {
   const { simulation, setSimulation } = useSimulation();
-  const { plans } = useSimulationEffects();
+
+  const { vehicleType, brand, model, year, priceTableNames, plans } =
+    useSimulationEffects();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [implementModalOpen, setImplementModalOpen] = useState(false);
@@ -47,7 +50,13 @@ function SimulationContent() {
         overflowY: "auto",
       }}
     >
-      <ClientVehicleForm />
+      <ClientVehicleForm
+        vehicleType={vehicleType}
+        brand={brand}
+        model={model}
+        year={year}
+        priceTableNames={priceTableNames}
+      />
       <PlanSelector
         plans={plans}
         simulation={simulation}

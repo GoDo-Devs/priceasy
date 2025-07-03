@@ -6,12 +6,15 @@ import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import AutoCompleteInput from "@/components/Form/AutoCompleteInput.jsx";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
-import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 
-function ClientVehicleForm() {
+function ClientVehicleForm({
+  vehicleType,
+  brand,
+  model,
+  year,
+  priceTableNames,
+}) {
   const { client, setClient, simulation, setSimulation } = useSimulation();
-  const { vehicleType, brand, model, year, priceTableNames } =
-    useSimulationEffects();
   const [cpfOptions, setCpfOptions] = useState([]);
 
   useEffect(() => {
