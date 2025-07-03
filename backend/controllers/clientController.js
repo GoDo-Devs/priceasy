@@ -37,6 +37,25 @@ export default class ClientController {
     }
   }
 
+  static async getClientById(req, res) {
+    const id = req.params.id;
+
+    const clientById = await Client.findByPk(id);
+
+    if (!clientById) {
+      res.status(404).json({ message: "Cliente não encontrado!" });
+      return;
+    }
+
+    try {
+      const client = await Client.findByPk(id);
+      res.status(200).json(client);
+    } catch (error) {
+      res.status(404).json({ message: "Cliente não encontrado!" });
+      return;
+    }
+  }
+
   static async getAll(req, res) {
     try {
       const clients = await Client.findAll({

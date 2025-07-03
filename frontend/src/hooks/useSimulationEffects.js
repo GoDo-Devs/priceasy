@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useSearchParams, useNavigate } from "react-router";
 
 export default function useSimulationEffects() {
   const { simulation, setSimulation, client, setClient } = useSimulation();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const [loading, setLoading] = useState(true);
 
   const [vehicleType, setVehicleType] = useState([]);
   const [brand, setBrand] = useState([]);
@@ -111,6 +115,8 @@ export default function useSimulationEffects() {
       simulation.vehicle_type_id !== 4
     ) {
       const [yearValue, fuelType] = simulation.year.split("-");
+
+      if (!yearValue || !fuelType) return;
 
       useHttp
         .post(`/fipe/price`, {
@@ -223,41 +229,33 @@ export default function useSimulationEffects() {
     simulation.plan_id,
   ]);
 
-  console.log(simulation);
-
   const saveSimulation = async () => {
     try {
       let clientId = null;
 
-      console.log("Buscando cliente pelo CPF:", client.cpf);
+      if (!client?.name || !client?.cpf || !client?.phone) {
+        throw new Error(
+          "Dados do cliente incompletos. Preencha nome, CPF e telefone."
+        );
+      }
 
       try {
         const clientRes = await useHttp.post("/clients/cpf", {
           cpf: client.cpf,
         });
         clientId = clientRes.data.id;
-        console.log("Cliente encontrado, ID:", clientId);
       } catch (err) {
         if (err.response?.status === 404) {
-          console.log("Cliente não encontrado, criando novo cliente...");
           const createRes = await useHttp.post("/clients/create", {
             name: client.name,
             cpf: client.cpf,
             phone: client.phone,
           });
-          clientId = clientId = createRes.data.client.id;
-          console.log("Cliente criado, ID:", clientId);
-
+          clientId = createRes.data.client.id;
           await new Promise((r) => setTimeout(r, 200));
         } else {
           throw err;
         }
-      }
-
-      if (!client.name || !client.cpf || !client.phone) {
-        throw new Error(
-          "Dados do cliente incompletos. Preencha nome, CPF e telefone."
-        );
       }
 
       const selectedProductsArray = Object.entries(
@@ -269,27 +267,80 @@ export default function useSimulationEffects() {
 
       const simulationPayload = {
         client_id: clientId,
-        vehicle_type_id: simulation.vehicle_type_id,
-        brand_id: Number(simulation.brand_id),
-        model_id: simulation.model_id,
-        year: simulation.year,
-        price_table_id: simulation.price_table_id,
-        protectedValue: simulation.protectedValue,
-        selectedProducts: selectedProductsArray,
-        plan_id: simulation.plan_id,
-        monthlyFee: simulation.monthlyFee,
-        implementList: simulation.implementList ?? [],
       };
 
-      console.log("Payload da simulação:", simulationPayload);
+      if (simulation.vehicle_type_id)
+        simulationPayload.vehicle_type_id = simulation.vehicle_type_id;
+      if (simulation.brand_id)
+        simulationPayload.brand_id = Number(simulation.brand_id);
+      if (simulation.model_id) simulationPayload.model_id = simulation.model_id;
+      if (simulation.year) simulationPayload.year = simulation.year;
+      if (simulation.price_table_id)
+        simulationPayload.price_table_id = simulation.price_table_id;
+      if (simulation.protectedValue)
+        simulationPayload.protectedValue = simulation.protectedValue;
+      if (selectedProductsArray.length > 0)
+        simulationPayload.selectedProducts = selectedProductsArray;
+      if (simulation.plan_id) simulationPayload.plan_id = simulation.plan_id;
+      if (simulation.monthlyFee)
+        simulationPayload.monthlyFee = simulation.monthlyFee;
+      if (simulation.implementList && simulation.implementList.length > 0)
+        simulationPayload.implementList = simulation.implementList;
 
       await useHttp.post("/simulations/create", simulationPayload);
-
-      console.log("Cotação salva com sucesso!");
+      return true;
     } catch (err) {
       console.error("Erro ao salvar a simulação:", err);
+      return false;
     }
   };
+
+  useEffect(() => {
+    if (!id) {
+      setLoading(false);
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await useHttp.get(`/simulations/${id}`);
+        const sim = res.data;
+
+        const selectedProducts = Array.isArray(sim.selectedProducts)
+          ? Object.fromEntries(
+              sim.selectedProducts.map((p) => [p.product_id, p.quantity])
+            )
+          : {};
+
+        setSimulation({
+          vehicle_type_id: sim.vehicle_type_id || "",
+          brand_id: sim.brand_id?.toString() || "",
+          model_id: sim.model_id || "",
+          year: sim.year?.toString() || "",
+          price_table_id: sim.price_table_id || "",
+          protectedValue: sim.protectedValue || "",
+          selectedProducts,
+          plan_id: sim.plan_id || "",
+          monthlyFee: sim.monthlyFee || "",
+          implementList: sim.implementList || [],
+        });
+
+        if (sim.client_id) {
+          const resClient = await useHttp.get(`/clients/${sim.client_id}`);
+          setClient({
+            name: resClient.data.name,
+            cpf: resClient.data.cpf,
+            phone: resClient.data.phone,
+          });
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Erro ao buscar simulação:", err);
+        setLoading(false);
+      }
+    })();
+  }, [id]);
 
   return {
     vehicleType,
@@ -300,5 +351,6 @@ export default function useSimulationEffects() {
     plans,
     rangeDetails,
     saveSimulation,
+    loading,
   };
 }

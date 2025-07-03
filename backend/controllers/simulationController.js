@@ -19,38 +19,27 @@ export default class SimulationController {
 
       const user_id = req.user?.id;
 
-      if (
-        !user_id ||
-        client_id == null ||
-        vehicle_type_id == null ||
-        brand_id == null ||
-        model_id == null ||
-        !year ||
-        price_table_id == null ||
-        protectedValue == null ||
-        !Array.isArray(selectedProducts) ||
-        selectedProducts.length === 0 ||
-        plan_id == null ||
-        monthlyFee == null
-      ) {
+      if (!user_id || client_id == null) {
         return res
           .status(400)
-          .json({ error: "Campos obrigatórios ausentes ou inválidos." });
+          .json({ error: "Usuário ou cliente não informado." });
       }
 
       const simulation = await Simulation.create({
         user_id,
         client_id,
-        vehicle_type_id,
-        brand_id,
-        model_id,
-        year,
-        price_table_id,
-        protectedValue,
-        selectedProducts,
-        plan_id,
-        monthlyFee,
-        implementList,
+        vehicle_type_id: vehicle_type_id ?? null,
+        brand_id: brand_id ?? null,
+        model_id: model_id ?? null,
+        year: year ?? null,
+        price_table_id: price_table_id ?? null,
+        protectedValue: protectedValue ?? null,
+        selectedProducts: Array.isArray(selectedProducts)
+          ? selectedProducts
+          : [],
+        plan_id: plan_id ?? null,
+        monthlyFee: monthlyFee ?? null,
+        implementList: Array.isArray(implementList) ? implementList : [],
       });
 
       return res.status(201).json(simulation);

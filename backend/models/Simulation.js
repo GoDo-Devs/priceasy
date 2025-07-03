@@ -51,7 +51,7 @@ Simulation.init(
     },
     vehicle_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "vehicle_types",
         key: "id",
@@ -59,19 +59,19 @@ Simulation.init(
     },
     brand_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     model_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     year: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     price_table_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "price_tables",
         key: "id",
@@ -79,11 +79,11 @@ Simulation.init(
     },
     protectedValue: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
+      allowNull: true,
     },
     plan_id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: "plans",
         key: "id",
@@ -91,7 +91,7 @@ Simulation.init(
     },
     monthlyFee: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false,
+      allowNull: true,
     },
     implementList: {
       type: DataTypes.JSON,
@@ -99,7 +99,7 @@ Simulation.init(
     },
     selectedProducts: {
       type: DataTypes.JSON,
-      allowNull: false,
+      allowNull: true,
     },
   },
   {

@@ -208,8 +208,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
       </DialogContent>
       <DialogActions>
         <Button
-          variant="outlined"
-          color="error"
+          color="primary"
           onClick={() => {
             setProducts([]);
             setSelectedProducts({});
@@ -225,6 +224,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             onClose();
           }}
           variant="contained"
+          color="secondary"
         >
           Salvar
         </Button>
