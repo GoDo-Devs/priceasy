@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        color: #000;
+      }
+      p {
+        font-size: 12pt;
+        margin-bottom: 16px;
+      }
+      .compact-paragraph {
+        margin-bottom: 6px;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 20px;
+        font-size: 10pt;
+        border: 1px solid #4d566b;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+        vertical-align: top;
+        border: 1px solid #4d566b;
+        background-color: white;
+        color: black;
+      }
+      th {
+        font-weight: bold;
+        background-color: #eee;
+      }
+      .plan-header {
+        background-color: #4d566b;
+        color: white;
+      }
+      .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .logo {
+        height: 120px;
+      }
+      .date-text {
+        font-size: 10pt;
+        color: #000;
+        text-align: right;
+      }
+      .date-text strong {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header-container">
+      <img
+        src="data:image/png;base64,{{LOGO_BASE64}}"
+        alt="Logo"
+        class="logo"
+      />
+      <div class="date-text">
+        <div><strong>Cotação:</strong> <em>{{ID_SIMULACAO}}</em></div>
+        <div><strong>Data:</strong> {{DATA}}</div>
+      </div>
+    </div>
+
+    <p class="compact-paragraph">
+      <strong>OLÁ, {{NOME_CLIENTE}}.</strong> Esta é uma cotação para seu
+      veículo:
+    </p>
+    <p class="compact-paragraph">
+      <strong>{{VEICULO_DESC}} (FIPE: {{FIPE_CODE}})</strong>
+    </p>
+    <p class="compact-paragraph">Avaliado em <strong>{{VALOR_FIPE}}</strong></p>
+
+    {{TABLE_PLAN}} {{TABLE_IMPLEMENT}} {{TABLE_PRODUCTS}} {{TABLE_QUOTE}}
+  </body>
+</html>
