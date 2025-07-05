@@ -342,6 +342,9 @@ export default function useSimulationEffects() {
     })();
   }, [id]);
 
+  console.log(simulation)
+  console.log(rangeDetails)
+
   return {
     vehicleType,
     brand,
@@ -352,5 +355,6 @@ export default function useSimulationEffects() {
     rangeDetails,
     saveSimulation,
     loading,
+    client
   };
 }
