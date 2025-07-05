@@ -13,7 +13,7 @@ import PlanSelector from "@/components/Simulation/PlanSelector.jsx";
 function SimulationContent() {
   const { simulation, setSimulation } = useSimulation();
 
-  const { vehicleType, brand, model, year, priceTableNames, plans } =
+  const { vehicleType, brand, model, year, priceTableNames, plans, client } =
     useSimulationEffects();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);

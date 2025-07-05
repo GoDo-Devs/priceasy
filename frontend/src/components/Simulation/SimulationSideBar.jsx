@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
 import { Box, Typography, Button, Divider } from "@mui/material";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import { useNavigate } from "react-router-dom";
 import SuccessModal from "@/components/Modal/SucessModal";
 import ErrorModal from "@/components/Modal/ErrorModal";
 
+import { generatePdf } from "@/utils/generatePdf";
+import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
+
 function SimulationSideBar() {
   const navigate = useNavigate();
-  const { simulation } = useSimulation();
+  const { simulation: baseSimulation, client } = useSimulation();
+  const { simulation, loading } = useCompleteSimulation(baseSimulation);
   const { rangeDetails, saveSimulation } = useSimulationEffects();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -21,7 +25,7 @@ function SimulationSideBar() {
   };
 
   const handleSave = async () => {
-    const success = await saveSimulation();
+    const success = await saveSimulation(simulation, rangeDetails);
 
     if (success === true) {
       setOpenSuccessModal(true);
@@ -56,6 +60,7 @@ function SimulationSideBar() {
         <Typography variant="h6" mb={4} fontWeight="bold" textAlign="center">
           Resumo da Cotação
         </Typography>
+
         <Box mb={1} display="flex" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Valor FIPE
@@ -65,6 +70,7 @@ function SimulationSideBar() {
           </Typography>
         </Box>
         <Divider sx={{ mb: 2 }} />
+
         <Box mb={1} display="flex" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Taxa de Matrícula
@@ -74,6 +80,7 @@ function SimulationSideBar() {
           </Typography>
         </Box>
         <Divider sx={{ mb: 2 }} />
+
         <Box mb={1} display="flex" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Mensalidade
@@ -83,6 +90,7 @@ function SimulationSideBar() {
           </Typography>
         </Box>
         <Divider sx={{ mb: 2 }} />
+
         <Box mb={1} display="flex" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Rastreador
@@ -92,6 +100,7 @@ function SimulationSideBar() {
           </Typography>
         </Box>
         <Divider sx={{ mb: 2 }} />
+
         <Box mb={1} display="flex" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Cota de Participação
@@ -109,6 +118,7 @@ function SimulationSideBar() {
         </Box>
         <Divider sx={{ mb: 2 }} />
       </Box>
+
       <Button
         variant="contained"
         color="secondary"
@@ -118,7 +128,8 @@ function SimulationSideBar() {
       >
         Salvar
       </Button>
-      {/* <Button
+
+      <Button
         variant="outlined"
         color="success"
         size="small"
@@ -126,7 +137,8 @@ function SimulationSideBar() {
         onClick={() => setOpenSuccessModal(true)}
       >
         Abrir Modal de Sucesso (teste)
-      </Button> */}
+      </Button>
+
       <SuccessModal
         open={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
@@ -135,14 +147,18 @@ function SimulationSideBar() {
           navigate("/");
         }}
         onDownload={() => {
-          alert("Download iniciado (implemente a função).");
+          if (!client || !simulation) {
+            alert("Dados da simulação ou cliente ausentes!");
+            return;
+          }
+
+          generatePdf(client, simulation, rangeDetails);
         }}
-        onSendEmail={() => {
-          alert("Função enviar e-mail (implemente a função).");
-        }}
+        onSendEmail={() => alert("Implementar função enviar e-mail")}
         title="Cotação salva com sucesso!"
         message="Você pode baixar o arquivo ou enviar para o e-mail. Ou ir para a tela inicial."
       />
+
       <ErrorModal
         open={showError}
         onClose={() => setShowError(false)}

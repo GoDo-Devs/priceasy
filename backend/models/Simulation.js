@@ -1,4 +1,4 @@
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, UUIDV4 } from "sequelize";
 import sequelize from "../db/index.js";
 
 class Simulation extends Model {
@@ -33,9 +33,9 @@ class Simulation extends Model {
 Simulation.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: UUIDV4,
       primaryKey: true,
-      autoIncrement: true,
     },
     user_id: {
       type: DataTypes.UUID,
