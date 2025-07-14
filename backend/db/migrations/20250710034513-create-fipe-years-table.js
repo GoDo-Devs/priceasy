@@ -8,10 +8,10 @@ export default {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
       },
       year: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       fuel: {
@@ -19,7 +19,7 @@ export default {
         allowNull: false,
       },
       fipe_model_id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         allowNull: false,
         references: {
           model: "fipe_models",
