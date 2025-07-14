@@ -13,6 +13,7 @@ function TextInput({
   className,
   errors = [],
   error = false,
+  maxLength,
   style
 }) {
   return (
@@ -31,6 +32,9 @@ function TextInput({
         onChange={onChange}
         slotProps={{
           input: {
+            inputProps: {
+              ...(maxLength ? { maxLength } : {}),
+            },
             endAdornment: endAdornment,
             startAdornment: startAdornment,
           },

@@ -1,4 +1,4 @@
-import { Box, Grid, InputLabel } from "@mui/material";
+import { Box, Card, Grid, InputLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -67,9 +67,9 @@ function ClientVehicleForm({
   }
 
   return (
-    <Box bgcolor="#1D1420" borderRadius={2} padding={2.5}>
+    <Card elevation={0} className="p-5">
       <Grid container spacing={2}>
-        <Grid item size={3.6}>
+        <Grid item size={{ xs: 12, md: 4.5 }}>
           <TextInput
             fullWidth
             label="Nome"
@@ -79,38 +79,30 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={2.1}>
+
+        <Grid item size={{ xs: 12, md: 3 }}>
           <AutoCompleteInput
             freeSolo
             fullWidth
             label="CPF"
             options={cpfOptions}
             value={formatCPF(client.cpf ?? "")}
+            maxLength={14}
             onInputChange={(val) => {
               const raw = val.replace(/\D/g, "");
               setClient((prev) => ({ ...prev, cpf: raw }));
-
-              if (raw.length === 11) {
-                fetchClientData(raw);
-              }
-            }}
-            onChange={(val) => {
-              const raw = val.replace(/\D/g, "");
-              setClient((prev) => ({ ...prev, cpf: raw }));
-
-              if (raw.length === 11) {
-                fetchClientData(raw);
-              }
+              if (raw.length === 11) fetchClientData(raw);
             }}
             required
           />
         </Grid>
 
-        <Grid item size={2}>
+        <Grid item size={{ xs: 12, md: 2.5 }}>
           <TextInput
             fullWidth
             label="Celular"
             name="phone"
+            maxLength={15}
             value={formatPhone(client.phone ?? "")}
             onChange={(e) => {
               const raw = e.target.value.replace(/\D/g, "");
@@ -119,7 +111,8 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={2}>
+
+        <Grid item size={{ xs: 12, md: 2 }}>
           <SelectInput
             fullWidth
             label="Tipo Veículo"
@@ -140,7 +133,8 @@ function ClientVehicleForm({
             }))}
           />
         </Grid>
-        <Grid item size={2.3}>
+
+        <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Marca"
@@ -156,7 +150,8 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={5}>
+
+        <Grid item size={{ xs: 12, md: 5 }}>
           <AutoCompleteInput
             fullWidth
             label="Modelo"
@@ -173,7 +168,8 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={2.2}>
+
+        <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Ano Modelo"
@@ -187,7 +183,8 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={2.5}>
+
+        <Grid item size={{ xs: 12, md: 3 }}>
           <AutoCompleteInput
             fullWidth
             label="Tabela de Preço"
@@ -201,7 +198,8 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={2.3}>
+
+        <Grid item size={{ xs: 12, md: 3 }}>
           <InputLabel className="mb-1">Valor Protegido</InputLabel>
           <CurrencyInput
             fullWidth
@@ -222,7 +220,7 @@ function ClientVehicleForm({
           />
         </Grid>
       </Grid>
-    </Box>
+    </Card>
   );
 }
 

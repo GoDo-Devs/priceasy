@@ -8,6 +8,7 @@ function AutoCompleteInput({
   onInputChange,
   width = "100%",
   freeSolo = false,
+  maxLength,
   ...rest
 }) {
   return (
@@ -61,6 +62,14 @@ function AutoCompleteInput({
             {...params}
             variant="outlined"
             size="small"
+            slotProps={{
+              input: {
+                inputProps: {
+                  ...params.inputProps,
+                  ...(maxLength ? { maxLength } : {}),
+                }
+              }
+            }}
             sx={{
               height: 40,
               ".MuiInputBase-root": {

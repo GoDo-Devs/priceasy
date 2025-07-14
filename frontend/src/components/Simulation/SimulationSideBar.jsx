@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Box, Typography, Button, Divider } from "@mui/material";
+import { Box, Typography, Button, Divider, Card, Stack } from "@mui/material";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import { useNavigate } from "react-router-dom";
 import SuccessModal from "@/components/Modal/SucessModal";
 import ErrorModal from "@/components/Modal/ErrorModal";
-
 import { generatePdf } from "@/utils/generatePdf";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
 import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
@@ -12,7 +11,7 @@ import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
 function SimulationSideBar() {
   const navigate = useNavigate();
   const { simulation: baseSimulation, client } = useSimulation();
-  const { simulation, loading } = useCompleteSimulation(baseSimulation);
+  const { simulation } = useCompleteSimulation(baseSimulation);
   const { rangeDetails, saveSimulation } = useSimulationEffects();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -40,24 +39,18 @@ function SimulationSideBar() {
   };
 
   return (
-    <Box
+   <Card
+      elevation={0}
+      className="p-4"
       sx={{
-        width: "30%",
-        height: "auto",
-        borderRadius: 2,
-        overflowY: "auto",
-        backgroundColor: "#1D1420",
-        color: "white",
-        p: 3,
-        fontFamily: "Roboto, sans-serif",
-        fontSize: "0.9rem",
+        height: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" mb={4} fontWeight="bold" textAlign="center">
+        <Typography variant="h6" mb={4} fontWeight="bold">
           Resumo da Cotação
         </Typography>
 
@@ -101,7 +94,7 @@ function SimulationSideBar() {
         </Box>
         <Divider sx={{ mb: 2 }} />
 
-        <Box mb={1} display="flex" justifyContent="space-between">
+        <Stack direction="row" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Cota de Participação
           </Typography>
@@ -115,29 +108,20 @@ function SimulationSideBar() {
                 : formatBRL(rangeDetails.franchiseValue)
               : "-"}
           </Typography>
-        </Box>
+        </Stack>
         <Divider sx={{ mb: 2 }} />
       </Box>
 
-      <Button
-        variant="contained"
-        color="secondary"
-        size="small"
-        sx={{ alignSelf: "flex-end", mt: 2 }}
-        onClick={handleSave}
-      >
-        Salvar
-      </Button>
-
-      <Button
-        variant="outlined"
-        color="success"
-        size="small"
-        sx={{ alignSelf: "flex-end", mt: 1 }}
-        onClick={() => setOpenSuccessModal(true)}
-      >
-        Abrir Modal de Sucesso (teste)
-      </Button>
+      <Box>
+        <Button
+          variant="contained"
+          color="secondary"
+          fullWidth
+          onClick={handleSave}
+        >
+          Salvar
+        </Button>
+      </Box>
 
       <SuccessModal
         open={openSuccessModal}
@@ -151,7 +135,6 @@ function SimulationSideBar() {
             alert("Dados da simulação ou cliente ausentes!");
             return;
           }
-
           generatePdf(client, simulation, rangeDetails);
         }}
         onSendEmail={() => alert("Implementar função enviar e-mail")}
@@ -165,7 +148,7 @@ function SimulationSideBar() {
         title="Erro ao salvar a cotação"
         message={errorMessage}
       />
-    </Box>
+    </Card>
   );
 }
 

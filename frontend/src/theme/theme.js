@@ -10,7 +10,7 @@ const theme = createTheme({
     },
     background: {
       main: "#4d566b",
-      paper: "#1a1d24",
+      paper: "#1D1420",
       default: "#120815",
     },
     secondary: {
@@ -23,6 +23,7 @@ const theme = createTheme({
       main: "#1a1d24",
       light: "#1a1d24",
       dark: "#1a1d24",
+      'cardBg': "#1D1420",
       contrastText: "#fff",
     },
   },

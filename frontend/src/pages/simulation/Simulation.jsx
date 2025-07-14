@@ -1,13 +1,18 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
 import SimulationContent from "@/components/Simulation/SimulationContent.jsx";
 import SimulationSideBar from "@/components/Simulation/SimulationSideBar.jsx";
 import { SimulationProvider } from "@/contexts/SimulationContext.jsx";
-import PageTitle from "@/components/PageTitle/PageTitle.jsx";
-
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
+import { useEffect } from "react";
 
 function SimulationInner() {
   const { loading } = useSimulationEffects();
+  
+  useEffect(() => {
+    setTimeout(() => {
+      window.dispatchEvent(new Event("closeDrawer"));
+    }, 100);
+  }, []);
 
   if (loading) {
     return (
@@ -23,14 +28,23 @@ function SimulationInner() {
   }
 
   return (
-    <Box padding={3}>
-      <PageTitle title="Cotação" />
-      <Box mt={2} sx={{ display: "flex", gap: 2 }}>
+    <Grid
+      container
+      sx={{
+        justifyContent: "space-between",
+        alignItems: "stretch",
+      }}
+      p={2}
+      spacing={2}
+    >
+      <Grid size={{ xs: 12, md: 9 }}>
         <SimulationContent />
+      </Grid>
+      <Grid size={{ xs: 12, md: 3 }}>
         <SimulationSideBar />
-      </Box>
-    </Box>
-  );
+      </Grid>
+    </Grid>
+  );  
 }
 
 export default function Simulation() {

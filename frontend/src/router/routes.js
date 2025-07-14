@@ -11,7 +11,6 @@ import Service from "@/pages/service/Service.jsx";
 import Plan from "@/pages/plan/Plan.jsx";
 import PlanAdd from "@/pages/plan/PlanAdd.jsx";
 import PriceTable from "../pages/price-table/PriceTable";
-
 import HomeIcon from "@mui/icons-material/Home";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";

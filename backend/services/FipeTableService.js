@@ -7,6 +7,9 @@ class FipeTableService {
   constructor() {
     this.http = new axios.create({
       baseURL: "https://veiculos.fipe.org.br/api/veiculos",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      }
     });
   }
 
@@ -19,6 +22,7 @@ class FipeTableService {
   }
 
   async searchBrands(vehicleTypeCode) {
+    console.log(vehicleTypeCode)
     const response = await this.http.post("/ConsultarMarcas", {
       codigoTabelaReferencia: this.referenceTable,
       codigoTipoVeiculo: vehicleTypeCode,

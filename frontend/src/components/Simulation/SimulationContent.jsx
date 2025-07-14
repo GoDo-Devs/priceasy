@@ -42,14 +42,7 @@ function SimulationContent() {
   };
 
   return (
-    <Box
-      sx={{
-        width: "100%",
-        height: "auto",
-        borderRadius: "8px",
-        overflowY: "auto",
-      }}
-    >
+    <Box>
       <ClientVehicleForm
         vehicleType={vehicleType}
         brand={brand}

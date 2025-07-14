@@ -6,17 +6,28 @@ import {
   Toolbar,
   Typography,
   Stack,
-  Collapse,
 } from "@mui/material";
 import { guardedAuthenticatedRoutes } from "@/router/routes.js";
 import ListLink from "../components/DrawerLinks/ListLink.jsx";
 import { ExitToApp } from "@mui/icons-material";
 import { AuthContext } from "@/contexts/authContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import GroupLink from "../components/DrawerLinks/GroupLink.jsx";
 
 function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
   const { handleLogout } = useContext(AuthContext);
+
+  useEffect(() => {
+    const handleGlobalCloseDrawer = () => {
+      setOpenDrawer(false);
+    };
+
+    window.addEventListener("closeDrawer", handleGlobalCloseDrawer);
+
+    return () => {
+      window.removeEventListener("closeDrawer", handleGlobalCloseDrawer);
+    };
+  }, [setOpenDrawer]);
 
   return (
     <Drawer
