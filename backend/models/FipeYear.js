@@ -13,12 +13,12 @@ class FipeYear extends Model {
 FipeYear.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
       autoIncrement: true,
     },
     year: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     fuel: {
@@ -26,7 +26,7 @@ FipeYear.init(
       allowNull: false,
     },
     fipe_model_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "fipe_models",

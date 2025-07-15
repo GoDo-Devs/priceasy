@@ -14,7 +14,7 @@ class FipeBrand extends Model {
 FipeBrand.init(
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
     },
     name: {
@@ -22,7 +22,7 @@ FipeBrand.init(
       allowNull: false,
     },
     vehicle_type_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "vehicle_types",

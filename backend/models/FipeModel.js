@@ -14,7 +14,7 @@ class FipeModel extends Model {
 FipeModel.init(  
   {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       primaryKey: true,
     },
     name: {
@@ -22,7 +22,7 @@ FipeModel.init(
       allowNull: false,
     },
     fipe_brand_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
       references: {
         model: "fipe_brands",
