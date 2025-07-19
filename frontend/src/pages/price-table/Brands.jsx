@@ -19,8 +19,8 @@ function Brands({ priceTable, setPriceTable }) {
         .post("/fipe/brands", { vehicleType: priceTable.vehicle_type_id })
         .then((res) => {
           const options = res.data.brands.map((brand) => ({
-            value: brand.Value,
-            label: brand.Label,
+            value: brand.id,
+            label: brand.name,
           }));
           setBrands(options);
           setLoadingBrands(false);

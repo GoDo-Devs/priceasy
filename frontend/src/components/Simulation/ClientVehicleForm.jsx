@@ -6,6 +6,7 @@ import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import AutoCompleteInput from "@/components/Form/AutoCompleteInput.jsx";
 import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useSearchParams } from "react-router";
 
 function ClientVehicleForm({
   vehicleType,
@@ -14,6 +15,9 @@ function ClientVehicleForm({
   year,
   priceTableNames,
 }) {
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const isEditing = Boolean(id);
   const { client, setClient, simulation, setSimulation } = useSimulation();
   const [cpfOptions, setCpfOptions] = useState([]);
 
@@ -43,8 +47,7 @@ function ClientVehicleForm({
       const { name, phone } = res.data;
       setClient((prev) => ({ ...prev, name, phone }));
     } catch (err) {
-      if (err.response?.status === 404) {
-      } else {
+      if (err.response?.status !== 404) {
         console.error("Erro ao buscar cliente:", err);
       }
     }
@@ -76,10 +79,10 @@ function ClientVehicleForm({
             name="name"
             value={client.name ?? ""}
             onChange={(e) => setClient({ ...client, name: e.target.value })}
+            disabled={isEditing}
             required
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 3 }}>
           <AutoCompleteInput
             freeSolo
@@ -93,10 +96,10 @@ function ClientVehicleForm({
               setClient((prev) => ({ ...prev, cpf: raw }));
               if (raw.length === 11) fetchClientData(raw);
             }}
+            disabled={isEditing}
             required
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 2.5 }}>
           <TextInput
             fullWidth
@@ -108,10 +111,10 @@ function ClientVehicleForm({
               const raw = e.target.value.replace(/\D/g, "");
               setClient((prev) => ({ ...prev, phone: raw }));
             }}
+            disabled={isEditing}
             required
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 2 }}>
           <SelectInput
             fullWidth
@@ -133,7 +136,6 @@ function ClientVehicleForm({
             }))}
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
@@ -143,14 +145,13 @@ function ClientVehicleForm({
             onChange={(val) =>
               setSimulation({
                 ...simulation,
-                brand_id: val,
+                brand_id: Number(val),
                 model_id: "",
                 year: "",
               })
             }
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 5 }}>
           <AutoCompleteInput
             fullWidth
@@ -160,7 +161,7 @@ function ClientVehicleForm({
             onChange={(val) =>
               setSimulation({
                 ...simulation,
-                model_id: val,
+                model_id: Number(val),
                 year: "",
                 price_table_id: null,
                 plan_id: null,
@@ -168,22 +169,25 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Ano Modelo"
             value={simulation.year}
             options={year}
-            onChange={(val) =>
+            onChange={(val) => {
+              const selected = year.find(
+                (y) => y.value === val || y.label === val
+              );
               setSimulation({
                 ...simulation,
-                year: val,
-              })
-            }
+                year: Number(selected?.value || ""),
+                modelYearLabel: selected?.label || "",
+                fuel: selected?.fuel ?? "",
+              });
+            }}
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 3 }}>
           <AutoCompleteInput
             fullWidth
@@ -193,12 +197,11 @@ function ClientVehicleForm({
             onChange={(val) =>
               setSimulation({
                 ...simulation,
-                price_table_id: val,
+                price_table_id: Number(val),
               })
             }
           />
         </Grid>
-
         <Grid item size={{ xs: 12, md: 3 }}>
           <InputLabel className="mb-1">Valor Protegido</InputLabel>
           <CurrencyInput

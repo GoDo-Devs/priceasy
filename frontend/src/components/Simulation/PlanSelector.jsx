@@ -28,6 +28,16 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
     );
   }
 
+  // Função para atualizar seleção de plano de forma única
+  const handleSelectPlan = (plan) => {
+    setSimulation((prev) => ({
+      ...prev,
+      plan_id: plan.id,
+      monthlyFee: plan.basePrice,
+      selectedProducts: {}, // se precisar manter produtos, ajuste aqui
+    }));
+  };
+
   return (
     <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
@@ -47,24 +57,12 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
               border="1px solid #4d566b"
               borderRadius={1}
               sx={{ cursor: "pointer" }}
-              onClick={() =>
-                setSimulation((prev) => ({
-                  ...prev,
-                  plan_id: plan.id,
-                  monthlyFee: plan.basePrice,
-                  selectedProducts: {},
-                }))
-              }
+              onClick={() => handleSelectPlan(plan)}
             >
               <Box display="flex" alignItems="center" flexGrow={1}>
                 <Radio
                   checked={isSelected}
-                  onChange={() =>
-                    setSimulation((prev) => ({
-                      ...prev,
-                      plan_id: plan.id,
-                    }))
-                  }
+                  onChange={() => handleSelectPlan(plan)}
                   color="primary"
                   onClick={(e) => e.stopPropagation()}
                 />

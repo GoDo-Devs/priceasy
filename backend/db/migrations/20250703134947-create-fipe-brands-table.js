@@ -13,7 +13,7 @@ export default {
         type: Sequelize.STRING
       },
       vehicle_type_id: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         references: {
           model: 'vehicle_types',
           key: 'id'

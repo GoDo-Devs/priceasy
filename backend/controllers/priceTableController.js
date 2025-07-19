@@ -136,22 +136,14 @@ export default class PriceTableController {
   }
 
   static async getPlansByPriceTableModelValue(req, res) {
-    const { price_table_id, vehiclePrice, model_id } = req.body;
+    const price_table_id = Number(req.body.price_table_id);
+    const model_id = Number(req.body.model_id);
+    const vehiclePrice = Number(req.body.vehiclePrice);
 
-    if (
-      !price_table_id ||
-      typeof price_table_id !== "number" ||
-      !vehiclePrice ||
-      !model_id
-    ) {
+    if (isNaN(price_table_id) || isNaN(model_id) || isNaN(vehiclePrice)) {
       return res
         .status(400)
         .json({ message: "Dados inválidos ou incompletos." });
-    }
-
-    const vehiclePriceNumber = parsePriceString(vehiclePrice);
-    if (vehiclePriceNumber === null) {
-      return res.status(400).json({ message: "Valor do veículo inválido." });
     }
 
     try {
@@ -171,9 +163,7 @@ export default class PriceTableController {
       }
 
       const selectedRange = priceTable.ranges.find((range) => {
-        return (
-          vehiclePriceNumber >= range.min && vehiclePriceNumber <= range.max
-        );
+        return vehiclePrice >= range.min && vehiclePrice <= range.max;
       });
 
       if (!selectedRange) {

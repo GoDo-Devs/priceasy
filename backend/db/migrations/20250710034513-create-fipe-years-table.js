@@ -8,7 +8,7 @@ export default {
         allowNull: false,
         primaryKey: true,
         autoIncrement: true,
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
       },
       year: {
         type: Sequelize.STRING,

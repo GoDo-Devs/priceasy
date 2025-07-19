@@ -15,7 +15,8 @@ import useGroupedModels from "@/hooks/useGroupedModels";
 function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
   const groupedModels = useGroupedModels(models);
   const modelsFromTable = priceTable.models || [];
-  const modelsValue = modelsFromTable.map((b) => Number(b.Value));
+  console.log(modelsFromTable)
+  const modelsValue = modelsFromTable.map((b) => Number(b.id));
   const [openGroups, setOpenGroups] = useState({});
 
   const toggleGroup = (groupName) => {
@@ -35,15 +36,15 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
 
     if (checked) {
       const selected = models.find(
-        (model) => Number(model.Value) === checkboxValue
+        (model) => Number(model.id) === checkboxValue
       );
       updatedModels = [...modelsFromTable, selected].filter(
         (model, index, self) =>
-          index === self.findIndex((m) => m.Value === model.Value)
+          index === self.findIndex((m) => m.id === model.id)
       );
     } else {
       updatedModels = modelsFromTable.filter(
-        (model) => Number(model.Value) !== checkboxValue
+        (model) => Number(model.id) !== checkboxValue
       );
     }
 
@@ -59,12 +60,12 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
     if (checked) {
       updatedModels = [...modelsFromTable, ...groupModels].filter(
         (model, index, self) =>
-          index === self.findIndex((m) => m.Value === model.Value)
+          index === self.findIndex((m) => m.id === model.id)
       );
     } else {
-      const groupValues = groupModels.map((m) => m.Value);
+      const groupValues = groupModels.map((m) => m.id);
       updatedModels = modelsFromTable.filter(
-        (model) => !groupValues.includes(model.Value)
+        (model) => !groupValues.includes(model.id)
       );
     }
 
@@ -100,7 +101,7 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
         Object.entries(groupedModels).map(([groupName, groupModels]) => {
           const total = groupModels.length;
           const selectedCount = groupModels.filter((model) =>
-            isModelSelected(model.Value)
+            isModelSelected(model.id)
           ).length;
 
           const allGroupSelected = selectedCount === total;
@@ -111,9 +112,8 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
               key={groupName}
               sx={{
                 mb: 1,
-                border: "1px solid",
+                borderBottom: "1px solid",
                 borderColor: "primary.main",
-                borderRadius: 2,
                 padding: 0,
               }}
             >
@@ -161,15 +161,15 @@ function ModelsGroup({ models = [], priceTable, setPriceTable, loading }) {
                 >
                   {groupModels.map((model) => (
                     <FormControlLabel
-                      key={model.Value}
+                      key={model.id}
                       control={
                         <Checkbox
-                          value={model.Value}
-                          checked={isModelSelected(model.Value)}
+                          value={model.id}
+                          checked={isModelSelected(model.id)}
                           onChange={handleCheckboxChange}
                         />
                       }
-                      label={model.Label}
+                      label={model.name}
                       sx={{
                         width: "48%",
                         ml: 0,
