@@ -13,6 +13,9 @@ export default class SimulationController {
         protectedValue,
         selectedProducts,
         plan_id,
+        fipeValue,
+        fipeCode,
+        name,
         monthlyFee,
         implementList,
       } = req.body;
@@ -28,6 +31,9 @@ export default class SimulationController {
       const simulation = await Simulation.create({
         user_id,
         client_id,
+        fipeValue: fipeValue ?? null,
+        fipeCode: fipeCode ?? null,
+        name: name ?? null,
         vehicle_type_id: vehicle_type_id ?? null,
         brand_id: brand_id ?? null,
         model_id: model_id ?? null,
@@ -90,6 +96,9 @@ export default class SimulationController {
       protectedValue,
       selectedProducts,
       plan_id,
+      fipeValue,
+      fipeCode,
+      name,
       monthlyFee,
       implementList,
     } = req.body;
@@ -102,6 +111,9 @@ export default class SimulationController {
       }
 
       await simulation.update({
+        fipeValue: fipeValue ?? null,
+        fipeCode: fipeCode ?? null,
+        name: name ?? null,
         vehicle_type_id: vehicle_type_id ?? simulation.vehicle_type_id,
         brand_id: brand_id ?? simulation.brand_id,
         model_id: model_id ?? simulation.model_id,

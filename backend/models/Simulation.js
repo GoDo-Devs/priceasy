@@ -81,6 +81,18 @@ Simulation.init(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
+    fipeValue : {
+      type: DataTypes.FLOAT,
+      allowNull: true,
+    },
+    fipeCode: {
+      type: DataTypes.STRING,
+       allowNull: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: true
+    },
     plan_id: {
       type: DataTypes.INTEGER,
       allowNull: true,

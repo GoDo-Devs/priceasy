@@ -260,6 +260,10 @@ export default function useSimulationEffects() {
           : {};
 
         setSimulation({
+          id: sim.id,
+          fipeCode: sim.fipeCode,
+          fipeValue: sim.fipeValue,
+          name: sim.name,
           vehicle_type_id: sim.vehicle_type_id,
           brand_id: sim.brand_id,
           model_id: sim.model_id,
@@ -327,6 +331,9 @@ export default function useSimulationEffects() {
       }));
 
       const simulationPayload = {
+        fipeCode: simulation.fipeCode,
+        fipeValue: simulation.fipeValue,
+        name: simulation.name,
         vehicle_type_id: simulation.vehicle_type_id,
         brand_id: Number(simulation.brand_id),
         model_id: Number(simulation.model_id),
@@ -352,6 +359,8 @@ export default function useSimulationEffects() {
       return false;
     }
   };
+
+  console.log(simulation);
 
   return {
     vehicleType,
