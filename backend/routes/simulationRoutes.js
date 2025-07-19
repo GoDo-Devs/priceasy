@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.post("/create", [checkToken], SimulationController.createSimulation);
 router.get("/", [checkToken], SimulationController.getAllSimulations);
-router.get("/:id",[checkToken], SimulationController.getSimulationById); 
+router.get("/:id", [checkToken], SimulationController.getSimulationById);
+router.put("/:id", [checkToken], SimulationController.updateSimulationById);
 
 export default router;

@@ -22,7 +22,7 @@ FipeBrand.init(
       allowNull: false,
     },
     vehicle_type_id: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: false,
       references: {
         model: "vehicle_types",

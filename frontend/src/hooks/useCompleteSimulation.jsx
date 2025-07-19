@@ -14,26 +14,31 @@ export function useCompleteSimulation(simulationInitial) {
       }
 
       try {
-        const planRes = await useHttp.get(`/plans/${simulationInitial.plan_id}`);
+        const planRes = await useHttp.get(
+          `/plans/${simulationInitial.plan_id}`
+        );
         const planName = planRes.data.name;
 
-        const planServicesRes = await useHttp.get(`/plan-services/${simulationInitial.plan_id}`);
-        const serviceIds = planServicesRes.data.map(ps => ps.id);
+        const planServicesRes = await useHttp.get(
+          `/plan-services/${simulationInitial.plan_id}`
+        );
+        const serviceIds = planServicesRes.data.map((ps) => ps.id);
 
         const servicesRes = await useHttp.get(`/services`);
         const allServices = servicesRes.data.services;
 
-        const filteredServices = allServices.filter(s => serviceIds.includes(s.id));
+        const filteredServices = allServices.filter((s) =>
+          serviceIds.includes(s.id)
+        );
 
         const cobertura = filteredServices
-          .filter(s => s.category_id === 1)
-          .map(s => s.name);
+          .filter((s) => s.category_id === 1)
+          .map((s) => s.name);
 
         const assist24 = filteredServices
-          .filter(s => s.category_id === 2)
-          .map(s => s.name);
+          .filter((s) => s.category_id === 2)
+          .map((s) => s.name);
 
-        // Produtos selecionados
         const selectedProducts = simulationInitial.selectedProducts || {};
         const productIds = Object.keys(selectedProducts);
 
@@ -55,11 +60,16 @@ export function useCompleteSimulation(simulationInitial) {
         if (simulationInitial.price_table_id && simulationInitial.plan_id) {
           try {
             const payload = {
-              price_table_id: simulationInitial.price_table_id,
-              model_id: simulationInitial.model_id,
-              plan_id: simulationInitial.plan_id,
+              price_table_id: Number(simulationInitial.price_table_id),
+              model_id: Number(simulationInitial.model_id),
+              vehiclePrice: Number(simulationInitial.protectedValue),
             };
-            const rangeDetailsRes = await useHttp.post("/price-tables/plans", payload);
+
+            const rangeDetailsRes = await useHttp.post(
+              "/price-tables/plans",
+              payload
+            );
+
             fetchedRangeDetails = rangeDetailsRes.data.rangeDetails || {};
           } catch (err) {
             console.error("Erro ao buscar rangeDetails:", err);
@@ -78,7 +88,6 @@ export function useCompleteSimulation(simulationInitial) {
           products,
           implementList: simulationInitial.implementList || [],
         });
-
       } catch (err) {
         console.error("Erro ao buscar dados do plano e serviços:", err);
         setSimulation(simulationInitial);

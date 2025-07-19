@@ -49,7 +49,7 @@ export default {
         allowNull: true,
       },
       year: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: true,
       },
       price_table_id: {
@@ -63,7 +63,7 @@ export default {
         onDelete: "SET DEFAULT",
       },
       protectedValue: {
-        type: Sequelize.DECIMAL(10, 2),
+        type: Sequelize.FLOAT,
         allowNull: true,
       },
       plan_id: {

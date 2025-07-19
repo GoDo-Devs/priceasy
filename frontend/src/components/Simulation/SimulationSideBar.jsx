@@ -23,6 +23,8 @@ function SimulationSideBar() {
     return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
   };
 
+  console.log(simulation)
+
   const handleSave = async () => {
     const success = await saveSimulation(simulation, rangeDetails);
 
@@ -94,7 +96,7 @@ function SimulationSideBar() {
         </Box>
         <Divider sx={{ mb: 2 }} />
 
-        <Stack direction="row" justifyContent="space-between">
+        <Stack mb={1} direction="row" justifyContent="space-between">
           <Typography variant="subtitle2" color="text.secondary">
             Cota de Participação
           </Typography>

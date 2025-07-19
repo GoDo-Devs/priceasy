@@ -1,14 +1,24 @@
 import FipeTableService from "../services/FipeTableService.js";
+import VehicleType from "../models/VehicleType.js";
+import FipeBrand from "../models/FipeBrand.js";
+import FipeModel from "../models/FipeModel.js";
+import FipeYear from "../models/FipeYear.js";
 
-class FipeController {
+export default class FipeController {
   static async getBrands(req, res) {
     const { vehicleType } = req.body;
-    const fipeService = new FipeTableService();
+
+    const vehicleTypeId = await VehicleType.findByPk(vehicleType);
+
+    if (!vehicleTypeId) {
+      res.status(404).json({ message: "Tipo de veículo não encontrado!" });
+      return;
+    }
 
     try {
-      await fipeService.setReferenceTable();
-
-      const brands = await fipeService.searchBrands(vehicleType);
+      const brands = await FipeBrand.findAll({
+        where: { vehicle_type_id: vehicleType },
+      });
 
       return res.status(200).json({
         brands: brands,
@@ -20,42 +30,65 @@ class FipeController {
 
   static async getModels(req, res) {
     const { vehicleType, brandCode } = req.body;
-    const fipeService = new FipeTableService();
+
+    const vehicleTypeId = await VehicleType.findByPk(vehicleType);
+    if (!vehicleTypeId) {
+      return res
+        .status(404)
+        .json({ message: "Tipo de veículo não encontrado!" });
+    }
+
+    const brand = await FipeBrand.findByPk(brandCode);
+    if (!brand) {
+      return res.status(404).json({ message: "Marca não encontrada!" });
+    }
 
     try {
-      await fipeService.setReferenceTable();
-
-      const models = await fipeService.searchModels(vehicleType, brandCode);
-
-      return res.status(200).json({
-        models: models["Modelos"],
+      const models = await FipeModel.findAll({
+        where: {
+          fipe_brand_id: brandCode,
+        },
       });
+
+      return res.status(200).json({ models: models });
     } catch (e) {
-      res.status(400).json({ error: e.message });
+      return res.status(400).json({ error: e.message });
     }
   }
 
   static async getModelYear(req, res) {
     const { vehicleType, brandCode, modelCode } = req.body;
-    const fipeService = new FipeTableService();
+
+    const vehicleTypeId = await VehicleType.findByPk(vehicleType);
+    if (!vehicleTypeId) {
+      return res
+        .status(404)
+        .json({ message: "Tipo de veículo não encontrado!" });
+    }
+
+    const brand = await FipeBrand.findByPk(brandCode);
+    if (!brand) {
+      return res.status(404).json({ message: "Marca não encontrada!" });
+    }
+
+    const model = await FipeModel.findByPk(modelCode)
+    if (!model) {
+      return res.status(404).json({ message: "Modelo não encontrado!" });
+    }
 
     try {
-      await fipeService.setReferenceTable();
-
-      const years = await fipeService.searchModelYear(
-        vehicleType,
-        brandCode,
-        modelCode
-      );
-
-      return res.status(200).json({
-        years: years,
+      const years = await FipeYear.findAll({
+        where: {
+          fipe_model_id: modelCode,
+        },
       });
+
+      return res.status(200).json({ years: years });
     } catch (e) {
-      res.status(400).json({ error: e.message });
+      return res.status(400).json({ error: e.message });
     }
   }
-
+  
   static async getPrice(req, res) {
     const { vehicleType, brandCode, modelCode, modelYear, fuelType } = req.body;
     const fipeService = new FipeTableService();
@@ -79,5 +112,3 @@ class FipeController {
     }
   }
 }
-
-export default FipeController;

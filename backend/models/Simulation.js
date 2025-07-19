@@ -66,7 +66,7 @@ Simulation.init(
       allowNull: true,
     },
     year: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     price_table_id: {
@@ -78,7 +78,7 @@ Simulation.init(
       },
     },
     protectedValue: {
-      type: DataTypes.DECIMAL(10, 2),
+      type: DataTypes.FLOAT,
       allowNull: true,
     },
     plan_id: {

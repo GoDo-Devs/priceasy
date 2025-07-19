@@ -1,4 +1,5 @@
 import { Autocomplete, TextField, InputLabel } from "@mui/material";
+import { useState } from "react";
 
 function AutoCompleteInput({
   label,
@@ -8,9 +9,20 @@ function AutoCompleteInput({
   onInputChange,
   width = "100%",
   freeSolo = false,
-  maxLength,
   ...rest
 }) {
+  const [inputValue, setInputValue] = useState("");
+
+  // Seleciona o objeto da lista que corresponde ao value atual
+  const selectedOption = freeSolo
+    ? value
+    : options.find((opt) => {
+        return (
+          String(opt.value) === String(value) ||
+          String(opt.label) === String(value)
+        );
+      }) || null;
+
   return (
     <div style={{ width }}>
       <InputLabel sx={{ mb: 0.5 }}>{label}</InputLabel>
@@ -20,41 +32,43 @@ function AutoCompleteInput({
         options={options}
         getOptionLabel={(option) => {
           if (freeSolo) {
-            // Para freeSolo, o valor pode ser string ou objeto
             if (typeof option === "string") return option;
             return option.label || "";
           }
-          // Para não freeSolo, o valor deve ser objeto
           return option.label || "";
         }}
         isOptionEqualToValue={(option, val) => {
           if (freeSolo) {
             if (typeof option === "string") return option === val;
-            return option.value === val || option.label === val;
+            return (
+              String(option.value) === String(val) ||
+              String(option.label) === String(val)
+            );
           }
-          return option.value === val;
+          return (
+            String(option.value) === String(val?.value) ||
+            String(option.label) === String(val?.label)
+          );
         }}
         onChange={(event, newValue) => {
           if (freeSolo) {
             if (typeof newValue === "string") {
               onChange?.(newValue);
-            } else if (newValue?.value) {
+            } else if (newValue?.value !== undefined) {
               onChange?.(newValue.value);
             } else {
               onChange?.("");
             }
           } else {
-            onChange?.(newValue?.value || "");
+            onChange?.(newValue?.value ?? "");
           }
         }}
         onInputChange={(event, newInputValue, reason) => {
-          if (onInputChange) onInputChange(newInputValue);
+          setInputValue(newInputValue);
+          onInputChange?.(newInputValue);
         }}
-        value={
-          freeSolo
-            ? value
-            : options.find((option) => option.value === value) || null
-        }
+        value={selectedOption}
+        inputValue={inputValue}
         clearIcon={null}
         popupIcon={null}
         renderInput={(params) => (
@@ -62,14 +76,6 @@ function AutoCompleteInput({
             {...params}
             variant="outlined"
             size="small"
-            slotProps={{
-              input: {
-                inputProps: {
-                  ...params.inputProps,
-                  ...(maxLength ? { maxLength } : {}),
-                }
-              }
-            }}
             sx={{
               height: 40,
               ".MuiInputBase-root": {

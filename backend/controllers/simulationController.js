@@ -78,4 +78,50 @@ export default class SimulationController {
       return res.status(500).json({ error: "Erro ao buscar simulação." });
     }
   }
+
+  static async updateSimulationById(req, res) {
+    const { id } = req.params;
+    const {
+      vehicle_type_id,
+      brand_id,
+      model_id,
+      year,
+      price_table_id,
+      protectedValue,
+      selectedProducts,
+      plan_id,
+      monthlyFee,
+      implementList,
+    } = req.body;
+
+    try {
+      const simulation = await Simulation.findOne({ where: { id } });
+
+      if (!simulation) {
+        return res.status(404).json({ error: "Simulação não encontrada." });
+      }
+
+      await simulation.update({
+        vehicle_type_id: vehicle_type_id ?? simulation.vehicle_type_id,
+        brand_id: brand_id ?? simulation.brand_id,
+        model_id: model_id ?? simulation.model_id,
+        year: year ?? simulation.year,
+        price_table_id: price_table_id ?? simulation.price_table_id,
+        protectedValue: protectedValue ?? simulation.protectedValue,
+        selectedProducts: Array.isArray(selectedProducts)
+          ? selectedProducts
+          : simulation.selectedProducts,
+        plan_id: plan_id ?? simulation.plan_id,
+        monthlyFee: monthlyFee ?? simulation.monthlyFee,
+        implementList: Array.isArray(implementList)
+          ? implementList
+          : simulation.implementList,
+      });
+
+      return res.status(200).json(simulation);
+    } catch (error) {
+      console.error("Erro ao atualizar simulação:", error);
+      return res.status(500).json({ error: "Erro ao atualizar simulação." });
+    }
+  }
 }
