@@ -66,6 +66,18 @@ export default {
         type: Sequelize.FLOAT,
         allowNull: true,
       },
+      fipeValue: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
+      },
+      fipeCode: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      name: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       plan_id: {
         type: Sequelize.INTEGER,
         allowNull: true,
