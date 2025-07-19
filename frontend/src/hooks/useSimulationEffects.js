@@ -260,6 +260,7 @@ export default function useSimulationEffects() {
           : {};
 
         setSimulation({
+          id: sim.id,
           vehicle_type_id: sim.vehicle_type_id,
           brand_id: sim.brand_id,
           model_id: sim.model_id,
