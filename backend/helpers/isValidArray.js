@@ -1,4 +1,4 @@
-const isValidArray = async (data, model, req, res) => {
+const isValidArray = async (data, model) => {
   if (data && Array.isArray(data)) {
     const validData = await model.findAll({
       where: { id: data },
@@ -9,9 +9,7 @@ const isValidArray = async (data, model, req, res) => {
     const invalidIds = data.filter((id) => !validIds.includes(id));
 
     if (invalidIds.length > 0) {
-      return res.status(400).json({
-        message: `Tipos de veículo inválidos`,
-      });
+      throw new Error(`Ids inválidos: ${invalidIds.join(", ")}`);
     }
 
     return validIds;

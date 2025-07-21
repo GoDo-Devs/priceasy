@@ -9,6 +9,7 @@ function AutoCompleteInput({
   onInputChange,
   width = "100%",
   freeSolo = false,
+  disabled = false, 
   ...rest
 }) {
   const [inputValue, setInputValue] = useState("");
@@ -71,6 +72,7 @@ function AutoCompleteInput({
         inputValue={inputValue}
         clearIcon={null}
         popupIcon={null}
+        disabled={disabled} 
         renderInput={(params) => (
           <TextField
             {...params}

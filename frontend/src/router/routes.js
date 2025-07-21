@@ -25,6 +25,8 @@ import MiscellaneousServicesIcon from "@mui/icons-material/MiscellaneousServices
 import DiscountIcon from "@mui/icons-material/Discount";
 import PriceChangeIcon from "@mui/icons-material/PriceChange";
 import PriceTableAdd from "../pages/price-table/PriceTableAdd";
+import LocalActivityIcon from '@mui/icons-material/LocalActivity';
+import Coupon from "../pages/coupon/Coupon";
 
 export const guardedAuthenticatedRoutes = [
   {
@@ -97,6 +99,12 @@ export const guardedAuthenticatedRoutes = [
             label: "Veículos",
             icon: LocalShippingIcon,
             Component: VehicleCategory,
+          },
+          {
+            path: "/cupons",
+            label: "Cupons",
+            icon: LocalActivityIcon,
+            Component: Coupon,
           },
           {
             path: "/usuarios",

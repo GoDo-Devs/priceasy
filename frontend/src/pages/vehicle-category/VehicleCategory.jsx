@@ -52,6 +52,7 @@ function VehicleCategory() {
           }}
           variant="contained"
           color="primary"
+          size="small"
         >
           Nova Categoria
           <AddIcon sx={{ ml: 1 }} />

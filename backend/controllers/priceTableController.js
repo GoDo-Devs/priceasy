@@ -109,101 +109,107 @@ export default class PriceTableController {
     }
   }
 
-  static async getPriceTablesByModelValue(req, res) {
-    const { model } = req.body;
-
-    if (!model || typeof model !== "number") {
-      return res
-        .status(400)
-        .json({ message: "Modelo inválido ou não informado." });
-    }
+  static async getPriceTablesByFilter(req, res) {
+    const { model, vehicle_type_id } = req.body;
 
     try {
       const allTables = await PriceTable.findAll();
 
-      const filteredTables = allTables.filter((table) => {
-        return Array.isArray(table.models) && table.models.includes(model);
-      });
+      if (vehicle_type_id) {
+        const filteredByVehicleType = allTables.filter(
+          (table) => table.vehicle_type_id === vehicle_type_id
+        );
+        return res.status(200).json({ priceTables: filteredByVehicleType });
+      }
 
-      return res.status(200).json({ priceTables: filteredTables });
+      if (model && typeof model === "number") {
+        const filteredByModel = allTables.filter(
+          (table) => Array.isArray(table.models) && table.models.includes(model)
+        );
+        return res.status(200).json({ priceTables: filteredByModel });
+      }
+
+      return res.status(200).json({ priceTables: allTables });
     } catch (error) {
-      console.error("Erro ao buscar tabelas por modelo:", error);
+      console.error("Erro ao buscar tabelas de preço:", error);
       return res.status(500).json({
-        message: "Erro ao buscar tabelas de preço pelo modelo.",
+        message: "Erro ao buscar tabelas de preço.",
         error: error.message,
       });
     }
   }
 
   static async getPlansByPriceTableModelValue(req, res) {
-    const price_table_id = Number(req.body.price_table_id);
-    const model_id = Number(req.body.model_id);
-    const vehiclePrice = Number(req.body.vehiclePrice);
+  const price_table_id = Number(req.body.price_table_id);
+  const model_id = req.body.model_id !== undefined ? Number(req.body.model_id) : null;
+  const vehicle_type_id = req.body.vehicle_type_id !== undefined ? Number(req.body.vehicle_type_id) : null;
+  const vehiclePrice = Number(req.body.vehiclePrice);
 
-    if (isNaN(price_table_id) || isNaN(model_id) || isNaN(vehiclePrice)) {
-      return res
-        .status(400)
-        .json({ message: "Dados inválidos ou incompletos." });
-    }
-
-    try {
-      const priceTable = await PriceTable.findByPk(price_table_id);
-
-      if (!priceTable) {
-        return res
-          .status(404)
-          .json({ message: "Tabela de preço não encontrada." });
-      }
-
-      if (!priceTable.models.includes(model_id)) {
-        return res.status(404).json({
-          message:
-            "O modelo informado não pertence à tabela de preço selecionada.",
-        });
-      }
-
-      const selectedRange = priceTable.ranges.find((range) => {
-        return vehiclePrice >= range.min && vehiclePrice <= range.max;
-      });
-
-      if (!selectedRange) {
-        return res.status(404).json({
-          message: "Nenhum intervalo encontrado para o valor informado.",
-        });
-      }
-
-      const planIdsInRange = selectedRange.pricePlanId.map((p) => p.plan_id);
-      const plans = await Plan.findAll({ where: { id: planIdsInRange } });
-
-      const result = plans.map((plan) => {
-        const priceInfo = selectedRange.pricePlanId.find(
-          (p) => p.plan_id === plan.id
-        );
-        return {
-          id: plan.id,
-          name: plan.name,
-          basePrice: priceInfo?.basePrice ?? null,
-        };
-      });
-
-      return res.status(200).json({
-        plans: result,
-        rangeDetails: {
-          accession: selectedRange.accession,
-          quota: selectedRange.quota,
-          installationPrice: selectedRange.installationPrice,
-          franchiseValue: selectedRange.franchiseValue,
-          isFranchisePercentage: selectedRange.isFranchisePercentage,
-        },
-      });
-    } catch (error) {
-      console.error("Erro ao buscar planos:", error);
-      return res.status(500).json({
-        message: "Erro ao buscar planos para a tabela de preço.",
-        error: error.message,
-      });
-    }
+  if (isNaN(price_table_id) || isNaN(vehiclePrice)) {
+    return res.status(400).json({ message: "Dados inválidos ou incompletos." });
   }
+
+  if (vehicle_type_id !== 4 && (model_id === null || isNaN(model_id))) {
+    return res.status(400).json({ message: "Modelo inválido ou não informado." });
+  }
+
+  try {
+    const priceTable = await PriceTable.findByPk(price_table_id);
+
+    if (!priceTable) {
+      return res.status(404).json({ message: "Tabela de preço não encontrada." });
+    }
+
+    if (vehicle_type_id !== 4) {
+      if (!Array.isArray(priceTable.models) || !priceTable.models.includes(model_id)) {
+        return res.status(404).json({
+          message: "O modelo informado não pertence à tabela de preço selecionada.",
+        });
+      }
+    }
+
+
+    const selectedRange = priceTable.ranges.find((range) => {
+      return vehiclePrice >= range.min && vehiclePrice <= range.max;
+    });
+
+    if (!selectedRange) {
+      return res.status(404).json({
+        message: "Nenhum intervalo encontrado para o valor informado.",
+      });
+    }
+
+    const planIdsInRange = selectedRange.pricePlanId.map((p) => p.plan_id);
+    const plans = await Plan.findAll({ where: { id: planIdsInRange } });
+
+    const result = plans.map((plan) => {
+      const priceInfo = selectedRange.pricePlanId.find((p) => p.plan_id === plan.id);
+      return {
+        id: plan.id,
+        name: plan.name,
+        basePrice: priceInfo?.basePrice ?? null,
+      };
+    });
+
+    return res.status(200).json({
+      plans: result,
+      rangeDetails: {
+        accession: selectedRange.accession,
+        quota: selectedRange.quota,
+        installationPrice: selectedRange.installationPrice,
+        franchiseValue: selectedRange.franchiseValue,
+        isFranchisePercentage: selectedRange.isFranchisePercentage,
+      },
+    });
+  } catch (error) {
+    console.error("Erro ao buscar planos:", error);
+    return res.status(500).json({
+      message: "Erro ao buscar planos para a tabela de preço.",
+      error: error.message,
+    });
+  }
+}
+
 
   static async getPriceTableId(req, res) {
     const id = req.params.id;

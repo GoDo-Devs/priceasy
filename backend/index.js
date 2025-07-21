@@ -19,6 +19,8 @@ import priceTableRoutes from "./routes/priceTableRoutes.js"
 import fipeRoutes from "./routes/fipeRoutes.js";
 import simulationRoutes from "./routes/simulationRoutes.js";
 import pdfRoutes from "./routes/pdfRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js"
+import userCouponRoutes from "./routes/userCouponRoutes.js"
 
 app.use(bodyParser.json());
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
@@ -41,6 +43,8 @@ app.use("/price-tables", priceTableRoutes);
 app.use("/fipe", fipeRoutes);
 app.use("/simulations", simulationRoutes);
 app.use("/pdf", pdfRoutes);
+app.use("/coupons", couponRoutes);
+app.use("/user-coupons", userCouponRoutes);
 
 app.listen(4000, "0.0.0.0", () => {
   console.log("Backend running on port 4000");
