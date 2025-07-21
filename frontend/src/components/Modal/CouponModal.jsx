@@ -6,13 +6,14 @@ import {
   InputLabel,
   Typography,
   Box,
-  Switch,
-  FormControlLabel,
+  Stack,
+  Chip,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
 import DateInput from "@/components/Form/DateInput.jsx";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
+import SelectUsersModal from "@/components/Modal/SelectUsersModal.jsx";
 import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
 import dayjs from "dayjs";
@@ -20,6 +21,7 @@ import dayjs from "dayjs";
 function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const [selectUsersModalOpen, setSelectUsersModalOpen] = useState(false);
 
   useEffect(() => {
     if (coupon && open) {
@@ -133,40 +135,30 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
         <InputLabel sx={{ marginLeft: "22px" }} className="text-white mb-1">
           Porcentagem de Desconto
         </InputLabel>
-        <CurrencyInput
-          value={coupon.discountPercentage}
-          onChange={(value) =>
-            setCoupon({ ...coupon, discountPercentage: value })
-          }
-          padding={"0px 22px"}
-          prefix=""
-          suffix="%"
-        />
+        <Box padding={"0px 22px"}>
+          <CurrencyInput
+            value={coupon.discountPercentage}
+            onChange={(value) =>
+              setCoupon({ ...coupon, discountPercentage: value })
+            }
+            prefix=""
+            suffix="%"
+          />
+        </Box>
       </Box>
       <Box sx={{ padding: "0px 22px" }}>
-        <InputLabel className="text-white mb-1">Selecionar Usuários</InputLabel>
-        {users.map((user) => (
-          <Box key={user.id} display="flex" alignItems="center">
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={selectedUserIds.includes(user.id)}
-                  onChange={() => toggleUser(user.id)}
-                  color="primary"
-                />
-              }
-              label={user.name}
-              sx={{
-                display: "block",
-                "& .MuiFormControlLabel-label": {
-                  fontSize: "0.9rem",
-                },
-              }}
-            />
-          </Box>
-        ))}
+        <Typography variant="body2" mt={1} mb={1}>
+          {selectedUserIds.length} usuário(s) selecionado(s)
+        </Typography>
+        <Button
+          sx={{ marginBottom: 1 }}
+          variant="contained"
+          fullWidth
+          onClick={() => setSelectUsersModalOpen(true)}
+        >
+          Selecionar Usuários
+        </Button>
       </Box>
-
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
@@ -178,6 +170,12 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
           Salvar
         </Button>
       </DialogActions>
+      <SelectUsersModal
+        open={selectUsersModalOpen}
+        onClose={() => setSelectUsersModalOpen(false)}
+        selectedUserIds={selectedUserIds}
+        setSelectedUserIds={setSelectedUserIds}
+      />
     </Dialog>
   );
 }
