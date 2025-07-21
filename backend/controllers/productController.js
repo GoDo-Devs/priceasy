@@ -25,12 +25,7 @@ export default class ProductController {
     );
 
     try {
-      const validIds = await isValidArray(
-        vehicle_type_ids,
-        VehicleType,
-        req,
-        res
-      );
+      const validIds = await isValidArray(vehicle_type_ids, VehicleType);
 
       const newProduct = await Product.create({
         name: name.trim(),
