@@ -70,7 +70,7 @@ function ClientVehicleForm({
   }
 
   return (
-    <Card elevation={0} className="p-5">
+    <Card sx={{borderRadius: 2}} elevation={0} className="p-5">
       <Grid container spacing={2}>
         <Grid item size={{ xs: 12, md: 4.5 }}>
           <TextInput

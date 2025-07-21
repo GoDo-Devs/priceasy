@@ -28,13 +28,12 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
     );
   }
 
-  // Função para atualizar seleção de plano de forma única
   const handleSelectPlan = (plan) => {
     setSimulation((prev) => ({
       ...prev,
       plan_id: plan.id,
       monthlyFee: plan.basePrice,
-      selectedProducts: {}, // se precisar manter produtos, ajuste aqui
+      selectedProducts: {},
     }));
   };
 
