@@ -92,6 +92,10 @@ export default {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
+      valueSelectedProducts: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
       implementList: {
         type: Sequelize.JSON,
         allowNull: true,
@@ -100,6 +104,33 @@ export default {
         type: Sequelize.JSON,
         allowNull: true,
       },
+      discountedAccession: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      discountedMonthlyFee: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      discountedInstallationPrice: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      discountedAccessionCouponId: {
+        type: Sequelize.UUID,
+        allowNull: true, 
+      },
+
+      discountedMonthlyFeeCouponId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+
+      discountedInstallationPriceCouponId: {
+        type: Sequelize.UUID,
+        allowNull: true,
+      },
+
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

@@ -18,6 +18,13 @@ export default class SimulationController {
         name,
         monthlyFee,
         implementList,
+        discountedAccession,
+        discountedAccessionCouponId,
+        discountedMonthlyFee,
+        discountedMonthlyFeeCouponId,
+        discountedInstallationPrice,
+        discountedInstallationPriceCouponId,
+        valueSelectedProducts,
       } = req.body;
 
       const user_id = req.user?.id;
@@ -46,6 +53,14 @@ export default class SimulationController {
         plan_id: plan_id ?? null,
         monthlyFee: monthlyFee ?? null,
         implementList: Array.isArray(implementList) ? implementList : [],
+        discountedAccession: discountedAccession ?? null,
+        discountedAccessionCouponId: discountedAccessionCouponId ?? null,
+        discountedMonthlyFee: discountedMonthlyFee ?? null,
+        discountedMonthlyFeeCouponId: discountedMonthlyFeeCouponId ?? null,
+        discountedInstallationPrice: discountedInstallationPrice ?? null,
+        discountedInstallationPriceCouponId:
+          discountedInstallationPriceCouponId ?? null,
+        valueSelectedProducts: valueSelectedProducts ?? null,
       });
 
       return res.status(201).json(simulation);
@@ -101,6 +116,13 @@ export default class SimulationController {
       name,
       monthlyFee,
       implementList,
+      discountedAccession,
+      discountedAccessionCouponId,
+      discountedMonthlyFee,
+      discountedMonthlyFeeCouponId,
+      discountedInstallationPrice,
+      discountedInstallationPriceCouponId,
+      valueSelectedProducts,
     } = req.body;
 
     try {
@@ -128,6 +150,22 @@ export default class SimulationController {
         implementList: Array.isArray(implementList)
           ? implementList
           : simulation.implementList,
+        discountedAccession:
+          discountedAccession ?? simulation.discountedAccession,
+        discountedAccessionCouponId:
+          discountedAccessionCouponId ?? simulation.discountedAccessionCouponId,
+        discountedMonthlyFee:
+          discountedMonthlyFee ?? simulation.discountedMonthlyFee,
+        discountedMonthlyFeeCouponId:
+          discountedMonthlyFeeCouponId ??
+          simulation.discountedMonthlyFeeCouponId,
+        discountedInstallationPrice:
+          discountedInstallationPrice ?? simulation.discountedInstallationPrice,
+        discountedInstallationPriceCouponId:
+          discountedInstallationPriceCouponId ??
+          simulation.discountedInstallationPriceCouponId,
+        valueSelectedProducts:
+          valueSelectedProducts ?? simulation.valueSelectedProducts,
       });
 
       return res.status(200).json(simulation);

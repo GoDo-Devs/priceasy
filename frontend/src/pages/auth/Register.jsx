@@ -127,10 +127,9 @@ function Register({ user = {}, onCreate = () => {} }) {
             )
           }
           onChange={handleChange}
-          placeholder={isEditing ? "Só preencha se for trocar a senha" : ""}
+          placeholder={isEditing ? "Preencha se for trocar a senha" : ""}
           errors={errors}
         />
-
         {!isEditing && (
           <TextInput
             label="Confirmação de Senha"

@@ -5,6 +5,12 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
   const noTable = !simulation.price_table_id;
   const noPlans = plans.length === 0;
 
+  const formatBRL = (value) => {
+    const num = Number(value);
+    if (isNaN(num)) return "-";
+    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  };
+
   if (noTable || noPlans) {
     return (
       <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
@@ -66,7 +72,10 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
                   onClick={(e) => e.stopPropagation()}
                 />
                 <Typography>
-                  {plan.name} - R$ {plan.basePrice.toFixed(2)}
+                  {plan.name} - {formatBRL(plan.basePrice)}
+                  {simulation.valueSelectedProducts > 0
+                    ? ` + ${formatBRL(simulation.valueSelectedProducts)}`
+                    : ""}
                 </Typography>
               </Box>
               {isSelected && (

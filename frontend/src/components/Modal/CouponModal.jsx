@@ -6,17 +6,22 @@ import {
   InputLabel,
   Typography,
   Box,
-  Stack,
-  Chip,
+  FormControlLabel,
+  Checkbox,
+  Paper,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
-import DateInput from "@/components/Form/DateInput.jsx";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
+import SelectInput from "@/components/Form/SelectInput.jsx";
 import SelectUsersModal from "@/components/Modal/SelectUsersModal.jsx";
 import useHttp from "@/services/useHttp.js";
-import Paper from "@mui/material/Paper";
-import dayjs from "dayjs";
+
+const targetOptions = [
+  { value: "accession", label: "Adesão" },
+  { value: "monthlyFee", label: "Mensalidade" },
+  { value: "installationPrice", label: "Rastreador" },
+];
 
 function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
   const [users, setUsers] = useState([]);
@@ -24,41 +29,42 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
   const [selectUsersModalOpen, setSelectUsersModalOpen] = useState(false);
 
   useEffect(() => {
-    if (coupon && open) {
-      if (coupon.validity && typeof coupon.validity === "string") {
-        setCoupon((prev) => ({
-          ...prev,
-          validity: dayjs(prev.validity),
-        }));
+    if (!open) return;
+
+    const fetchData = async () => {
+      try {
+        const resUsers = await useHttp.get("/users");
+        setUsers(resUsers.data.users || []);
+      } catch {
+        setUsers([]);
       }
 
-      useHttp
-        .get("/users")
-        .then((response) => {
-          setUsers(response.data.users || []);
-        })
-        .catch(() => setUsers([]));
-
-      if (coupon.id) {
-        useHttp
-          .get(`/user-coupons/${coupon.id}`)
-          .then((res) => {
-            setSelectedUserIds(res.data || []);
-          })
-          .catch(() => setSelectedUserIds([]));
+      if (coupon?.id) {
+        try {
+          const resUserCoupons = await useHttp.get(
+            `/user-coupons/${coupon.id}`
+          );
+          setSelectedUserIds(resUserCoupons.data || []);
+        } catch {
+          setSelectedUserIds([]);
+        }
       } else {
         setSelectedUserIds([]);
       }
-    }
-  }, [coupon, open]);
+    };
 
-  const toggleUser = (userId) => {
-    setSelectedUserIds((prev) =>
-      prev.includes(userId)
-        ? prev.filter((id) => id !== userId)
-        : [...prev, userId]
-    );
-  };
+    fetchData();
+  }, [coupon?.id, open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    setCoupon((prev) => ({
+      ...prev,
+      is_active: prev?.is_active ?? true,
+      target: prev?.target || "accession",
+    }));
+  }, [open]);
 
   useEffect(() => {
     if (!open) {
@@ -66,33 +72,48 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
     }
   }, [open]);
 
+  const handleChange = useCallback(
+    (field) => (e) => {
+      const value = e?.target?.value ?? e;
+      setCoupon((prev) => ({ ...prev, [field]: value }));
+    },
+    [setCoupon]
+  );
+
+  const handleCheckboxChange = (field) => (e) => {
+    setCoupon((prev) => ({ ...prev, [field]: e.target.checked }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const payload = {
+      ...coupon,
+      users_ids: selectedUserIds,
+    };
+
+
     try {
-      const payload = {
-        ...coupon,
-        validity: coupon.validity ? coupon.validity.toISOString() : null,
-        users_ids: selectedUserIds,
-      };
-
-      if (coupon.id) {
+      if (coupon?.id) {
         await useHttp.patch(`/coupons/${coupon.id}`, payload);
-        const updatedCoupon = { ...payload, id: coupon.id };
         setCoupons((prev) =>
-          prev.map((c) => (c.id === coupon.id ? updatedCoupon : c))
+          prev.map((c) =>
+            c.id === coupon.id ? { ...payload, id: coupon.id } : c
+          )
         );
-
-        console.log("Cupom atualizado:", updatedCoupon);
       } else {
-        await useHttp.post("/coupons/create/", payload);
-        setCoupons((prev) => [...prev, payload]);
+        const res = await useHttp.post("/coupons/create/", payload);
+        setCoupons((prev) => [...prev, res.data]);
       }
+
       onClose();
     } catch (error) {
       console.error("Erro ao salvar o cupom:", error);
     }
   };
+
+  console.log(selectedUserIds)
+  console.log(coupon)
 
   return (
     <Dialog
@@ -114,51 +135,61 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
     >
       <DialogContent>
         <Typography variant="h5" mb={3} align="center" gutterBottom>
-          {coupon.id ? "Editar Cupom" : "Criar Cupom"}
+          {coupon?.id ? "Editar Cupom" : "Criar Cupom"}
         </Typography>
         <TextInput
           label="Nome do Cupom"
           name="name"
           className="mb-5"
           value={coupon.name || ""}
-          onChange={(e) => setCoupon({ ...coupon, name: e.target.value })}
-          required
-        ></TextInput>
-        <DateInput
-          label="Selecionar Validade"
-          value={coupon.validity || null}
-          onChange={(newValue) => setCoupon({ ...coupon, validity: newValue })}
+          onChange={handleChange("name")}
           required
         />
-      </DialogContent>
-      <Box mb={2}>
-        <InputLabel sx={{ marginLeft: "22px" }} className="text-white mb-1">
+        <InputLabel className="text-white mb-1 mt-5">
           Porcentagem de Desconto
         </InputLabel>
-        <Box padding={"0px 22px"}>
-          <CurrencyInput
-            value={coupon.discountPercentage}
-            onChange={(value) =>
-              setCoupon({ ...coupon, discountPercentage: value })
+        <CurrencyInput
+          value={coupon.discountPercentage}
+          onChange={handleChange("discountPercentage")}
+          prefix=""
+          suffix="%"
+        />
+        <SelectInput
+          label="Aplicação de Desconto"
+          name="target"
+          className="mb-3 mt-5"
+          value={coupon.target || ""}
+          onChange={handleChange("target")}
+          options={targetOptions}
+        />
+        <Box
+          mt={2}
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="is_active"
+                checked={coupon.is_active}
+                onChange={handleCheckboxChange("is_active")}
+              />
             }
-            prefix=""
-            suffix="%"
+            label="Ativo"
           />
+          <Typography variant="body2">
+            {selectedUserIds.length} usuário(s) selecionado(s)
+          </Typography>
         </Box>
-      </Box>
-      <Box sx={{ padding: "0px 22px" }}>
-        <Typography variant="body2" mt={1} mb={1}>
-          {selectedUserIds.length} usuário(s) selecionado(s)
-        </Typography>
         <Button
-          sx={{ marginBottom: 1 }}
           variant="contained"
           fullWidth
           onClick={() => setSelectUsersModalOpen(true)}
         >
           Selecionar Usuários
         </Button>
-      </Box>
+      </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button

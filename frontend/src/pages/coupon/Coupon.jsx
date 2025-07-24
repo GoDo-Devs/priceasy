@@ -11,8 +11,9 @@ function Coupon() {
   const [openModal, setOpenModal] = useState(false);
   const [coupon, setCoupon] = useState({
     name: "",
-    validity: "",
+    is_active: true,
     discountPercentage: "",
+    target: "",
   });
 
   const handleEdit = (id) => {
@@ -58,7 +59,12 @@ function Coupon() {
         setCoupons={setCoupons}
         onClose={() => {
           setOpenModal(false);
-          setCoupon({ name: "", validity: "", discountPercentage: "" });
+          setCoupon({
+            name: "",
+            is_active: true,
+            discountPercentage: "",
+            target: "",
+          });
         }}
       />
     </Box>

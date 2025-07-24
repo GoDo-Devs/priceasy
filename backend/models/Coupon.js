@@ -23,14 +23,19 @@ Coupon.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    validity: {
-      type: DataTypes.DATE,
+    is_active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
       allowNull: false,
     },
     discountPercentage: {
       type: DataTypes.NUMBER,
       allowNull: false,
-    }
+    },
+    target: {
+      type: DataTypes.ENUM("accession", "monthlyFee", "installationPrice"),
+      allowNull: false,
+    },
   },
   {
     sequelize,

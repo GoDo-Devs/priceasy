@@ -119,11 +119,11 @@ export default function useSimulationEffects() {
     if (brand_id && model_id && year && fuel && vehicle_type_id !== 4) {
       useHttp
         .post(`/fipe/price`, {
-          vehicleType: vehicle_type_id,
-          brandCode: brand_id,
-          modelCode: model_id,
-          modelYear: year,
-          fuelType: fuel,
+          vehicleType: Number(vehicle_type_id),
+          brandCode: Number(brand_id),
+          modelCode: Number(model_id),
+          modelYear: Number(year),
+          fuelType: Number(fuel),
         })
         .then((res) => {
           const rawValue = res.data.consultResult.Valor;
@@ -289,6 +289,7 @@ export default function useSimulationEffects() {
           : {};
 
         setSimulation({
+          user_id: sim.user_id,
           id: sim.id,
           fipeCode: sim.fipeCode,
           fipeValue: sim.fipeValue,
@@ -303,6 +304,14 @@ export default function useSimulationEffects() {
           plan_id: sim.plan_id,
           monthlyFee: sim.monthlyFee,
           implementList: sim.implementList || [],
+          discountedAccession: sim.discountedAccession,
+          discountedAccessionCouponId: sim.discountedAccessionCouponId,
+          discountedMonthlyFee: sim.discountedMonthlyFee,
+          discountedMonthlyFeeCouponId: sim.discountedMonthlyFeeCouponId,
+          discountedInstallationPrice: sim.discountedInstallationPrice,
+          discountedInstallationPriceCouponId:
+            sim.discountedInstallationPriceCouponId,
+          valueSelectedProducts: sim.valueSelectedProducts ?? null,
         });
 
         if (sim.client_id) {
@@ -360,6 +369,7 @@ export default function useSimulationEffects() {
       }));
 
       const simulationPayload = {
+        user_id: simulation.user_id,
         fipeCode: simulation.fipeCode,
         fipeValue: simulation.fipeValue,
         name: simulation.name,
@@ -373,23 +383,32 @@ export default function useSimulationEffects() {
         monthlyFee: simulation.monthlyFee,
         selectedProducts: selectedProductsArray,
         implementList: simulation.implementList || [],
+        discountedAccession: simulation.discountedAccession,
+        discountedAccessionCouponId: simulation.discountedAccessionCouponId,
+        discountedMonthlyFee: simulation.discountedMonthlyFee,
+        discountedMonthlyFeeCouponId: simulation.discountedMonthlyFeeCouponId,
+        discountedInstallationPrice: simulation.discountedInstallationPrice,
+        discountedInstallationPriceCouponId:
+          simulation.discountedInstallationPriceCouponId,
+        valueSelectedProducts: simulation.valueSelectedProducts ?? null,
       };
 
       if (!simulation.id) {
         simulationPayload.client_id = clientId;
-        await useHttp.post("/simulations/create", simulationPayload);
+        const { data } = await useHttp.post(
+          "/simulations/create",
+          simulationPayload
+        );
+        return data;
       } else {
         await useHttp.put(`/simulations/${simulation.id}`, simulationPayload);
+        return { id: simulation.id };
       }
-
-      return true;
     } catch (err) {
       console.error("Erro ao salvar a simulação:", err);
       return false;
     }
   };
-
-  console.log(simulation);
 
   return {
     vehicleType,

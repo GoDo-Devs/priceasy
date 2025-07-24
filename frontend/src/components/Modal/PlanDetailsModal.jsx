@@ -85,13 +85,18 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   const isProductSelected = (product) =>
     selectedProducts[product.product_group_id] === product.id;
 
-  const monthlyFee = useMemo(() => {
-    const selectedIds = Object.values(selectedProducts).filter(Boolean);
-    const totalProducts = products.reduce((sum, p) => {
-      return selectedIds.includes(p.id) ? sum + p.price : sum;
+  const valueSelectedProducts = useMemo(() => {
+    return products.reduce((sum, p) => {
+      return selectedProducts[p.product_group_id] === p.id
+        ? sum + p.price
+        : sum;
     }, 0);
-    return plan.basePrice + totalProducts;
-  }, [selectedProducts, products, plan.basePrice]);
+  }, [selectedProducts, products]);
+
+  const monthlyFee = useMemo(
+    () => plan.basePrice + valueSelectedProducts,
+    [plan.basePrice, valueSelectedProducts]
+  );
 
   return (
     <Dialog
@@ -220,7 +225,13 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         </Button>
         <Button
           onClick={() => {
-            if (onSave) onSave(monthlyFee, selectedProducts, plan.id);
+            if (onSave)
+              onSave({
+                planId: plan.id,
+                monthlyFee: plan.basePrice,
+                valueSelectedProducts,
+                selectedProducts,
+              });
             onClose();
           }}
           variant="contained"
