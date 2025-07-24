@@ -5,7 +5,8 @@ import isAdmin from "../middlewares/isAdmin.js";
 
 const router = express.Router();
 
-router.get('/', [checkToken, isAdmin], userController.getAll)
+router.get("/", [checkToken, isAdmin], userController.getAll);
+router.post("/by-id", [checkToken, isAdmin], userController.getUserById);
 router.delete("/:id", [checkToken, isAdmin], userController.removeUserById);
 
 export default router;

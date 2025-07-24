@@ -40,10 +40,24 @@ export function useColumnsCoupons() {
       Cell: ({ cell }) => `${cell.getValue()}%`,
     },
     {
-      accessorKey: "validity",
-      header: "Validade",
+      accessorKey: "target",
+      header: "Aplicação do Desconto",
       size: 50,
-      Cell: ({ cell }) => formatDate(cell.getValue()),
+      Cell: ({ cell }) => {
+        const value = cell.getValue();
+        const targetMap = {
+          installationPrice: "Rastreador",
+          accession: "Adesão",
+          monthlyFee: "Mensalidade",
+        };
+        return targetMap[value] || value;
+      },
+    },
+    {
+      accessorKey: "is_active",
+      header: "Situação",
+      size: 50,
+      Cell: ({ cell }) => (cell.getValue() ? "Ativo" : "Inativo"),
     },
   ];
 

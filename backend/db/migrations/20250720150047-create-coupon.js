@@ -14,12 +14,17 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      validity: {
-        type: Sequelize.DATE,
+      is_active: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
+        defaultValue: 0,
       },
       discountPercentage: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      target: {
+        type: Sequelize.ENUM("accession", "monthlyFee", "installationPrice"),
         allowNull: false,
       },
       created_at: {

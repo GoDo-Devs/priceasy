@@ -81,17 +81,17 @@ Simulation.init(
       type: DataTypes.FLOAT,
       allowNull: true,
     },
-    fipeValue : {
+    fipeValue: {
       type: DataTypes.FLOAT,
       allowNull: true,
     },
     fipeCode: {
       type: DataTypes.STRING,
-       allowNull: true,
+      allowNull: true,
     },
     name: {
       type: DataTypes.STRING,
-      allowNull: true
+      allowNull: true,
     },
     plan_id: {
       type: DataTypes.INTEGER,
@@ -105,12 +105,40 @@ Simulation.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
+    valueSelectedProducts: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
     implementList: {
       type: DataTypes.JSON,
       allowNull: true,
     },
     selectedProducts: {
       type: DataTypes.JSON,
+      allowNull: true,
+    },
+    discountedAccession: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    discountedMonthlyFee: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    discountedInstallationPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    discountedAccessionCouponId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    discountedMonthlyFeeCouponId: {
+      type: DataTypes.UUID,
+      allowNull: true,
+    },
+    discountedInstallationPriceCouponId: {
+      type: DataTypes.UUID,
       allowNull: true,
     },
   },

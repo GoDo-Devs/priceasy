@@ -1,7 +1,18 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../db/index.js";
 
-class UserCoupon extends Model {}
+class UserCoupon extends Model {
+  static associate(models) {
+    UserCoupon.belongsTo(models.Coupon, {
+      foreignKey: "coupon_id",
+      as: "Coupon",
+    });
+    UserCoupon.belongsTo(models.User, {
+      foreignKey: "user_id",
+      as: "User",
+    });
+  }
+}
 
 UserCoupon.init(
   {
@@ -19,7 +30,7 @@ UserCoupon.init(
       },
     },
     coupon_id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: "coupons",

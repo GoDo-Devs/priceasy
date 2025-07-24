@@ -18,6 +18,23 @@ function formatCurrency(value) {
   });
 }
 
+function formatPercentage(value) {
+  if (value == null) return "-";
+  return `${value}%`;
+}
+
+function formatValueWithDiscount(real, discounted, isPercentage = false) {
+  const formatFn = isPercentage ? formatPercentage : formatCurrency;
+  if (discounted == null || Number(discounted) === Number(real)) {
+    return formatFn(real);
+  } else {
+    return `
+      ${formatFn(discounted)}&nbsp;
+      <span style="text-decoration: line-through;">${formatFn(real)}</span>
+    `;
+  }
+}
+
 function loadTemplate(fileName) {
   const filePath = path.join(templatesDir, fileName);
   if (!fs.existsSync(filePath)) {
@@ -33,30 +50,38 @@ router.post("/generate", async (req, res) => {
       JSON.stringify(req.body, null, 2)
     );
 
-    const { client, simulation, rangeDetails = {} } = req.body;
+    const { client, simulation, rangeDetails = {}, consultant } = req.body;
 
     if (!client || !simulation) {
       return res.status(400).send("Dados incompletos para gerar o PDF.");
     }
 
-    // Prepara dados
     const nomeCliente = client.name?.toUpperCase?.() || "CLIENTE";
     const veiculoDesc = `${simulation.name?.toUpperCase() || ""} ${
       simulation.modelYear || ""
     }`.trim();
     const fipeCode = simulation.fipeCode || "";
     const valorFipe = formatCurrency(simulation.fipeValue);
+
     const planName = simulation.plan?.name || "PLANO DESCONHECIDO";
     const cobertura = simulation.plan?.cobertura || [];
     const assist24 = simulation.plan?.assist24 || [];
+
     const implementList = simulation.implementList || [];
     const selectedProducts = simulation.selectedProducts || {};
     const allProducts = simulation.products || [];
     const { monthlyFee } = simulation;
 
-    // Funções para gerar linhas das tabelas
+    const consultantName = consultant?.name?.toUpperCase() || "-";
+    const consultantEmail = consultant?.email || "-";
+
     const generateListRows = (items) =>
-      items.map((item) => `<tr><td>${item}</td></tr>`).join("");
+      items
+        .map(
+          (item) =>
+            `<tr><td colspan="2" style="padding: 4px 8px;">${item}</td></tr>`
+        )
+        .join("");
 
     const generateImplementRows = () =>
       implementList
@@ -68,7 +93,6 @@ router.post("/generate", async (req, res) => {
 
     const generateProductRows = () => {
       if (Array.isArray(selectedProducts)) {
-        // Caso seja array (ex: [{ product_id: 1, quantity: 2 }])
         return selectedProducts
           .map(({ product_id }) => {
             const p = allProducts.find(
@@ -80,7 +104,6 @@ router.post("/generate", async (req, res) => {
           })
           .join("");
       } else {
-        // Caso seja objeto { id: quantidade }
         return Object.entries(selectedProducts)
           .map(([id]) => {
             const p = allProducts.find((p) => String(p.id) === id);
@@ -92,11 +115,14 @@ router.post("/generate", async (req, res) => {
       }
     };
 
-    // Carrega templates e substitui placeholders
+
+    const coberturaRows = generateListRows(cobertura);
+    const assistenciasRows = generateListRows(assist24);
+
     const planTable = loadTemplate("table-plan.html")
       .replace("{{PLAN_NAME}}", planName)
-      .replace("{{COBERTURAS}}", generateListRows(cobertura))
-      .replace("{{ASSISTENCIAS}}", generateListRows(assist24));
+      .replace("{{COBERTURAS}}", coberturaRows)
+      .replace("{{ASSISTENCIAS}}", assistenciasRows);
 
     const implementTable = implementList.length
       ? loadTemplate("table-implements.html").replace(
@@ -117,18 +143,49 @@ router.post("/generate", async (req, res) => {
       : "";
 
     const quoteTable = loadTemplate("table-quote.html")
-      .replace("{{MENSALIDADE}}", formatCurrency(monthlyFee))
-      .replace("{{TAXA_MATRICULA}}", formatCurrency(rangeDetails.accession))
+      .replace("{{MENSALIDADE_REAL}}", formatCurrency(monthlyFee))
       .replace(
-        "{{COTA_PARTICIPACAO}}",
-        rangeDetails.isFranchisePercentage
-          ? `${rangeDetails.franchiseValue}%`
-          : formatCurrency(rangeDetails.franchiseValue)
+        "{{MENSALIDADE_DESCONTO}}",
+        formatValueWithDiscount(monthlyFee, simulation.discountedMonthlyFee)
       )
       .replace(
-        "{{RASTREADOR}}",
+        "{{TAXA_MATRICULA_REAL}}",
+        formatCurrency(rangeDetails.accession)
+      )
+      .replace(
+        "{{TAXA_MATRICULA_DESCONTO}}",
+        formatValueWithDiscount(
+          rangeDetails.accession,
+          simulation.discountedAccession
+        )
+      )
+      .replace(
+        "{{COTA_PARTICIPACAO_REAL}}",
+        formatPercentage(rangeDetails.franchiseValue)
+      )
+      .replace(
+        "{{COTA_PARTICIPACAO_DESCONTO}}",
+        formatValueWithDiscount(
+          rangeDetails.franchiseValue,
+          simulation.discountedFranchiseValue,
+          true
+        )
+      )
+      .replace(
+        "{{RASTREADOR_REAL}}",
         formatCurrency(rangeDetails.installationPrice)
+      )
+      .replace(
+        "{{RASTREADOR_DESCONTO}}",
+        formatValueWithDiscount(
+          rangeDetails.installationPrice,
+          simulation.discountedInstallationPrice
+        )
       );
+
+    const consultantTable = loadTemplate("table-consultant.html")
+      .replace("{{CONSULTOR_NOME}}", consultantName)
+      .replace("{{CONSULTOR_EMAIL}}", consultantEmail);
 
     const baseHtml = loadTemplate("base.html")
       .replace("{{LOGO_BASE64}}", logoBase64)
@@ -137,10 +194,7 @@ router.post("/generate", async (req, res) => {
         "{{DATA}}",
         new Date(simulation.createdAt || Date.now()).toLocaleDateString(
           "pt-BR",
-          {
-            day: "2-digit",
-            month: "2-digit",
-          }
+          { day: "2-digit", month: "2-digit" }
         )
       )
       .replace("{{NOME_CLIENTE}}", nomeCliente)
@@ -150,9 +204,9 @@ router.post("/generate", async (req, res) => {
       .replace("{{TABLE_PLAN}}", planTable)
       .replace("{{TABLE_IMPLEMENT}}", implementTable)
       .replace("{{TABLE_PRODUCTS}}", productsTable)
-      .replace("{{TABLE_QUOTE}}", quoteTable);
+      .replace("{{TABLE_QUOTE}}", quoteTable)
+      .replace("{{TABLE_CONSULTANT}}", consultantTable);
 
-    // Debug: log do HTML gerado (evite logar muito em produção)
     console.log("HTML gerado para PDF:", baseHtml.substring(0, 500) + "...");
 
     const browser = await chromium.launch({
@@ -170,22 +224,23 @@ router.post("/generate", async (req, res) => {
 
     await browser.close();
 
+    const filename = simulation?.id
+      ? `proposta_${simulation.id}.pdf`
+      : `proposta.pdf`;
+
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=proposta_${
-        simulation.id || "cliente"
-      }.pdf`,
+      "Content-Disposition": `attachment; filename="${filename}"`,
       "Content-Length": pdfBuffer.length,
     });
 
     res.send(pdfBuffer);
   } catch (err) {
     console.error("Erro ao gerar PDF:", err);
-    if (err.stack) console.error(err.stack);
-    // Retorna mensagem de erro mais detalhada no header para ajudar no frontend (cuidado em prod)
-    res
-      .status(500)
-      .send({ error: "Erro interno ao gerar PDF", message: err.message });
+    res.status(500).send({
+      error: "Erro interno ao gerar PDF",
+      message: err.message,
+    });
   }
 });
 

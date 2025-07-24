@@ -3,23 +3,18 @@ import User from "../models/User.js";
 import UserCoupon from "../models/UserCoupon.js";
 import isValidArray from "../helpers/isValidArray.js";
 
+const ALLOWED_TARGETS = ["accession", "monthlyFee", "installationPrice"];
+
 export default class CouponController {
   static async create(req, res) {
-    const { name, validity, discountPercentage, users_ids } = req.body;
+    const { name, is_active, discountPercentage, target, users_ids } = req.body;
 
     try {
-      const couponExists = await Coupon.findOne({ where: { name } });
-
-      if (couponExists) {
-        return res.status(422).json({
-          message: "Cupom já cadastrado, por favor utilize outro nome!",
-        });
-      }
-
-      const date = new Date(validity);
-      if (isNaN(date.getTime())) {
+      if (!ALLOWED_TARGETS.includes(target)) {
         return res.status(400).json({
-          message: "A validade do cupom deve ser uma data válida.",
+          message: `O campo 'target' deve ser um dos seguintes valores: ${ALLOWED_TARGETS.join(
+            ", "
+          )}.`,
         });
       }
 
@@ -32,13 +27,14 @@ export default class CouponController {
 
       const newCoupon = await Coupon.create({
         name: name.trim(),
-        validity: date,
-        discountPercentage: discountPercentage,
+        is_active,
+        discountPercentage,
+        target,
       });
 
       if (validIds.length > 0) {
-        const values = validIds.map((typeId) => ({
-          user_id: typeId,
+        const values = validIds.map((userId) => ({
+          user_id: userId,
           coupon_id: newCoupon.id,
         }));
 
@@ -88,20 +84,21 @@ export default class CouponController {
 
   static async updateCouponById(req, res) {
     const { id } = req.params;
-    const { name, validity, discountPercentage, users_ids } = req.body;
+    const { name, is_active, discountPercentage, target, users_ids } = req.body;
 
     try {
+      if (!ALLOWED_TARGETS.includes(target)) {
+        return res.status(400).json({
+          message: `O campo 'target' deve ser um dos seguintes valores: ${ALLOWED_TARGETS.join(
+            ", "
+          )}.`,
+        });
+      }
+
       const coupon = await Coupon.findByPk(id);
 
       if (!coupon) {
         return res.status(404).json({ message: "Cupom não encontrado!" });
-      }
-
-      const date = new Date(validity);
-      if (isNaN(date.getTime())) {
-        return res.status(400).json({
-          message: "A validade do cupom deve ser uma data válida.",
-        });
       }
 
       let validIds = [];
@@ -112,8 +109,9 @@ export default class CouponController {
       }
 
       coupon.name = name.trim();
-      coupon.validity = date;
+      coupon.is_active = is_active;
       coupon.discountPercentage = discountPercentage;
+      coupon.target = target;
       await coupon.save();
 
       await UserCoupon.destroy({ where: { coupon_id: id } });

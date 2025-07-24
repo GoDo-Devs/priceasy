@@ -1,47 +1,77 @@
-import { useState } from "react";
-import { Box, Typography, Button, Divider, Card, Stack } from "@mui/material";
-import useSimulationEffects from "@/hooks/useSimulationEffects.js";
+import { useState, useEffect } from "react";
+import { Card, Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+
+import useHttp from "@/services/useHttp";
+import useSimulationEffects from "@/hooks/useSimulationEffects.js";
+import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
+import DiscountModal from "@/components/Modal/DiscountModal.jsx";
 import SuccessModal from "@/components/Modal/SucessModal";
 import ErrorModal from "@/components/Modal/ErrorModal";
 import { generatePdf } from "@/utils/generatePdf";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
-import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
+
+import PriceCardsList from "./PriceCardsList.jsx";
 
 function SimulationSideBar() {
+  const [openDiscountModal, setOpenDiscountModal] = useState(false);
+  const [editType, setEditType] = useState(null);
+  const [consultant, setConsultant] = useState(null);
+
   const navigate = useNavigate();
-  const { simulation: baseSimulation, client } = useSimulation();
+  const { simulation: baseSimulation, setSimulation, client } = useSimulation();
   const { simulation } = useCompleteSimulation(baseSimulation);
   const { rangeDetails, saveSimulation } = useSimulationEffects();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
 
-  const formatBRL = (value) => {
-    const num = Number(value);
-    if (isNaN(num)) return "-";
-    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const toNumber = (val) => {
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
   };
 
-  console.log(simulation)
+  const handleEditClick = (type) => {
+    setEditType(type);
+    setOpenDiscountModal(true);
+  };
 
   const handleSave = async () => {
-    const success = await saveSimulation(simulation, rangeDetails);
+    const result = await saveSimulation(simulation, rangeDetails);
 
-    if (success === true) {
+    if (result && result.id) {
+      setSimulation((prev) => ({
+        ...prev,
+        id: result.id,
+        user_id: result.user_id ?? prev.user_id,
+      }));
       setOpenSuccessModal(true);
     } else {
       setErrorMessage(
-        typeof success === "string"
-          ? success
+        typeof result === "string"
+          ? result
           : "Ocorreu um erro ao salvar a cotação. Verifique os dados e tente novamente."
       );
       setShowError(true);
     }
   };
 
+  useEffect(() => {
+    if (!simulation?.user_id) return;
+
+    useHttp
+      .post("/users/by-id", { id: simulation.user_id })
+      .then((res) => setConsultant(res.data))
+      .catch((err) => {
+        console.error("Erro ao buscar consultor:", err);
+        setConsultant(null);
+      });
+  }, [simulation?.user_id]);
+
+  console.log(consultant);
+
   return (
-   <Card
+    <Card
       elevation={0}
       className="p-4"
       sx={{
@@ -52,68 +82,16 @@ function SimulationSideBar() {
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" mb={4} fontWeight="bold">
+        <Typography variant="h6" mb={2} fontWeight="bold">
           Resumo da Cotação
         </Typography>
-
-        <Box mb={1} display="flex" justifyContent="space-between">
-          <Typography variant="subtitle2" color="text.secondary">
-            Valor FIPE
-          </Typography>
-          <Typography color="secondary.main" fontSize="0.85rem">
-            {formatBRL(simulation.fipeValue)}
-          </Typography>
-        </Box>
-        <Divider sx={{ mb: 2 }} />
-
-        <Box mb={1} display="flex" justifyContent="space-between">
-          <Typography variant="subtitle2" color="text.secondary">
-            Taxa de Matrícula
-          </Typography>
-          <Typography color="secondary.main" fontSize="0.85rem">
-            {formatBRL(rangeDetails.accession)}
-          </Typography>
-        </Box>
-        <Divider sx={{ mb: 2 }} />
-
-        <Box mb={1} display="flex" justifyContent="space-between">
-          <Typography variant="subtitle2" color="text.secondary">
-            Mensalidade
-          </Typography>
-          <Typography color="secondary.main" fontSize="0.85rem">
-            {formatBRL(simulation.monthlyFee)}
-          </Typography>
-        </Box>
-        <Divider sx={{ mb: 2 }} />
-
-        <Box mb={1} display="flex" justifyContent="space-between">
-          <Typography variant="subtitle2" color="text.secondary">
-            Rastreador
-          </Typography>
-          <Typography color="secondary.main" fontSize="0.85rem">
-            {formatBRL(rangeDetails.installationPrice)}
-          </Typography>
-        </Box>
-        <Divider sx={{ mb: 2 }} />
-
-        <Stack mb={1} direction="row" justifyContent="space-between">
-          <Typography variant="subtitle2" color="text.secondary">
-            Cota de Participação
-          </Typography>
-          <Typography color="secondary.main" fontSize="0.85rem">
-            {rangeDetails.franchiseValue != null
-              ? rangeDetails.isFranchisePercentage
-                ? formatBRL(
-                    (simulation.protectedValue || 0) *
-                      (rangeDetails.franchiseValue / 100)
-                  )
-                : formatBRL(rangeDetails.franchiseValue)
-              : "-"}
-          </Typography>
-        </Stack>
-        <Divider sx={{ mb: 2 }} />
+        <PriceCardsList
+          simulation={simulation}
+          rangeDetails={rangeDetails}
+          onEdit={handleEditClick}
+          toNumber={toNumber}
+        />
       </Box>
-
       <Box>
         <Button
           variant="contained"
@@ -124,7 +102,17 @@ function SimulationSideBar() {
           Salvar
         </Button>
       </Box>
-
+      <DiscountModal
+        open={openDiscountModal}
+        onClose={() => {
+          setOpenDiscountModal(false);
+          setEditType(null);
+        }}
+        type={editType}
+        simulation={simulation}
+        setSimulation={setSimulation}
+        rangeDetails={rangeDetails}
+      />
       <SuccessModal
         open={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
@@ -133,17 +121,16 @@ function SimulationSideBar() {
           navigate("/");
         }}
         onDownload={() => {
-          if (!client || !simulation) {
+          if (!client || !simulation?.id) {
             alert("Dados da simulação ou cliente ausentes!");
             return;
           }
-          generatePdf(client, simulation, rangeDetails);
+          generatePdf(client, simulation, rangeDetails, consultant);
         }}
         onSendEmail={() => alert("Implementar função enviar e-mail")}
         title="Cotação salva com sucesso!"
         message="Você pode baixar o arquivo ou enviar para o e-mail. Ou ir para a tela inicial."
       />
-
       <ErrorModal
         open={showError}
         onClose={() => setShowError(false)}

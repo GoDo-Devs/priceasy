@@ -20,12 +20,18 @@ function SimulationContent() {
   const [implementModalOpen, setImplementModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
 
-  const handleSavePlanDetails = (monthlyFee, selectedProducts, planId) => {
+  const handleSavePlanDetails = ({
+    planId,
+    monthlyFee,
+    valueSelectedProducts,
+    selectedProducts,
+  }) => {
     setSimulation((prev) => ({
       ...prev,
       plan_id: planId,
       selectedProducts,
       monthlyFee,
+      valueSelectedProducts, 
     }));
   };
 
