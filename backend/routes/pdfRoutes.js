@@ -2,6 +2,7 @@ import express from "express";
 import { chromium } from "playwright";
 import fs from "fs";
 import path from "path";
+import { PDFDocument } from "pdf-lib";
 
 const router = express.Router();
 
@@ -9,6 +10,7 @@ const logoPath = new URL("../assets/logo.png", import.meta.url).pathname;
 const logoBase64 = fs.readFileSync(logoPath).toString("base64");
 
 const templatesDir = path.resolve("templates");
+const assetsDir = path.resolve("assets");
 
 function formatCurrency(value) {
   if (value == null) return "-";
@@ -57,11 +59,16 @@ router.post("/generate", async (req, res) => {
     }
 
     const nomeCliente = client.name?.toUpperCase?.() || "CLIENTE";
+    const placa =
+      simulation.plate && simulation.plate.trim()
+        ? `(placa ${simulation.plate.toUpperCase()})`
+        : "";
+    const fipeCode = simulation.fipeCode || "";
     const veiculoDesc = `${simulation.name?.toUpperCase() || ""} ${
       simulation.modelYear || ""
-    }`.trim();
-    const fipeCode = simulation.fipeCode || "";
-    const valorFipe = formatCurrency(simulation.fipeValue);
+    }${fipeCode ? ` (FIPE: ${fipeCode})` : ""}`.trim();
+
+    const protectedValue = formatCurrency(simulation.protectedValue);
 
     const planName = simulation.plan?.name || "PLANO DESCONHECIDO";
     const cobertura = simulation.plan?.cobertura || [];
@@ -114,7 +121,6 @@ router.post("/generate", async (req, res) => {
           .join("");
       }
     };
-
 
     const coberturaRows = generateListRows(cobertura);
     const assistenciasRows = generateListRows(assist24);
@@ -198,47 +204,82 @@ router.post("/generate", async (req, res) => {
         )
       )
       .replace("{{NOME_CLIENTE}}", nomeCliente)
+      .replace("{{PLACA}}", placa)
       .replace("{{VEICULO_DESC}}", veiculoDesc)
-      .replace("{{FIPE_CODE}}", fipeCode)
-      .replace("{{VALOR_FIPE}}", valorFipe)
+      .replace("{{VALOR_FIPE}}", protectedValue)
       .replace("{{TABLE_PLAN}}", planTable)
       .replace("{{TABLE_IMPLEMENT}}", implementTable)
       .replace("{{TABLE_PRODUCTS}}", productsTable)
       .replace("{{TABLE_QUOTE}}", quoteTable)
       .replace("{{TABLE_CONSULTANT}}", consultantTable);
 
-    console.log("HTML gerado para PDF:", baseHtml.substring(0, 500) + "...");
-
     const browser = await chromium.launch({
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
-
     const page = await browser.newPage();
     await page.setContent(baseHtml, { waitUntil: "networkidle" });
-
     const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: { top: "20px", bottom: "20px", left: "20px", right: "20px" },
     });
-
     await browser.close();
 
+    const proposta1Path = path.join(assetsDir, "proposta1.pdf");
+    const proposta2Path = path.join(assetsDir, "proposta2.pdf");
+    const proposta3Path = path.join(assetsDir, "proposta3.pdf");
+
+    if (
+      !fs.existsSync(proposta1Path) ||
+      !fs.existsSync(proposta2Path) ||
+      !fs.existsSync(proposta3Path)
+    ) {
+      return res
+        .status(500)
+        .send("Arquivos de propostas não encontrados na pasta assets.");
+    }
+
+    const proposta1Bytes = fs.readFileSync(proposta1Path);
+    const proposta2Bytes = fs.readFileSync(proposta2Path);
+    const proposta3Bytes = fs.readFileSync(proposta3Path);
+
+    const mergedPdf = await PDFDocument.create();
+
+    const pdfProposta1 = await PDFDocument.load(proposta1Bytes);
+    const pdfCotacao = await PDFDocument.load(pdfBuffer);
+    const pdfProposta2 = await PDFDocument.load(proposta2Bytes);
+    const pdfProposta3 = await PDFDocument.load(proposta3Bytes);
+
+    async function copyPages(sourcePdf) {
+      const copiedPages = await mergedPdf.copyPages(
+        sourcePdf,
+        sourcePdf.getPageIndices()
+      );
+      copiedPages.forEach((page) => mergedPdf.addPage(page));
+    }
+
+    await copyPages(pdfProposta1);
+    await copyPages(pdfCotacao);
+    await copyPages(pdfProposta2);
+    await copyPages(pdfProposta3);
+
+    const mergedPdfBytes = await mergedPdf.save();
+
     const filename = simulation?.id
-      ? `proposta_${simulation.id}.pdf`
-      : `proposta.pdf`;
+      ? `proposta_${simulation.id}_completo.pdf`
+      : `proposta_completa.pdf`;
 
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${filename}"`,
-      "Content-Length": pdfBuffer.length,
+      "Content-Length": mergedPdfBytes.length,
     });
 
-    res.send(pdfBuffer);
+    res.send(Buffer.from(mergedPdfBytes));
   } catch (err) {
-    console.error("Erro ao gerar PDF:", err);
+    console.error("Erro ao gerar e unir PDFs:", err);
     res.status(500).send({
-      error: "Erro interno ao gerar PDF",
+      error: "Erro interno ao gerar o PDF completo",
       message: err.message,
     });
   }

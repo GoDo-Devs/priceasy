@@ -108,7 +108,7 @@ export default function useSimulationEffects() {
   useEffect(() => {
     const { brand_id, model_id, year, fuel, vehicle_type_id } = simulation;
 
-    if (!brand_id || !model_id || !year || vehicle_type_id === 4) {
+    if (vehicle_type_id !== 4 && (!brand_id || !model_id || !year)) {
       setSimulation((prev) => ({
         ...prev,
         protectedValue: "",
@@ -300,6 +300,7 @@ export default function useSimulationEffects() {
           year: sim.year,
           price_table_id: sim.price_table_id,
           protectedValue: sim.protectedValue,
+          plate: sim.plate,
           selectedProducts,
           plan_id: sim.plan_id,
           monthlyFee: sim.monthlyFee,
@@ -379,6 +380,7 @@ export default function useSimulationEffects() {
         year: Number(simulation.year),
         price_table_id: simulation.price_table_id,
         protectedValue: simulation.protectedValue,
+        plate: simulation.plate,
         plan_id: simulation.plan_id,
         monthlyFee: simulation.monthlyFee,
         selectedProducts: selectedProductsArray,
@@ -409,6 +411,8 @@ export default function useSimulationEffects() {
       return false;
     }
   };
+
+  console.log(simulation);
 
   return {
     vehicleType,

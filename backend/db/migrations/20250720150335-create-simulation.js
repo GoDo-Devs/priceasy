@@ -66,6 +66,10 @@ export default {
         type: Sequelize.FLOAT,
         allowNull: true,
       },
+      plate: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       fipeValue: {
         type: Sequelize.FLOAT,
         allowNull: true,
@@ -118,7 +122,7 @@ export default {
       },
       discountedAccessionCouponId: {
         type: Sequelize.UUID,
-        allowNull: true, 
+        allowNull: true,
       },
 
       discountedMonthlyFeeCouponId: {

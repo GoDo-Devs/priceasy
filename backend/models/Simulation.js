@@ -77,6 +77,10 @@ Simulation.init(
         key: "id",
       },
     },
+    plate: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     protectedValue: {
       type: DataTypes.FLOAT,
       allowNull: true,

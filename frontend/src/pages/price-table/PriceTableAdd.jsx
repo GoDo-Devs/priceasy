@@ -54,10 +54,13 @@ function PriceTableAdd() {
             ? res.data.models.map((m) =>
                 typeof m === "object"
                   ? {
-                      Label: m.Label ?? m.label ?? "",
-                      Value: m.Value ?? m.value ?? m.id ?? m,
+                      id: Number(m.id ?? m.Value ?? m.value ?? m),
+                      name: m.name ?? m.Label ?? m.label ?? "",
                     }
-                  : { Value: m }
+                  : {
+                      id: Number(m),
+                      name: String(m),
+                    }
               )
             : [],
 

@@ -1,5 +1,10 @@
-import { Autocomplete, TextField, InputLabel } from "@mui/material";
+import { Autocomplete, TextField, InputLabel, Popper } from "@mui/material";
 import { useState } from "react";
+
+// Popper personalizado para forçar abrir pra baixo
+const CustomPopper = function (props) {
+  return <Popper {...props} placement="bottom-start" />;
+};
 
 function AutoCompleteInput({
   label,
@@ -9,12 +14,10 @@ function AutoCompleteInput({
   onInputChange,
   width = "100%",
   freeSolo = false,
-  disabled = false, 
+  disabled = false,
   ...rest
 }) {
   const [inputValue, setInputValue] = useState("");
-
-  // Seleciona o objeto da lista que corresponde ao value atual
   const selectedOption = freeSolo
     ? value
     : options.find((opt) => {
@@ -29,8 +32,8 @@ function AutoCompleteInput({
       <InputLabel sx={{ mb: 0.5 }}>{label}</InputLabel>
       <Autocomplete
         freeSolo={freeSolo}
-        disablePortal
         options={options}
+        PopperComponent={CustomPopper}
         getOptionLabel={(option) => {
           if (freeSolo) {
             if (typeof option === "string") return option;
@@ -72,7 +75,7 @@ function AutoCompleteInput({
         inputValue={inputValue}
         clearIcon={null}
         popupIcon={null}
-        disabled={disabled} 
+        disabled={disabled}
         renderInput={(params) => (
           <TextField
             {...params}
