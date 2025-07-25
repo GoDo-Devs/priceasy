@@ -70,7 +70,7 @@ function ClientVehicleForm({
   }
 
   return (
-    <Card sx={{borderRadius: 2}} elevation={0} className="p-5">
+    <Card sx={{ borderRadius: 2 }} elevation={0} className="p-5">
       <Grid container spacing={2}>
         <Grid item size={{ xs: 12, md: 4.5 }}>
           <TextInput
@@ -186,6 +186,21 @@ function ClientVehicleForm({
                 fuel: selected?.fuel ?? "",
               });
             }}
+          />
+        </Grid>
+        <Grid item size={{ xs: 12, md: 2 }}>
+          <TextInput
+            fullWidth
+            label="Placa"
+            name="plate"
+            value={simulation.plate ?? ""}
+            onChange={(e) =>
+              setSimulation({
+                ...simulation,
+                plate: e.target.value ?? "",
+              })
+            }
+            required
           />
         </Grid>
         <Grid item size={{ xs: 12, md: 3 }}>

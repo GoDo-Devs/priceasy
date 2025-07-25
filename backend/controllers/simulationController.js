@@ -11,6 +11,7 @@ export default class SimulationController {
         year,
         price_table_id,
         protectedValue,
+        plate,
         selectedProducts,
         plan_id,
         fipeValue,
@@ -47,6 +48,7 @@ export default class SimulationController {
         year: year ?? null,
         price_table_id: price_table_id ?? null,
         protectedValue: protectedValue ?? null,
+        plate: plate ?? null,
         selectedProducts: Array.isArray(selectedProducts)
           ? selectedProducts
           : [],
@@ -109,6 +111,7 @@ export default class SimulationController {
       year,
       price_table_id,
       protectedValue,
+      plate,
       selectedProducts,
       plan_id,
       fipeValue,
@@ -142,6 +145,7 @@ export default class SimulationController {
         year: year ?? simulation.year,
         price_table_id: price_table_id ?? simulation.price_table_id,
         protectedValue: protectedValue ?? simulation.protectedValue,
+        plate: plate ?? simulation.plate,
         selectedProducts: Array.isArray(selectedProducts)
           ? selectedProducts
           : simulation.selectedProducts,

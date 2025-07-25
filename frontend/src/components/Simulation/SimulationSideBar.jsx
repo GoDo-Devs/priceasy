@@ -68,8 +68,6 @@ function SimulationSideBar() {
       });
   }, [simulation?.user_id]);
 
-  console.log(consultant);
-
   return (
     <Card
       elevation={0}
