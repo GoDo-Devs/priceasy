@@ -1,7 +1,7 @@
 import { Box, CircularProgress, Grid } from "@mui/material";
 import SimulationContent from "@/components/Simulation/SimulationContent.jsx";
 import SimulationSideBar from "@/components/Simulation/SimulationSideBar.jsx";
-import { SimulationProvider } from "@/contexts/SimulationContext.jsx";
+import { SimulationProvider } from "@/contexts/simulationContext.jsx";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import { useEffect } from "react";
 

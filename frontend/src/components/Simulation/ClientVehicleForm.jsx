@@ -5,7 +5,7 @@ import TextInput from "@/components/Form/TextInput.jsx";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import AutoCompleteInput from "@/components/Form/AutoCompleteInput.jsx";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
 
 function ClientVehicleForm({

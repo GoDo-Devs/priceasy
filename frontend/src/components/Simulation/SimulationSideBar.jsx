@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 import useHttp from "@/services/useHttp";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
-import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
 import DiscountModal from "@/components/Modal/DiscountModal.jsx";
 import SuccessModal from "@/components/Modal/SucessModal";
 import ErrorModal from "@/components/Modal/ErrorModal";
 import { generatePdf } from "@/utils/generatePdf";
-
 import PriceCardsList from "./PriceCardsList.jsx";
+import { useSimulation } from "@/contexts/simulationContext";
+import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
 
 function SimulationSideBar() {
   const [openDiscountModal, setOpenDiscountModal] = useState(false);

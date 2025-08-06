@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
 
 export default function useSimulationEffects() {
