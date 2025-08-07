@@ -78,14 +78,14 @@ export default class VehicleCategoryController {
   static async removeVehicleCategoryById(req, res) {
     const id = req.params.id;
 
-    const vehicleCategoryExists = await VehicleType.findByPk(id);
+    const vehicleCategoryExists = await VehicleCategory.findByPk(id);
     if (!vehicleCategoryExists) {
       res.status(404).json({ message: "Categoria de Veículo não encontrado!" });
       return;
     }
 
     try {
-      await VehicleType.destroy({ where: { id: id } });
+      await VehicleCategory.destroy({ where: { id: id } });
       res
         .status(200)
         .json({ message: "Categoria de Veículo removido com sucesso!" });
