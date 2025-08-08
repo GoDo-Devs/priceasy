@@ -9,7 +9,7 @@ export async function generatePdf(
   try {
     const response = await useHttp.post(
       "/pdf/generate",
-      { client, simulation, rangeDetails, consultant },
+      { client, simulation, rangeDetails, consultant, action: "download" },
       { responseType: "blob" }
     );
 
