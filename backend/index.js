@@ -23,7 +23,7 @@ import couponRoutes from "./routes/couponRoutes.js"
 import userCouponRoutes from "./routes/userCouponRoutes.js"
 
 app.use(bodyParser.json());
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_URL }));
 app.use(express.static("public"));
 
 app.use("/auth", authRoutes);

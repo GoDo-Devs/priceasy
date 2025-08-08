@@ -1,7 +1,7 @@
 import { Box, CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
+import { useSimulation } from "@/contexts/simulationContext.jsx";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import PlanDetailsModal from "@/components/Modal/PlanDetailsModal.jsx";
 import AddImplementSimulation from "@/components/Modal/AddImplementSimulation.jsx";
