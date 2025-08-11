@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import useHttp from "@/services/useHttp";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
-import { useSimulation } from "@/contexts/SimulationContext.jsx";
 import { useCompleteSimulation } from "@/hooks/useCompleteSimulation";
 import DiscountModal from "@/components/Modal/DiscountModal.jsx";
 import SuccessModal from "@/components/Modal/SucessModal";
@@ -14,6 +13,7 @@ import { generatePdf } from "@/utils/generatePdf";
 
 import PriceCardsList from "./PriceCardsList.jsx";
 import { Snackbar, Alert } from "@mui/material";
+import { useSimulation } from "../../contexts/simulationContext.jsx";
 
 function SimulationSideBar() {
   const [openDiscountModal, setOpenDiscountModal] = useState(false);

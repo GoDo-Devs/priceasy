@@ -1,4 +1,10 @@
 import Simulation from "../models/Simulation.js";
+import Client from "../models/Client.js";
+import VehicleType from "../models/VehicleType.js";
+import { Op } from "sequelize";
+import sequelize from "../db/index.js";
+import FipeBrand from "../models/FipeBrand.js";
+import FipeModel from "../models/FipeModel.js";
 
 export default class SimulationController {
   static async createSimulation(req, res) {
@@ -74,11 +80,57 @@ export default class SimulationController {
 
   static async getAllSimulations(req, res) {
     try {
-      const simulations = await Simulation.findAll({
+      const page = parseInt(req.query.page) || 1;
+      const limit = 20;
+      const offset = (page - 1) * limit;
+
+      const where = {};
+      if (!req.user.isAdmin) {
+        where.user_id = req.user.id;
+      }
+
+      const { count, rows: simulations } = await Simulation.findAndCountAll({
+        where,
+        attributes: [
+          'id', 'user_id', 'client_id', 'vehicle_type_id', 'brand_id', 'model_id', 
+          'year', 'price_table_id', 'plate', 'protectedValue', 'fipeValue', 'fipeCode',
+          'name', 'plan_id', 'monthlyFee', 'valueSelectedProducts', 'implementList',
+          'selectedProducts', 'discountedAccession', 'discountedMonthlyFee',
+          'discountedInstallationPrice', 'discountedAccessionCouponId',
+          'discountedMonthlyFeeCouponId', 'discountedInstallationPriceCouponId',
+          'created_at', 'updated_at'
+        ],
         order: [["created_at", "DESC"]],
+        limit,
+        offset,
+        include: [
+          {
+            model: Client,
+            as: "client",
+            attributes: ["id", "name"],
+          },
+          {
+            model: VehicleType,
+            as: "vehicleType",
+            attributes: ["id", "name"],
+          },
+        ],
       });
 
-      return res.status(200).json(simulations);
+      simulations.forEach((simulation) => {
+        const brand = FipeBrand.findByPk(simulation.brand_id)
+        const model = FipeModel.findByPk(simulation.model_id)
+
+        simulation.brand = brand
+        simulation.model = model
+      })
+
+      return res.status(200).json({
+        simulations,
+        totalPages: Math.ceil(count / limit),
+        currentPage: page,
+        totalItems: count,
+      });
     } catch (error) {
       console.error("Erro ao listar simulações:", error);
       return res.status(500).json({ error: "Erro ao buscar simulações." });
@@ -99,6 +151,58 @@ export default class SimulationController {
     } catch (error) {
       console.error("Erro ao buscar simulação:", error);
       return res.status(500).json({ error: "Erro ao buscar simulação." });
+    }
+  }
+
+  static async getMetrics(req, res) {
+    try {
+      const where = {};
+      if (!req.user.isAdmin) {
+        where.user_id = req.user.id;
+      }
+
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const totalSimulations = await Simulation.count({ where });
+
+      const monthlySimulations = await Simulation.count({
+        where: {
+          ...where,
+          created_at: {
+            [Op.gte]: startOfMonth,
+          },
+        },
+      });
+
+      const monthlyValue = await Simulation.sum("protectedValue", {
+        where: {
+          ...where,
+          created_at: {
+            [Op.gte]: startOfMonth,
+          },
+        },
+      });
+
+      const averageValue = await Simulation.findOne({
+        where,
+        attributes: [
+          [sequelize.fn("AVG", sequelize.col("protectedValue")), "average"],
+        ],
+      });
+
+      return res.status(200).json({
+        total: totalSimulations,
+        monthly: {
+          count: monthlySimulations,
+          value: monthlyValue || 0,
+          average: averageValue.getDataValue("average") || 0,
+        },
+      });
+    } catch (error) {
+      console.error("Erro ao buscar métricas:", error);
+      return res.status(500).json({ error: "Erro ao buscar métricas." });
     }
   }
 

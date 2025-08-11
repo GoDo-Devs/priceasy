@@ -5,27 +5,32 @@ class Simulation extends Model {
   static associate(models) {
     Simulation.belongsTo(models.User, {
       foreignKey: "user_id",
-      as: "users",
+      targetKey: "id",
+      as: "user",
     });
 
     Simulation.belongsTo(models.Client, {
       foreignKey: "client_id",
-      as: "clients",
+      targetKey: "id",
+      as: "client",
     });
 
     Simulation.belongsTo(models.VehicleType, {
       foreignKey: "vehicle_type_id",
-      as: "vehicle_types",
+      targetKey: "id",
+      as: "vehicleType",
     });
 
     Simulation.belongsTo(models.PriceTable, {
       foreignKey: "price_table_id",
-      as: "price_tables",
+      targetKey: "id",
+      as: "priceTable",
     });
 
     Simulation.belongsTo(models.PriceTable, {
       foreignKey: "plan_id",
-      as: "plans",
+      targetKey: "id",
+      as: "plan",
     });
   }
 }
