@@ -14,7 +14,7 @@ export function useColumnsRanges(priceTable, setPriceTable) {
         size: 10,
         Cell: ({ cell }) => {
           const value = parseNumber(cell.getValue());
-          return `R$ ${value.toLocaleString("pt-BR", {
+          return `${value.toLocaleString("pt-BR", {
             minimumFractionDigits: 2,
           })}`;
         },

@@ -110,10 +110,6 @@ Simulation.init(
         key: "id",
       },
     },
-    monthlyFee: {
-      type: DataTypes.DECIMAL(10, 2),
-      allowNull: true,
-    },
     valueSelectedProducts: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
@@ -126,6 +122,10 @@ Simulation.init(
       type: DataTypes.JSON,
       allowNull: true,
     },
+    accession: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
     discountedAccession: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
@@ -134,7 +134,15 @@ Simulation.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
+    monthlyFee: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
     discountedInstallationPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    installationPrice: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
@@ -150,6 +158,14 @@ Simulation.init(
       type: DataTypes.UUID,
       allowNull: true,
     },
+    isFranchisePercentage: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+    },
+    franchiseValue: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
   },
   {
     sequelize,
@@ -162,3 +178,5 @@ Simulation.init(
 );
 
 export default Simulation;
+
+console.log("Associações do Simulation:", Simulation.associations);

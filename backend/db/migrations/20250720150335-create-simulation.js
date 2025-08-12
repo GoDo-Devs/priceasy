@@ -92,10 +92,6 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
       },
-      monthlyFee: {
-        type: Sequelize.DECIMAL(10, 2),
-        allowNull: true,
-      },
       valueSelectedProducts: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
@@ -112,7 +108,15 @@ export default {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
+      accession: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
       discountedMonthlyFee: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      monthlyFee: {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
@@ -120,21 +124,30 @@ export default {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
+      installationPrice: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
       discountedAccessionCouponId: {
         type: Sequelize.UUID,
         allowNull: true,
       },
-
       discountedMonthlyFeeCouponId: {
         type: Sequelize.UUID,
         allowNull: true,
       },
-
       discountedInstallationPriceCouponId: {
         type: Sequelize.UUID,
         allowNull: true,
       },
-
+      isFranchisePercentage: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+      },
+      franchiseValue: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

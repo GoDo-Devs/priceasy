@@ -19,13 +19,20 @@ export default function PriceCardsList({
       <PriceCard
         label="Taxa de Matrícula"
         discountedValue={
-          simulation.discountedAccession != null &&
-          simulation.discountedAccession !== rangeDetails.accession
+          simulation.discountedAccession != null
             ? simulation.discountedAccession
             : rangeDetails.accession
         }
-        originalValue={rangeDetails.accession}
-        onEdit={rangeDetails.accession ? () => onEdit("accession") : null}
+        originalValue={
+          simulation.accession != null
+            ? simulation.accession
+            : rangeDetails.accession
+        }
+        onEdit={
+          simulation.accession != null || rangeDetails.accession != null
+            ? () => onEdit("accession")
+            : null
+        }
         alwaysGreen
       />
       <PriceCard
@@ -40,32 +47,47 @@ export default function PriceCardsList({
           simulation.monthlyFee != null
             ? toNumber(simulation.monthlyFee) +
               toNumber(simulation.valueSelectedProducts)
+            : rangeDetails.monthlyFee != null
+            ? toNumber(rangeDetails.monthlyFee) +
+              toNumber(simulation.valueSelectedProducts)
             : null
         }
-        onEdit={simulation.monthlyFee ? () => onEdit("monthlyFee") : null}
+        onEdit={
+          simulation.monthlyFee != null || rangeDetails.monthlyFee != null
+            ? () => onEdit("monthlyFee")
+            : null
+        }
         alwaysGreen
       />
       <PriceCard
         label="Rastreador"
         discountedValue={
-          simulation.discountedInstallationPrice != null &&
-          simulation.discountedInstallationPrice !==
-            rangeDetails.installationPrice
+          simulation.discountedInstallationPrice != null
             ? simulation.discountedInstallationPrice
             : rangeDetails.installationPrice
         }
-        originalValue={rangeDetails.installationPrice}
+        originalValue={
+          simulation.installationPrice != null
+            ? simulation.installationPrice
+            : rangeDetails.installationPrice
+        }
         onEdit={
-          rangeDetails.installationPrice
+          simulation.installationPrice != null ||
+          rangeDetails.installationPrice != null
             ? () => onEdit("installationPrice")
             : null
         }
         alwaysGreen
       />
       <PriceCard
-        label="Cota de Participação"
+        label="Cota de Participação"d
         discountedValue={
-          rangeDetails.franchiseValue != null
+          simulation.franchiseValue != null
+            ? simulation.isFranchisePercentage
+              ? (simulation.protectedValue || 0) *
+                (simulation.franchiseValue / 100)
+              : simulation.franchiseValue
+            : rangeDetails.franchiseValue != null
             ? rangeDetails.isFranchisePercentage
               ? (simulation.protectedValue || 0) *
                 (rangeDetails.franchiseValue / 100)
@@ -74,7 +96,7 @@ export default function PriceCardsList({
         }
         originalValue={null}
         alwaysGreen
-      />
+      /> 
     </Box>
   );
 }

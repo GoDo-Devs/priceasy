@@ -28,6 +28,22 @@ export default class FipeController {
     }
   }
 
+  static async getBrandNameById(req, res) {
+    const { id } = req.body; 
+
+    try {
+      const brand = await FipeBrand.findByPk(id);
+
+      if (!brand) {
+        return res.status(404).json({ message: "Marca não encontrada!" });
+      }
+
+      return res.status(200).json({ name: brand.name });
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
+    }
+  }
+
   static async getModels(req, res) {
     const { vehicleType, brandCode } = req.body;
 
@@ -71,7 +87,7 @@ export default class FipeController {
       return res.status(404).json({ message: "Marca não encontrada!" });
     }
 
-    const model = await FipeModel.findByPk(modelCode)
+    const model = await FipeModel.findByPk(modelCode);
     if (!model) {
       return res.status(404).json({ message: "Modelo não encontrado!" });
     }
@@ -88,7 +104,7 @@ export default class FipeController {
       return res.status(400).json({ error: e.message });
     }
   }
-  
+
   static async getPrice(req, res) {
     const { vehicleType, brandCode, modelCode, modelYear, fuelType } = req.body;
     const fipeService = new FipeTableService();

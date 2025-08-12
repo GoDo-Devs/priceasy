@@ -1,5 +1,8 @@
 import { Card, Typography, Box, Divider, Grid } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { useEffect, useState } from "react";
+import useHttp from "@/services/useHttp.js";
+import { useNavigate } from "react-router-dom";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -15,15 +18,26 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 function QuotationCard({ simulation }) {
   const {
-    clients,
+    client,
     created_at,
     discountedAccession,
     discountedMonthlyFee,
     protectedValue,
     name,
-    brand,
+    brand_id,
     year,
   } = simulation;
+
+  const navigate = useNavigate();
+  const [brand, setBrand] = useState();
+
+  useEffect(() => {
+    if (!brand_id) return;
+    useHttp
+      .post("/fipe/brand-name", { id: brand_id })
+      .then((res) => setBrand(res.data.name))
+      .catch(() => setBrand("Marca não encontrada"));
+  }, [brand_id]);
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -36,8 +50,12 @@ function QuotationCard({ simulation }) {
     return new Date(dateString).toLocaleDateString("pt-BR");
   };
 
+  const handleClick = () => {
+    navigate(`/cotacao/?id=${simulation.id}`);
+  };
+
   return (
-    <StyledCard elevation={3}>
+    <StyledCard elevation={3} onClick={handleClick} sx={{ cursor: "pointer" }}>
       <Box
         sx={{
           display: "flex",
@@ -47,7 +65,7 @@ function QuotationCard({ simulation }) {
         }}
       >
         <Typography variant="h6" fontWeight={600}>
-          {clients?.name || "Cliente não informado"}
+          {client?.name || "Cliente não informado"}
         </Typography>
         <Typography
           variant="caption"
@@ -68,7 +86,7 @@ function QuotationCard({ simulation }) {
         </Typography>
         <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
         <Typography variant="body2" color="text.secondary">
-          {year}
+          {year === 32000 ? "Zero KM" : year}
         </Typography>
       </Box>
 
@@ -79,7 +97,7 @@ function QuotationCard({ simulation }) {
               Adesão
             </Typography>
             <Typography fontWeight={700} color="success.main">
-              {formatCurrency(discountedAccession)}
+              {formatCurrency(discountedAccession ?? simulation.accession)}
             </Typography>
           </Box>
         </Grid>
@@ -89,7 +107,7 @@ function QuotationCard({ simulation }) {
               Mensalidade
             </Typography>
             <Typography fontWeight={700} color="info.main">
-              {formatCurrency(discountedMonthlyFee)}
+              {formatCurrency(discountedMonthlyFee ?? simulation.monthlyFee)}
             </Typography>
           </Box>
         </Grid>

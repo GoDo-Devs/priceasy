@@ -24,6 +24,10 @@ export default class SimulationController {
         fipeCode,
         name,
         monthlyFee,
+        accession,
+        installationPrice,
+        isFranchisePercentage,
+        franchiseValue,
         implementList,
         discountedAccession,
         discountedAccessionCouponId,
@@ -60,6 +64,10 @@ export default class SimulationController {
           : [],
         plan_id: plan_id ?? null,
         monthlyFee: monthlyFee ?? null,
+        accession: accession ?? null,
+        installationPrice: installationPrice ?? null,
+        isFranchisePercentage: isFranchisePercentage ?? null,
+        franchiseValue: franchiseValue ?? null,
         implementList: Array.isArray(implementList) ? implementList : [],
         discountedAccession: discountedAccession ?? null,
         discountedAccessionCouponId: discountedAccessionCouponId ?? null,
@@ -92,13 +100,36 @@ export default class SimulationController {
       const { count, rows: simulations } = await Simulation.findAndCountAll({
         where,
         attributes: [
-          'id', 'user_id', 'client_id', 'vehicle_type_id', 'brand_id', 'model_id', 
-          'year', 'price_table_id', 'plate', 'protectedValue', 'fipeValue', 'fipeCode',
-          'name', 'plan_id', 'monthlyFee', 'valueSelectedProducts', 'implementList',
-          'selectedProducts', 'discountedAccession', 'discountedMonthlyFee',
-          'discountedInstallationPrice', 'discountedAccessionCouponId',
-          'discountedMonthlyFeeCouponId', 'discountedInstallationPriceCouponId',
-          'created_at', 'updated_at'
+          "id",
+          "user_id",
+          "client_id",
+          "vehicle_type_id",
+          "brand_id",
+          "model_id",
+          "year",
+          "price_table_id",
+          "plate",
+          "protectedValue",
+          "fipeValue",
+          "fipeCode",
+          "name",
+          "plan_id",
+          "monthlyFee",
+          "valueSelectedProducts",
+          "implementList",
+          "selectedProducts",
+          "accession",
+          "installationPrice",
+          "discountedAccession",
+          "discountedMonthlyFee",
+          "discountedInstallationPrice",
+          "discountedAccessionCouponId",
+          "discountedMonthlyFeeCouponId",
+          "discountedInstallationPriceCouponId",
+          "isFranchisePercentage",
+          "franchiseValue",
+          "created_at",
+          "updated_at",
         ],
         order: [["created_at", "DESC"]],
         limit,
@@ -118,12 +149,12 @@ export default class SimulationController {
       });
 
       simulations.forEach((simulation) => {
-        const brand = FipeBrand.findByPk(simulation.brand_id)
-        const model = FipeModel.findByPk(simulation.model_id)
+        const brand = FipeBrand.findByPk(simulation.brand_id);
+        const model = FipeModel.findByPk(simulation.model_id);
 
-        simulation.brand = brand
-        simulation.model = model
-      })
+        simulation.brand = brand;
+        simulation.model = model;
+      });
 
       return res.status(200).json({
         simulations,

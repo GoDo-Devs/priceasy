@@ -8,6 +8,7 @@ const router = express.Router();
 const validator = createValidator({});
 
 router.post("/brands", validator.body(brandsSchema), [checkToken], FipeController.getBrands);
+router.post('/brand-name', [checkToken], FipeController.getBrandNameById);
 router.post("/models", validator.body(modelsSchema), [checkToken], FipeController.getModels);
 router.post("/years", validator.body(modelYearSchema), [checkToken], FipeController.getModelYear);
 router.post("/price", validator.body(priceSchema), [checkToken], FipeController.getPrice);
