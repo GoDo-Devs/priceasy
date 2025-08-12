@@ -101,7 +101,13 @@ function RangeModal({
         ? undefined
         : Number(value);
 
+    const previousRange =
+      typeof editingIndex === "number"
+        ? (priceTable.ranges || [])[editingIndex] || {}
+        : {};
+
     const newRange = {
+      ...previousRange, 
       min: minValue,
       max: maxValue,
       accession: toNumberOrUndefined(accession),

@@ -1,14 +1,14 @@
-import {
-  RouterProvider,
-} from "react-router";
+import { RouterProvider } from "react-router";
 import routes from "./router/routes";
-import '@/theme/app.css'
-
+import { SimulationProvider } from "@/contexts/simulationContext.jsx";
+import '@/theme/app.css';
 
 function App() {
   return (
-    <RouterProvider router={routes} />
-  )
+    <SimulationProvider>
+      <RouterProvider router={routes} />
+    </SimulationProvider>
+  );
 }
 
-export default App
+export default App;
