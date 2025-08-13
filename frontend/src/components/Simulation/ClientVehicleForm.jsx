@@ -136,6 +136,21 @@ function ClientVehicleForm({
             }))}
           />
         </Grid>
+        <Grid item size={{ xs: 12, md: 2 }}>
+          <TextInput
+            fullWidth
+            label="Placa"
+            name="plate"
+            value={simulation.plate ?? ""}
+            onChange={(e) =>
+              setSimulation({
+                ...simulation,
+                plate: e.target.value ?? "",
+              })
+            }
+            required
+          />
+        </Grid>
         <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
@@ -186,21 +201,6 @@ function ClientVehicleForm({
                 fuel: selected?.fuel ?? "",
               });
             }}
-          />
-        </Grid>
-        <Grid item size={{ xs: 12, md: 2 }}>
-          <TextInput
-            fullWidth
-            label="Placa"
-            name="plate"
-            value={simulation.plate ?? ""}
-            onChange={(e) =>
-              setSimulation({
-                ...simulation,
-                plate: e.target.value ?? "",
-              })
-            }
-            required
           />
         </Grid>
         <Grid item size={{ xs: 12, md: 3 }}>

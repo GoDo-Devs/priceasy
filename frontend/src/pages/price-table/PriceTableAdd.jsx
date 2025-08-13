@@ -237,6 +237,7 @@ function PriceTableAdd() {
       onAddItem={renderModal}
       showAddButton={true}
       priceTable={priceTable}
+      setPriceTable={setPriceTable}
     />
   );
 }

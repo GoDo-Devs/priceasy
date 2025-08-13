@@ -10,7 +10,7 @@ export function useColumnsPlan() {
 
   const fetchPlan = () => {
     useHttp.get("/plans").then((res) => {
-      setPlans(res.data.plans || []);
+      setPlans((res.data.plans || []).sort((a, b) => a.id - b.id));
     });
   };
 
@@ -26,7 +26,10 @@ export function useColumnsPlan() {
       });
   };
 
-  const columns = [{ accessorKey: "name", header: "Nome" }];
+  const columns = [
+    { accessorKey: "id", header: "Código", size: 20 },
+    { accessorKey: "name", header: "Nome", size: 180 },
+  ];
 
   return { columns, plans, setPlans, handleDelete };
 }
