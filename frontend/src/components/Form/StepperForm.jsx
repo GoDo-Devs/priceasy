@@ -1,11 +1,7 @@
-import {
-  Box,
-  Button,
-  Stepper,
-  Step,
-  StepLabel,
-} from "@mui/material";
+import { Box, Button, Stepper, Step, StepLabel } from "@mui/material";
 import { useState } from "react";
+import { importRangesFromExcel } from "@/utils/importRangesFromExcel";
+import { useRef } from "react";
 
 function StepperForm({
   steps = [],
@@ -15,10 +11,19 @@ function StepperForm({
   onAddItem,
   showAddButton = false,
   priceTable,
+  setPriceTable,
 }) {
   const [activeStep, setActiveStep] = useState(0);
   const [openModal, setOpenModal] = useState(false);
   const [error, setError] = useState("");
+  const fileInputRef = useRef();
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      importRangesFromExcel(file, setPriceTable);
+    }
+  };
 
   const handleNext = () => {
     if (activeStep === 0) {
@@ -64,8 +69,26 @@ function StepperForm({
           </Step>
         ))}
       </Stepper>
+      {showAddButton && steps[activeStep] === "Tabela" && (
+        <Box sx={{ display: "flex", gap: 2, mt: 2, alignItems: "center" }}>
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            onChange={handleFileChange}
+            ref={fileInputRef}
+            style={{ display: "none" }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Importar tabela
+          </Button>
+        </Box>
+      )}
       {error && <Box sx={{ color: "red", mt: 2 }}>{error}</Box>}
-      <Box sx={{ mt: 3, mb: 2 }}>{renderStepContent(activeStep)}</Box>
+      <Box sx={{ mt: 2, mb: 2 }}>{renderStepContent(activeStep)}</Box>
       <Box
         sx={{
           display: "flex",
