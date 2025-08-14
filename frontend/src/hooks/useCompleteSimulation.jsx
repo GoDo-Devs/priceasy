@@ -9,16 +9,19 @@ export function useCompleteSimulation(simulationInitial) {
   useEffect(() => {
     async function fetchPlanDetails() {
       if (!simulationInitial?.plan_id) {
+        console.warn("Sem plano selecionado ainda.");
         setLoading(false);
         return;
       }
 
       try {
+        // 1. Buscar nome do plano
         const planRes = await useHttp.get(
           `/plans/${simulationInitial.plan_id}`
         );
         const planName = planRes.data.name;
 
+        // 2. Buscar serviços do plano
         const planServicesRes = await useHttp.get(
           `/plan-services/${simulationInitial.plan_id}`
         );
@@ -39,8 +42,9 @@ export function useCompleteSimulation(simulationInitial) {
           .filter((s) => s.category_id === 2)
           .map((s) => s.name);
 
+        // 3. Buscar produtos selecionados
         const selectedProducts = simulationInitial.selectedProducts || {};
-        const productIds = Object.keys(selectedProducts);
+        const productIds = Object.values(selectedProducts);
 
         const fetchedProducts = await Promise.all(
           productIds.map(async (id) => {
@@ -56,6 +60,7 @@ export function useCompleteSimulation(simulationInitial) {
 
         const products = fetchedProducts.filter(Boolean);
 
+        // 4. Buscar rangeDetails (valores da tabela de preço)
         let fetchedRangeDetails = {};
         if (simulationInitial.price_table_id && simulationInitial.plan_id) {
           try {
@@ -69,27 +74,32 @@ export function useCompleteSimulation(simulationInitial) {
               "/price-tables/plans",
               payload
             );
-
             fetchedRangeDetails = rangeDetailsRes.data.rangeDetails || {};
           } catch (err) {
             console.error("Erro ao buscar rangeDetails:", err);
           }
         }
 
-        setRangeDetails(fetchedRangeDetails);
-
-        setSimulation({
+        // 5. Atualizar simulation com todos os dados
+        const updatedSimulation = {
           ...simulationInitial,
           plan: {
             name: planName,
             cobertura,
             assist24,
           },
-          products,
+          products, // ← lista com nome e preço
           implementList: simulationInitial.implementList || [],
-        });
+        };
+
+        console.log(
+          "✅ Simulation atualizado com produtos:",
+          updatedSimulation
+        );
+        setSimulation(updatedSimulation);
+        setRangeDetails(fetchedRangeDetails);
       } catch (err) {
-        console.error("Erro ao buscar dados do plano e serviços:", err);
+        console.error("Erro geral ao buscar dados do plano e produtos:", err);
         setSimulation(simulationInitial);
       } finally {
         setLoading(false);

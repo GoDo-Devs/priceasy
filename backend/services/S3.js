@@ -51,3 +51,28 @@ export async function getPdfFromS3(key) {
     data.Body.on("error", reject);
   });
 }
+
+export async function uploadMetaToS3(key, hash) {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+    Body: JSON.stringify({ hash }),
+    ContentType: "application/json",
+  });
+  await s3.send(command);
+}
+
+export async function getMetaFromS3(key) {
+  try {
+    const command = new GetObjectCommand({ Bucket: BUCKET_NAME, Key: key });
+    const data = await s3.send(command);
+
+    const chunks = [];
+    for await (const chunk of data.Body) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
+    return JSON.parse(buffer.toString("utf-8"));
+  } catch (err) {
+    if (err.name === "NoSuchKey" || err.name === "NotFound") return null;
+    throw err;
+  }
+}
