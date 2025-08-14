@@ -48,6 +48,12 @@ export async function generatePdf({
   rangeDetails = {},
   consultant,
 }) {
+  function getValue(key) {
+    if (simulation[key] != null) return simulation[key];
+    if (rangeDetails[key] != null) return rangeDetails[key];
+    return null;
+  }
+
   const nomeCliente = client.name?.toUpperCase?.() || "CLIENTE";
   const placa =
     simulation.plate && simulation.plate.trim()
@@ -65,9 +71,7 @@ export async function generatePdf({
   const assist24 = simulation.plan?.assist24 || [];
 
   const implementList = simulation.implementList || [];
-  const selectedProducts = simulation.selectedProducts || {};
   const allProducts = simulation.products || [];
-  const { monthlyFee } = simulation;
 
   const consultantName = consultant?.name?.toUpperCase() || "-";
   const consultantEmail = consultant?.email || "-";
@@ -88,27 +92,23 @@ export async function generatePdf({
       .join("");
 
   const generateProductRows = () => {
-    if (Array.isArray(selectedProducts)) {
-      return selectedProducts
-        .map(({ product_id }) => {
-          const p = allProducts.find(
-            (p) => String(p.id) === String(product_id)
-          );
-          return `<tr><td>${
-            p?.name || "Produto " + product_id
-          }</td><td>${formatCurrency(p?.price || 0)}</td></tr>`;
-        })
-        .join("");
-    } else {
-      return Object.entries(selectedProducts)
-        .map(([id]) => {
-          const p = allProducts.find((p) => String(p.id) === id);
-          return `<tr><td>${
-            p?.name || "Produto " + id
-          }</td><td>${formatCurrency(p?.price || 0)}</td></tr>`;
-        })
-        .join("");
+    const selectedIds = Object.values(simulation.selectedProducts || {}).map(
+      String
+    );
+
+    const selectedProducts = (simulation.products || []).filter((p) =>
+      selectedIds.includes(String(p.id))
+    );
+
+    if (selectedProducts.length === 0) {
+      return `<tr><td colspan="2">Nenhum produto selecionado</td></tr>`;
     }
+
+    return selectedProducts
+      .map(
+        (p) => `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
+      )
+      .join("");
   };
 
   const coberturaRows = generateListRows(cobertura);
@@ -125,54 +125,50 @@ export async function generatePdf({
         generateImplementRows()
       )
     : "";
-
-  const productsTable = (
-    Array.isArray(selectedProducts)
-      ? selectedProducts.length
-      : Object.keys(selectedProducts).length
-  )
+  const productsTable = allProducts.length
     ? loadTemplate("table-products.html").replace(
         "{{PRODUTOS}}",
         generateProductRows()
       )
     : "";
 
+  const mensalidadeReal = getValue("monthlyFee");
+  const taxaMatriculaReal = getValue("accession");
+  const cotaParticipacaoReal = getValue("franchiseValue");
+  const rastreadorReal = getValue("installationPrice");
+
+  const mensalidadeDesconto = simulation.discountedMonthlyFee;
+  const taxaMatriculaDesconto = simulation.discountedAccession;
+  const cotaParticipacaoDesconto = simulation.discountedFranchiseValue;
+  const rastreadorDesconto = simulation.discountedInstallationPrice;
+
   const quoteTable = loadTemplate("table-quote.html")
-    .replace("{{MENSALIDADE_REAL}}", formatCurrency(monthlyFee))
+    .replace("{{MENSALIDADE_REAL}}", formatCurrency(mensalidadeReal))
     .replace(
       "{{MENSALIDADE_DESCONTO}}",
-      formatValueWithDiscount(monthlyFee, simulation.discountedMonthlyFee)
+      formatValueWithDiscount(mensalidadeReal, mensalidadeDesconto)
     )
-    .replace("{{TAXA_MATRICULA_REAL}}", formatCurrency(rangeDetails.accession))
+    .replace("{{TAXA_MATRICULA_REAL}}", formatCurrency(taxaMatriculaReal))
     .replace(
       "{{TAXA_MATRICULA_DESCONTO}}",
-      formatValueWithDiscount(
-        rangeDetails.accession,
-        simulation.discountedAccession
-      )
+      formatValueWithDiscount(taxaMatriculaReal, taxaMatriculaDesconto)
     )
     .replace(
       "{{COTA_PARTICIPACAO_REAL}}",
-      formatPercentage(rangeDetails.franchiseValue)
+      formatPercentage(cotaParticipacaoReal)
     )
     .replace(
       "{{COTA_PARTICIPACAO_DESCONTO}}",
       formatValueWithDiscount(
-        rangeDetails.franchiseValue,
-        simulation.discountedFranchiseValue,
+        cotaParticipacaoReal,
+        cotaParticipacaoDesconto,
         true
       )
     )
-    .replace(
-      "{{RASTREADOR_REAL}}",
-      formatCurrency(rangeDetails.installationPrice)
-    )
+    .replace("{{RASTREADOR_REAL}}", formatCurrency(rastreadorReal))
     .replace(
       "{{RASTREADOR_DESCONTO}}",
-      formatValueWithDiscount(
-        rangeDetails.installationPrice,
-        simulation.discountedInstallationPrice
-      )
+      formatValueWithDiscount(rastreadorReal, rastreadorDesconto)
     );
 
   const consultantTable = loadTemplate("table-consultant.html")

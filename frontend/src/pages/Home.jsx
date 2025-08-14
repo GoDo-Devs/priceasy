@@ -76,7 +76,7 @@ function Home() {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {metrics.map((metric, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
+          <Grid size={{ xs: 12, md: 4}} key={index}>
             <MetricCard title={metric.title} value={metric.value} />
           </Grid>
         ))}
@@ -94,7 +94,7 @@ function Home() {
         <>
           <Grid container spacing={2}>
             {simulations.map((simulation) => (
-              <Grid item xs={12} sm={6} md={4} key={simulation.id}>
+              <Grid size={{ xs: 12, md: 4}} key={simulation.id}>
                 <QuotationCard simulation={simulation} />
               </Grid>
             ))}

@@ -9,7 +9,7 @@ import DiscountModal from "@/components/Modal/DiscountModal.jsx";
 import SuccessModal from "@/components/Modal/SucessModal";
 import ErrorModal from "@/components/Modal/ErrorModal";
 import { sendPdfEmail } from "@/utils/sendPdfEmail";
-import { generatePdf } from "@/utils/generatePdf";
+import { generatePdf, updatePdf } from "@/utils/pdfActions";
 
 import PriceCardsList from "./PriceCardsList.jsx";
 import { Snackbar, Alert } from "@mui/material";
@@ -42,7 +42,7 @@ function SimulationSideBar() {
     setEditType(type);
     setOpenDiscountModal(true);
   };
-  console.log(rangeDetails)
+  console.log(rangeDetails);
 
   const handleSave = async () => {
     const result = await saveSimulation(simulation, rangeDetails);
@@ -144,8 +144,14 @@ function SimulationSideBar() {
             showSnackbar("Dados da simulação ou cliente ausentes!", "error");
             return;
           }
-          generatePdf(client, simulation, rangeDetails, consultant);
-          showSnackbar("Download feito com sucesso!", "success");
+
+          if (simulation?.id) {
+            updatePdf(client, simulation, rangeDetails, consultant);
+            showSnackbar("PDF baixado com sucesso!", "success");
+          } else {
+            generatePdf(client, simulation, rangeDetails, consultant);
+            showSnackbar("PDF baixado com sucesso!", "success");
+          }
         }}
         onSendEmail={handleSendEmail}
         title="Cotação salva com sucesso!"
