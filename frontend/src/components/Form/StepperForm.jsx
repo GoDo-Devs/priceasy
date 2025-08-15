@@ -1,7 +1,14 @@
-import { Box, Button, Stepper, Step, StepLabel } from "@mui/material";
-import { useState } from "react";
+import {
+  Box,
+  Button,
+  Stepper,
+  Step,
+  StepLabel,
+  Snackbar,
+  Alert,
+} from "@mui/material";
+import { useState, useRef } from "react";
 import { importRangesFromExcel } from "@/utils/importRangesFromExcel";
-import { useRef } from "react";
 
 function StepperForm({
   steps = [],
@@ -18,10 +25,26 @@ function StepperForm({
   const [error, setError] = useState("");
   const fileInputRef = useRef();
 
+  // Snackbar
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "info",
+  });
+
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      importRangesFromExcel(file, setPriceTable);
+      importRangesFromExcel(file, setPriceTable, showSnackbar);
+      e.target.value = null;
     }
   };
 
@@ -69,6 +92,7 @@ function StepperForm({
           </Step>
         ))}
       </Stepper>
+
       {showAddButton && steps[activeStep] === "Tabela" && (
         <Box sx={{ display: "flex", gap: 2, mt: 2, alignItems: "center" }}>
           <input
@@ -87,8 +111,11 @@ function StepperForm({
           </Button>
         </Box>
       )}
+
       {error && <Box sx={{ color: "red", mt: 2 }}>{error}</Box>}
+
       <Box sx={{ mt: 2, mb: 2 }}>{renderStepContent(activeStep)}</Box>
+
       <Box
         sx={{
           display: "flex",
@@ -127,6 +154,21 @@ function StepperForm({
           </Button>
         )}
       </Box>
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }
