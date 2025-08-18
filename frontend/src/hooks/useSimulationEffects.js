@@ -76,8 +76,13 @@ export default function useSimulationEffects() {
   }, [simulation.brand_id]);
 
   useEffect(() => {
+    if (loading) return;
+
     setYear([]);
-    setSimulation((prev) => ({ ...prev, year: "" }));
+
+    if (!id) {
+      setSimulation((prev) => ({ ...prev, year: "" }));
+    }
 
     if (
       simulation.vehicle_type_id &&
@@ -103,7 +108,31 @@ export default function useSimulationEffects() {
           console.error("Erro ao carregar anos do veículo:", err)
         );
     }
-  }, [simulation.model_id]);
+  }, [simulation.model_id, loading]);
+
+  useEffect(() => {
+    if (
+      Array.isArray(year) &&
+      year.length > 0 &&
+      simulation.year &&
+      !year.find((y) => String(y.value) === String(simulation.year))
+    ) {
+      const selected = year.find(
+        (y) =>
+          String(y.value) === String(simulation.year) ||
+          String(y.label) === String(simulation.year)
+      );
+
+      if (selected) {
+        setSimulation((prev) => ({
+          ...prev,
+          year: Number(selected.value),
+          modelYearLabel: selected.label,
+          fuel: selected.fuel ?? "",
+        }));
+      }
+    }
+  }, [year, simulation.year]);
 
   useEffect(() => {
     const { brand_id, model_id, year, fuel, vehicle_type_id } = simulation;
@@ -205,60 +234,37 @@ export default function useSimulationEffects() {
       simulation.price_table_id !== undefined &&
       simulation.protectedValue
     ) {
-      if (simulation.vehicle_type_id === 4) {
-        const vehiclePriceNumber =
-          typeof simulation.protectedValue === "number"
-            ? simulation.protectedValue
-            : Number(
-                String(simulation.protectedValue)
-                  .replace(/[^\d,.-]/g, "")
-                  .replace(".", "")
-                  .replace(",", ".")
-              );
+      const vehiclePriceNumber =
+        typeof simulation.protectedValue === "number"
+          ? simulation.protectedValue
+          : Number(
+              String(simulation.protectedValue)
+                .replace(/[^\d,.-]/g, "")
+                .replace(".", "")
+                .replace(",", ".")
+            );
 
-        const payload = {
-          price_table_id: simulation.price_table_id,
-          vehiclePrice: vehiclePriceNumber,
-          vehicle_type_id: simulation.vehicle_type_id,
-        };
+      const payload =
+        simulation.vehicle_type_id === 4
+          ? {
+              price_table_id: simulation.price_table_id,
+              vehiclePrice: vehiclePriceNumber,
+              vehicle_type_id: simulation.vehicle_type_id,
+            }
+          : {
+              price_table_id: simulation.price_table_id,
+              vehiclePrice: vehiclePriceNumber,
+              model_id: simulation.model_id,
+              vehicle_type_id: simulation.vehicle_type_id,
+            };
 
-        useHttp
-          .post("/price-tables/plans", payload)
-          .then((res) => {
-            setPlans(res.data.plans || []);
-            setRangeDetails(res.data.rangeDetails || {});
-          })
-          .catch((err) => console.error("Erro ao carregar planos:", err));
-      } else {
-        if (simulation.model_id && simulation.year && simulation.brand_id) {
-          const vehiclePriceNumber =
-            typeof simulation.protectedValue === "number"
-              ? simulation.protectedValue
-              : Number(
-                  String(simulation.protectedValue)
-                    .replace(/[^\d,.-]/g, "")
-                    .replace(".", "")
-                    .replace(",", ".")
-                );
-
-          const payload = {
-            price_table_id: simulation.price_table_id,
-            vehiclePrice: vehiclePriceNumber,
-            model_id: simulation.model_id,
-            vehicle_type_id: simulation.vehicle_type_id,
-          };
-
-          useHttp
-            .post("/price-tables/plans", payload)
-            .then((res) => {
-              setPlans(res.data.plans || []);
-              setRangeDetails(res.data.rangeDetails || {});
-            })
-            .catch((err) => console.error("Erro ao carregar planos:", err));
-        } else {
-          setPlans([]);
-        }
-      }
+      useHttp
+        .post("/price-tables/plans", payload)
+        .then((res) => {
+          setPlans(res.data.plans || []);
+          setRangeDetails(res.data.rangeDetails || {});
+        })
+        .catch((err) => console.error("Erro ao carregar planos:", err));
     } else {
       setPlans([]);
     }
@@ -420,8 +426,6 @@ export default function useSimulationEffects() {
     }
   };
 
-  console.log(simulation);
-
   return {
     vehicleType,
     brand,
@@ -433,5 +437,6 @@ export default function useSimulationEffects() {
     saveSimulation,
     loading,
     client,
+    simulation,
   };
 }

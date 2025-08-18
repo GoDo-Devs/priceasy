@@ -25,7 +25,8 @@ export function AuthProvider({ children }) {
 
   async function handleLogin(loginFields) {
     const response = await authService.login(loginFields);
-    afterConfirmLogin(response.data);
+    const { data } = await authService.me();
+    afterConfirmLogin(data);
 
     return response;
   }
