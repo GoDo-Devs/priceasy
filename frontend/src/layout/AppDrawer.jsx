@@ -1,3 +1,4 @@
+import React, { useContext, useEffect } from "react";
 import {
   Box,
   Divider,
@@ -7,15 +8,19 @@ import {
   Typography,
   Stack,
 } from "@mui/material";
-import { guardedAuthenticatedRoutes } from "@/router/routes.js";
-import ListLink from "../components/DrawerLinks/ListLink.jsx";
 import { ExitToApp } from "@mui/icons-material";
 import { AuthContext } from "@/contexts/authContext";
-import { useContext, useEffect } from "react";
+import ListLink from "../components/DrawerLinks/ListLink.jsx";
 import GroupLink from "../components/DrawerLinks/GroupLink.jsx";
+import { guardedAuthenticatedRoutes } from "@/router/routes.js";
+
+function canAccess(route, user) {
+  if (!route.guard) return true;
+  return route.guard.every((fn) => fn(user));
+}
 
 function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
-  const { handleLogout } = useContext(AuthContext);
+  const { handleLogout, user } = useContext(AuthContext);
 
   useEffect(() => {
     const handleGlobalCloseDrawer = () => {
@@ -29,13 +34,23 @@ function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
     };
   }, [setOpenDrawer]);
 
+  const filteredRoutes = guardedAuthenticatedRoutes[0].children
+    .filter((route) => canAccess(route, user))
+    .map((route) => {
+      if (route.children) {
+        return {
+          ...route,
+          children: route.children.filter((child) => canAccess(child, user)),
+        };
+      }
+      return route;
+    });
+
   return (
     <Drawer
       variant={isMobile ? "temporary" : "persistent"}
       open={open}
-      sx={{
-        width: open && drawerWidth,
-      }}
+      sx={{ width: open ? drawerWidth : 0 }}
       onClose={() => setOpenDrawer(false)}
     >
       <Stack width={drawerWidth} height="100vh" overflow="hidden">
@@ -43,12 +58,18 @@ function AppDrawer({ open, drawerWidth, isMobile, setOpenDrawer }) {
           <Toolbar />
           <Divider />
           <List>
-            {guardedAuthenticatedRoutes[0].children.map(
-              ({ path, icon: Icon, label, children }) => {
-                return children
-                      ? <GroupLink key={label} path={path} Icon={Icon} title={label} children={children} />
-                      : <ListLink key={label} path={path} Icon={Icon} title={label} />
-              }
+            {filteredRoutes.map(({ path, icon: Icon, label, children }) =>
+              children ? (
+                <GroupLink
+                  key={label}
+                  path={path}
+                  Icon={Icon}
+                  title={label}
+                  children={children}
+                />
+              ) : (
+                <ListLink key={label} path={path} Icon={Icon} title={label} />
+              )
             )}
           </List>
         </Box>

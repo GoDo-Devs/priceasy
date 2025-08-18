@@ -22,6 +22,30 @@ function ClientVehicleForm({
   const [cpfOptions, setCpfOptions] = useState([]);
 
   useEffect(() => {
+    if (
+      Array.isArray(year) &&
+      year.length > 0 &&
+      simulation.year &&
+      !year.find((y) => String(y.value) === String(simulation.year))
+    ) {
+      const selected = year.find(
+        (y) =>
+          String(y.value) === String(simulation.year) ||
+          String(y.label) === String(simulation.year)
+      );
+
+      if (selected) {
+        setSimulation((prev) => ({
+          ...prev,
+          year: Number(selected.value),
+          modelYearLabel: selected.label,
+          fuel: selected.fuel ?? "",
+        }));
+      }
+    }
+  }, [year, simulation.year]);
+
+  useEffect(() => {
     if (client.cpf && client.cpf.length >= 3) {
       useHttp
         .post("/clients/search", { cpf: client.cpf })
