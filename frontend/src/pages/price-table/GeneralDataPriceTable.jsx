@@ -21,7 +21,18 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
   }, [priceTable.vehicle_type_id]);
 
   return (
-    <Box display="flex" gap={2} mb={3}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 3,
+        padding: 3,
+        mt: 3,
+        mb: 3,
+        justifyContent: "start",
+        borderRadius: "20px",
+        backgroundColor: "background.paper",
+      }}
+    >
       <TextInput
         label="Nome da Tabela"
         name="name"
