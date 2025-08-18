@@ -86,7 +86,18 @@ function Brands({ priceTable, setPriceTable }) {
     priceTable.brands.length > 0 && priceTable.brands.length < brands.length;
 
   return (
-    <Box display="flex" flexDirection="column" gap={2} mb={3}>
+    <Box
+      sx={{
+        borderRadius: "20px",
+        backgroundColor: "background.paper",
+        padding: 3,
+        mt: 3,
+      }}
+      display="flex"
+      flexDirection="column"
+      gap={2}
+      mb={3}
+    >
       {loadingBrands ? (
         <Box
           display="flex"

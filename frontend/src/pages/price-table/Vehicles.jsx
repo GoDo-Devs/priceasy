@@ -29,7 +29,10 @@ function Vehicles({ priceTable, setPriceTable }) {
           setLoadingModels(false);
         })
         .catch((err) => {
-          console.error("Erro ao buscar modelos, tentando novamente em 3s:", err);
+          console.error(
+            "Erro ao buscar modelos, tentando novamente em 3s:",
+            err
+          );
           setTimeout(fetchModels, 1000);
         });
     }
@@ -48,10 +51,13 @@ function Vehicles({ priceTable, setPriceTable }) {
     <Box
       sx={{
         display: "flex",
-        gap: 4,
+        gap: 2,
         padding: 2,
-        mt: 5,
+        mt: 3,
+        mb: 3,
         justifyContent: "center",
+        borderRadius: "20px",
+        backgroundColor: "background.paper",
       }}
     >
       <SidebarLinks options={options} onSelect={setSelectedBrand} />
