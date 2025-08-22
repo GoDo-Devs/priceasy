@@ -4,7 +4,14 @@ import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
 
 export default function useSimulationEffects() {
-  const { simulation, setSimulation, client, setClient } = useSimulation();
+  const {
+    simulation,
+    setSimulation,
+    client,
+    setClient,
+    rangeDetails,
+    setRangeDetails,
+  } = useSimulation();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const [loading, setLoading] = useState(true);
@@ -15,7 +22,6 @@ export default function useSimulationEffects() {
   const [year, setYear] = useState([]);
   const [priceTableNames, setPriceTableNames] = useState([]);
   const [plans, setPlans] = useState([]);
-  const [rangeDetails, setRangeDetails] = useState({});
 
   useEffect(() => {
     useHttp
@@ -217,33 +223,48 @@ export default function useSimulationEffects() {
   }, [simulation.fipeValue]);
 
   useEffect(() => {
+    const {
+      price_table_id,
+      protectedValue,
+      model_id,
+      year,
+      brand_id,
+      vehicle_type_id,
+    } = simulation;
+
     if (
-      simulation.price_table_id !== null &&
-      simulation.price_table_id !== undefined &&
-      simulation.protectedValue
+      price_table_id != null &&
+      protectedValue != null &&
+      model_id != null &&
+      year != null &&
+      brand_id != null &&
+      vehicle_type_id != null
     ) {
+      setRangeDetails({});
+      setLoading(true);
+
       const vehiclePriceNumber =
-        typeof simulation.protectedValue === "number"
-          ? simulation.protectedValue
+        typeof protectedValue === "number"
+          ? protectedValue
           : Number(
-              String(simulation.protectedValue)
+              String(protectedValue)
                 .replace(/[^\d,.-]/g, "")
                 .replace(".", "")
                 .replace(",", ".")
             );
 
       const payload =
-        simulation.vehicle_type_id === 4
+        vehicle_type_id === 4
           ? {
-              price_table_id: simulation.price_table_id,
+              price_table_id,
               vehiclePrice: vehiclePriceNumber,
-              vehicle_type_id: simulation.vehicle_type_id,
+              vehicle_type_id,
             }
           : {
-              price_table_id: simulation.price_table_id,
+              price_table_id,
               vehiclePrice: vehiclePriceNumber,
-              model_id: simulation.model_id,
-              vehicle_type_id: simulation.vehicle_type_id,
+              model_id,
+              vehicle_type_id,
             };
 
       useHttp
@@ -251,10 +272,15 @@ export default function useSimulationEffects() {
         .then((res) => {
           setPlans(res.data.plans || []);
           setRangeDetails(res.data.rangeDetails || {});
+          setLoading(false);
         })
-        .catch((err) => console.error("Erro ao carregar planos:", err));
+        .catch((err) => {
+          console.error("Erro ao carregar planos:", err);
+          setLoading(false);
+        });
     } else {
       setPlans([]);
+      setRangeDetails({});
     }
   }, [
     simulation.price_table_id,
@@ -422,6 +448,7 @@ export default function useSimulationEffects() {
     priceTableNames,
     plans,
     rangeDetails,
+    setRangeDetails,
     saveSimulation,
     loading,
     client,

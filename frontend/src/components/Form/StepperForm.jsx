@@ -25,7 +25,6 @@ function StepperForm({
   const [error, setError] = useState("");
   const fileInputRef = useRef();
 
-  // Snackbar
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
@@ -78,13 +77,7 @@ function StepperForm({
   };
 
   return (
-    <Box
-      sx={{
-        width: drawerWidth === 0 ? "99vw" : `calc(99vw - ${drawerWidth}px)`,
-        transition: "width 0.1s ease",
-        padding: "30px",
-      }}
-    >
+    <Box padding={3}>
       <Stepper activeStep={activeStep}>
         {steps.map((label) => (
           <Step key={label}>
