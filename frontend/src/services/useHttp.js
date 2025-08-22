@@ -4,7 +4,6 @@ const useHttp = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
-// Add request interceptor to set the token before each request
 useHttp.interceptors.request.use(
   function (config) {
     const token = localStorage.getItem("access-token");

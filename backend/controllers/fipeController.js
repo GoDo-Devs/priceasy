@@ -29,7 +29,7 @@ export default class FipeController {
   }
 
   static async getBrandNameById(req, res) {
-    const { id } = req.body; 
+    const { id } = req.body;
 
     try {
       const brand = await FipeBrand.findByPk(id);
@@ -125,6 +125,42 @@ export default class FipeController {
       });
     } catch (e) {
       res.status(400).json({ error: e.message });
+    }
+  }
+
+  static async getVehicleByPlate(req, res) {
+    const { plate } = req.body;
+
+    if (!plate || (plate.length !== 7 && plate.length !== 8)) {
+      return res
+        .status(400)
+        .json({ error: "Placa inválida. Deve conter 7 ou 8 caracteres." });
+    }
+
+    const fipeService = new FipeTableService();
+
+    try {
+      const fipeData = await fipeService.searchVehicleDataByPlate(plate);
+
+      const fipesArray = Array.isArray(fipeData)
+        ? fipeData.filter(Boolean)
+        : fipeData
+        ? [fipeData]
+        : [];
+
+      const firstFipe = fipesArray.length > 0 ? fipesArray[0] : null;
+
+      if (!firstFipe) {
+        return res
+          .status(404)
+          .json({ error: "Fipe não encontrada para essa placa." });
+      }
+
+      return res.status(200).json({
+        fipe: firstFipe,
+      });
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
     }
   }
 }

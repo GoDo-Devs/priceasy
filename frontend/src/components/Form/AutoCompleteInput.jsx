@@ -1,7 +1,6 @@
 import { Autocomplete, TextField, InputLabel, Popper } from "@mui/material";
 import { useState } from "react";
 
-// Popper personalizado para forçar abrir pra baixo
 const CustomPopper = function (props) {
   return <Popper {...props} placement="bottom-start" />;
 };

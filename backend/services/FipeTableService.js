@@ -8,28 +8,23 @@ class FipeTableService {
     this.http = new axios.create({
       baseURL: "https://veiculos.fipe.org.br/api/veiculos",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
-      }
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      },
     });
   }
 
   async setReferenceTable() {
     const response = await this.http.post("/ConsultarTabelaDeReferencia");
-
     this.checkErrors(response.data);
-
     this.referenceTable = response.data[0]["Codigo"];
   }
 
   async searchBrands(vehicleTypeCode) {
-    console.log(vehicleTypeCode)
     const response = await this.http.post("/ConsultarMarcas", {
       codigoTabelaReferencia: this.referenceTable,
       codigoTipoVeiculo: vehicleTypeCode,
     });
-
     this.checkErrors(response.data);
-
     return response.data;
   }
 
@@ -39,9 +34,7 @@ class FipeTableService {
       codigoTipoVeiculo: vehicleTypeCode,
       codigoMarca: brandCode,
     });
-
     this.checkErrors(response.data);
-
     return response.data;
   }
 
@@ -57,11 +50,10 @@ class FipeTableService {
 
     const yearWithFuel = response.data.map((yearFuel) => {
       const [year, fuel] = yearFuel["Value"].split("-");
-
       return {
         value: yearFuel["Value"],
         anoModelo: Number(year),
-        tipoCombustivel: Number(fuel)
+        tipoCombustivel: Number(fuel),
       };
     });
 
@@ -92,10 +84,50 @@ class FipeTableService {
 
   checkErrors(response) {
     const error = response["erro"];
-
     if (error) {
-      throw new Error(`Erro ao consultar Tabela Fipe ${error}`);
+      throw new Error(`Erro ao consultar Tabela Fipe: ${error}`);
     }
+  }
+
+  async searchVehicleDataByPlate(plate) {
+    if (process.env.USE_MOCK_FIPE === "true") {
+      return this.getMockFipeByPlate(plate);
+    }
+
+    const apiKey = process.env.API_PLATE_KEY;
+
+    const response = await axios.get(
+      `https://placas.fipeapi.com.br/placas/${plate}?key=${apiKey}`
+    );
+
+    if (!response.data || !response.data.data) {
+      throw new Error("Veículo não encontrado pela placa");
+    }
+
+    return response.data.data.fipes;
+  }
+
+  async searchVehicleDataByPlate(plate) {
+    const apiKey = process.env.API_PLATE_KEY;
+
+    const response = await axios.get(
+      `https://placas.fipeapi.com.br/placas/${plate}?key=${apiKey}`
+    );
+
+    if (!response.data || !response.data.data) {
+      throw new Error("Veículo não encontrado pela placa");
+    }
+
+    const fipes = response.data.data.fipes;
+
+    return fipes.map((fipe) => {
+      const [modelYear, fuel] = String(fipe.id_modelo_ano ?? "").split("-");
+      return {
+        ...fipe,
+        modelYear: Number(modelYear) || null,
+        fuel: Number(fuel) || null,
+      };
+    });
   }
 }
 
