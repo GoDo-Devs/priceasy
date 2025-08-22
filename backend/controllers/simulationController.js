@@ -5,6 +5,7 @@ import { Op } from "sequelize";
 import sequelize from "../db/index.js";
 import FipeBrand from "../models/FipeBrand.js";
 import FipeModel from "../models/FipeModel.js";
+import FipeTableService from "../services/FipeTableService.js";
 
 export default class SimulationController {
   static async createSimulation(req, res) {
@@ -93,7 +94,7 @@ export default class SimulationController {
       const offset = (page - 1) * limit;
 
       const where = {};
-      if (!req.user.isAdmin) {
+      if (!req.user.is_admin) {
         where.user_id = req.user.id;
       }
 
@@ -188,7 +189,7 @@ export default class SimulationController {
   static async getMetrics(req, res) {
     try {
       const where = {};
-      if (!req.user.isAdmin) {
+      if (!req.user.is_admin) {
         where.user_id = req.user.id;
       }
 
@@ -223,14 +224,30 @@ export default class SimulationController {
         ],
       });
 
-      return res.status(200).json({
+      let apiUsage = null;
+      if (req.user.is_admin) {
+        const fipeService = new FipeTableService();
+        try {
+          apiUsage = await fipeService.searchConsumption();
+        } catch (error) {
+          console.error("Erro ao consultar consumo da API:", error);
+        }
+      }
+
+      const response = {
         total: totalSimulations,
         monthly: {
           count: monthlySimulations,
           value: monthlyValue || 0,
           average: averageValue.getDataValue("average") || 0,
         },
-      });
+      };
+
+      if (req.user.is_admin) {
+        response.apiUsage = apiUsage;
+      }
+
+      return res.status(200).json(response);
     } catch (error) {
       console.error("Erro ao buscar métricas:", error);
       return res.status(500).json({ error: "Erro ao buscar métricas." });

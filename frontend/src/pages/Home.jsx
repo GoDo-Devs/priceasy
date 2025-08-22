@@ -30,22 +30,45 @@ function Home() {
 
   const fetchMetrics = async () => {
     try {
-      const data = await simulationService.getMetrics();
+      const response = await simulationService.getMetrics();
+      const apiUsage = response.apiUsage || null;
+      console.log(apiUsage);
+
       setMetrics([
-        { title: "Total de Cotações", value: data.total.toString() },
-        { title: "Cotações do Mês", value: data.monthly.count.toString() },
+        { title: "Total de Cotações", value: response.total.toString() },
+        { title: "Cotações do Mês", value: response.monthly.count.toString() },
         {
           title: "Valor Médio Protegido",
           value: new Intl.NumberFormat("pt-BR", {
             style: "currency",
             currency: "BRL",
-          }).format(data.monthly.average),
+          }).format(response.monthly.average),
+        },
+        {
+          title: "Total de Consultas",
+          value: apiUsage
+            ? `${apiUsage.consumido} de ${apiUsage.limite}`
+            : "0 / 0",
         },
       ]);
     } catch (error) {
       console.error("Error fetching metrics:", error);
     }
   };
+
+  function isValidMetric(metric) {
+    return (
+      metric.value !== null &&
+      metric.value !== undefined &&
+      metric.value !== "" &&
+      metric.value !== "0 / 0"
+    );
+  }
+
+  function getMdSize(metrics) {
+    const validCount = metrics.filter(isValidMetric).length;
+    return validCount === 3 ? 4 : 3;
+  }
 
   const fetchSimulations = async () => {
     try {
@@ -73,13 +96,15 @@ function Home() {
       <Typography variant="h5" sx={{ mb: 3 }}>
         Página Inicial
       </Typography>
-
       <Grid container spacing={2} sx={{ mb: 3 }}>
-        {metrics.map((metric, index) => (
-          <Grid size={{ xs: 12, md: 4}} key={index}>
-            <MetricCard title={metric.title} value={metric.value} />
-          </Grid>
-        ))}
+        {metrics.filter(isValidMetric).map((metric, index, arr) => {
+          const mdSize = getMdSize(arr);
+          return (
+            <Grid size={{ xs: 12, md: mdSize }} key={index}>
+              <MetricCard title={metric.title} value={metric.value} />
+            </Grid>
+          );
+        })}
       </Grid>
 
       <Typography variant="h5" sx={{ mb: 2 }}>
@@ -94,7 +119,7 @@ function Home() {
         <>
           <Grid container spacing={2}>
             {simulations.map((simulation) => (
-              <Grid size={{ xs: 12, md: 4}} key={simulation.id}>
+              <Grid size={{ xs: 12, md: 4 }} key={simulation.id}>
                 <QuotationCard simulation={simulation} />
               </Grid>
             ))}

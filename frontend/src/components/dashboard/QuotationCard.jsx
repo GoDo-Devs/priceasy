@@ -10,7 +10,8 @@ const StyledCard = styled(Card)(({ theme }) => ({
   width: "100%",
   borderRadius: 16,
   transition: "transform 0.2s ease-in-out",
-  display: "block",
+  display: "flex",
+  flexDirection: "column", 
   "&:hover": {
     transform: "translateY(-4px)",
   },
@@ -56,52 +57,54 @@ function QuotationCard({ simulation }) {
 
   return (
     <StyledCard elevation={3} onClick={handleClick} sx={{ cursor: "pointer" }}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          alignContent: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <Typography variant="h6" fontWeight={600}>
-          {client?.name || "Cliente não informado"}
-        </Typography>
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          sx={{ mt: { xs: 0.5, sm: 0 } }}
+      <Box sx={{ flexGrow: 1 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            alignContent: "center",
+            justifyContent: "space-between",
+          }}
         >
-          {formatDate(created_at)}
-        </Typography>
-      </Box>
-
-      {!brand && !name && !year ? (
-        <Typography
-          variant="body1"
-          fontWeight={500}
-          color="text.secondary"
-          sx={{ my: 2 }}
-        >
-          Agregado
-        </Typography>
-      ) : (
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, my: 2 }}>
-          <Typography variant="body1" fontWeight={500} color="text.secondary">
-            {brand}
+          <Typography variant="h6" fontWeight={600}>
+            {client?.name || "Cliente não informado"}
           </Typography>
-          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          <Typography variant="body2" color="text.secondary">
-            {name}
-          </Typography>
-          <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-          <Typography variant="body2" color="text.secondary">
-            {year === 32000 ? "Zero KM" : year}
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            sx={{ mt: { xs: 0.5, sm: 0 } }}
+          >
+            {formatDate(created_at)}
           </Typography>
         </Box>
-      )}
 
-      <Grid container justifyContent="space-between" spacing={2} sx={{ mt: 3 }}>
+        {!brand && !name && !year ? (
+          <Typography
+            variant="body1"
+            fontWeight={500}
+            color="text.secondary"
+            sx={{ my: 2 }}
+          >
+            Agregado
+          </Typography>
+        ) : (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, my: 2 }}>
+            <Typography variant="body1" fontWeight={500} color="text.secondary">
+              {brand}
+            </Typography>
+            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              {name}
+            </Typography>
+            <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+            <Typography variant="body2" color="text.secondary">
+              {year === 32000 ? "Zero KM" : year}
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      <Grid container justifyContent="space-between" spacing={2} sx={{ mt: 1 }}>
         <Grid item size={{ xs: 12, md: 4 }}>
           <Box sx={{ textAlign: "center" }}>
             <Typography color="textSecondary" variant="caption">

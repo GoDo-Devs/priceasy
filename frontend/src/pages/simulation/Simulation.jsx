@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 function SimulationInner() {
   const { loading } = useSimulationEffects();
-  
+
   useEffect(() => {
     setTimeout(() => {
       window.dispatchEvent(new Event("closeDrawer"));
@@ -28,23 +28,24 @@ function SimulationInner() {
   }
 
   return (
-    <Grid
-      container
-      sx={{
-        justifyContent: "space-between",
-        alignItems: "stretch",
-      }}
-      p={2}
-      spacing={2}
-    >
-      <Grid size={{ xs: 12, md: 9 }}>
-        <SimulationContent />
+    <Box p={2.5}>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          justifyContent: "space-between",
+          alignItems: "stretch",
+        }}
+      >
+        <Grid size={{ xs: 12, md: 9 }}>
+            <SimulationContent />
+        </Grid>
+        <Grid size={{ xs: 12, md: 3 }}>
+            <SimulationSideBar />
+        </Grid>
       </Grid>
-      <Grid size={{ xs: 12, md: 3 }}>
-        <SimulationSideBar />
-      </Grid>
-    </Grid>
-  );  
+    </Box>
+  );
 }
 
 export default function Simulation() {
