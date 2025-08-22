@@ -42,7 +42,6 @@ function SimulationSideBar() {
     setEditType(type);
     setOpenDiscountModal(true);
   };
-  console.log(rangeDetails);
 
   const handleSave = async () => {
     const result = await saveSimulation(simulation, rangeDetails);

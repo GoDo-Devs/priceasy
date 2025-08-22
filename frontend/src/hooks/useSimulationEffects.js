@@ -48,10 +48,6 @@ export default function useSimulationEffects() {
   }, [simulation.vehicle_type_id]);
 
   useEffect(() => {
-    setModel([]);
-    setYear([]);
-    setSimulation((prev) => ({ ...prev, model_id: "", year: "" }));
-
     if (
       simulation.vehicle_type_id &&
       simulation.brand_id &&
@@ -69,21 +65,13 @@ export default function useSimulationEffects() {
           }));
           setModel(options);
         })
-        .catch((err) =>
-          console.error("Erro ao carregar modelos do veículo:", err)
-        );
+        .catch(console.error);
+    } else {
+      setModel([]);
     }
-  }, [simulation.brand_id]);
+  }, [simulation.vehicle_type_id, simulation.brand_id]);
 
   useEffect(() => {
-    if (loading) return;
-
-    setYear([]);
-
-    if (!id) {
-      setSimulation((prev) => ({ ...prev, year: "" }));
-    }
-
     if (
       simulation.vehicle_type_id &&
       simulation.brand_id &&
@@ -104,11 +92,11 @@ export default function useSimulationEffects() {
           }));
           setYear(options);
         })
-        .catch((err) =>
-          console.error("Erro ao carregar anos do veículo:", err)
-        );
+        .catch(console.error);
+    } else {
+      setYear([]);
     }
-  }, [simulation.model_id, loading]);
+  }, [simulation.vehicle_type_id, simulation.brand_id, simulation.model_id]);
 
   useEffect(() => {
     if (

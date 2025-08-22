@@ -12,5 +12,6 @@ router.post('/brand-name', [checkToken], FipeController.getBrandNameById);
 router.post("/models", validator.body(modelsSchema), [checkToken], FipeController.getModels);
 router.post("/years", validator.body(modelYearSchema), [checkToken], FipeController.getModelYear);
 router.post("/price", validator.body(priceSchema), [checkToken], FipeController.getPrice);
+router.post("/plate", [checkToken], FipeController.getVehicleByPlate);
 
 export default router;

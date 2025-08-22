@@ -64,6 +64,41 @@ function ClientVehicleForm({
     }
   }, [client.cpf]);
 
+  useEffect(() => {
+    if (isEditing) return;
+
+    const plate = simulation.plate?.trim() ?? "";
+
+    const fetchVehicleData = async () => {
+      try {
+        const { data } = await useHttp.post("/fipe/plate", { plate });
+
+        const fipeData = data.fipe;
+        if (!fipeData) return;
+        console.log(fipeData)
+
+        setSimulation((prev) => ({
+          ...prev,
+          vehicle_type_id: fipeData.tipo ?? prev.vehicle_type_id,
+          brand_id: fipeData.id_marca ?? prev.brand_id,
+          model_id: fipeData.id_modelo ?? prev.model_id,
+          year: fipeData.modelYear ?? prev.year,
+          fuel: fipeData.fuelCode ?? prev.fuel,
+          fipeValue: fipeData.valor ?? prev.fipeValue,
+          plate,
+        }));
+
+        console.log(fipeData);
+      } catch (err) {
+        console.error("Erro ao buscar veículo pela placa:", err);
+      }
+    };
+
+    if (plate && plate.length >= 7) {
+      fetchVehicleData();
+    }
+  }, [simulation.plate, isEditing]);
+
   const fetchClientData = async (cpf) => {
     if (cpf.length !== 11) return;
     try {
@@ -140,6 +175,21 @@ function ClientVehicleForm({
           />
         </Grid>
         <Grid item size={{ xs: 12, md: 2 }}>
+          <TextInput
+            fullWidth
+            label="Placa"
+            name="plate"
+            value={simulation.plate ?? ""}
+            onChange={(e) =>
+              setSimulation({
+                ...simulation,
+                plate: e.target.value ?? "",
+              })
+            }
+            required
+          />
+        </Grid>
+        <Grid item size={{ xs: 12, md: 2 }}>
           <SelectInput
             fullWidth
             label="Tipo Veículo"
@@ -160,26 +210,11 @@ function ClientVehicleForm({
             }))}
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2 }}>
-          <TextInput
-            fullWidth
-            label="Placa"
-            name="plate"
-            value={simulation.plate ?? ""}
-            onChange={(e) =>
-              setSimulation({
-                ...simulation,
-                plate: e.target.value ?? "",
-              })
-            }
-            required
-          />
-        </Grid>
         <Grid item size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Marca"
-            value={simulation.brand_id}
+            value={simulation.brand_id ?? ""}
             options={brand}
             onChange={(val) =>
               setSimulation({
@@ -195,7 +230,7 @@ function ClientVehicleForm({
           <AutoCompleteInput
             fullWidth
             label="Modelo"
-            value={simulation.model_id}
+            value={simulation.model_id ?? ""}
             options={model}
             onChange={(val) =>
               setSimulation({
@@ -212,7 +247,7 @@ function ClientVehicleForm({
           <AutoCompleteInput
             fullWidth
             label="Ano Modelo"
-            value={simulation.year}
+            value={simulation.year ?? ""}
             options={year}
             onChange={(val) => {
               const selected = year.find(
