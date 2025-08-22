@@ -1,10 +1,11 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback } from "react";
 
 const SimulationContext = createContext();
 
 export function SimulationProvider({ children }) {
   const [simulation, setSimulation] = useState({});
   const [client, setClient] = useState({});
+  const [rangeDetails, setRangeDetails] = useState({});
 
   return (
     <SimulationContext.Provider
@@ -12,7 +13,9 @@ export function SimulationProvider({ children }) {
         simulation,
         setSimulation,
         client,
-        setClient
+        setClient,
+        rangeDetails,
+        setRangeDetails
       }}
     >
       {children}

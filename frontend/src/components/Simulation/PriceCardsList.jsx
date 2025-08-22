@@ -8,6 +8,8 @@ export default function PriceCardsList({
   onEdit,
   toNumber,
 }) {
+  console.log(simulation)
+  console.log(rangeDetails)
   return (
     <Box sx={{ flexGrow: 1 }}>
       <PriceCard
