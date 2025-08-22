@@ -163,4 +163,18 @@ export default class FipeController {
       return res.status(400).json({ error: e.message });
     }
   }
+
+  static async getApiUsage(req, res) {
+    const fipeService = new FipeTableService();
+
+    try {
+      const usage = await fipeService.searchConsumption();
+
+      return res.status(200).json({
+        usage
+      });
+    } catch (e) {
+      return res.status(400).json({ error: e.message });
+    }
+  }
 }

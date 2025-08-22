@@ -3,6 +3,7 @@ import axios from "axios";
 class FipeTableService {
   http;
   referenceTable;
+  apiKey;
 
   constructor() {
     this.http = new axios.create({
@@ -11,6 +12,8 @@ class FipeTableService {
         "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
       },
     });
+
+    this.apiKey = process.env.API_PLATE_KEY;
   }
 
   async setReferenceTable() {
@@ -90,28 +93,8 @@ class FipeTableService {
   }
 
   async searchVehicleDataByPlate(plate) {
-    if (process.env.USE_MOCK_FIPE === "true") {
-      return this.getMockFipeByPlate(plate);
-    }
-
-    const apiKey = process.env.API_PLATE_KEY;
-
     const response = await axios.get(
-      `https://placas.fipeapi.com.br/placas/${plate}?key=${apiKey}`
-    );
-
-    if (!response.data || !response.data.data) {
-      throw new Error("Veículo não encontrado pela placa");
-    }
-
-    return response.data.data.fipes;
-  }
-
-  async searchVehicleDataByPlate(plate) {
-    const apiKey = process.env.API_PLATE_KEY;
-
-    const response = await axios.get(
-      `https://placas.fipeapi.com.br/placas/${plate}?key=${apiKey}`
+      `https://placas.fipeapi.com.br/placas/${plate}?key=${this.apiKey}`
     );
 
     if (!response.data || !response.data.data) {
@@ -128,6 +111,18 @@ class FipeTableService {
         fuel: Number(fuel) || null,
       };
     });
+  }
+
+  async searchConsumption() {
+    const response = await axios.get(
+      `https://placas.fipeapi.com.br/consumo?key=${this.apiKey}`
+    );
+
+    if (!response.data || !response.data.data) {
+      throw new Error("Não foi possível consultar o consumo da API");
+    }
+
+    return response.data.data;
   }
 }
 

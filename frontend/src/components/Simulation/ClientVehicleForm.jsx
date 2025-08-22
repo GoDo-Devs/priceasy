@@ -1,9 +1,10 @@
-import { Box, Card, Grid, InputLabel } from "@mui/material";
+import { Box, Card, Grid, InputLabel, Button } from "@mui/material";
 import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
 import TextInput from "@/components/Form/TextInput.jsx";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
+import PlateSearchInput from "@/components/Form/PlateSearchInput.jsx";
 import AutoCompleteInput from "@/components/Form/AutoCompleteInput.jsx";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
@@ -64,40 +65,29 @@ function ClientVehicleForm({
     }
   }, [client.cpf]);
 
-  useEffect(() => {
-    if (isEditing) return;
+  const handleFetchVehicleData = async () => {
+    const plate = simulation.plate?.trim();
+    if (!plate || plate.length < 7) return;
 
-    const plate = simulation.plate?.trim() ?? "";
+    try {
+      const { data } = await useHttp.post("/fipe/plate", { plate });
+      const fipeData = data.fipe;
+      if (!fipeData) return;
 
-    const fetchVehicleData = async () => {
-      try {
-        const { data } = await useHttp.post("/fipe/plate", { plate });
-
-        const fipeData = data.fipe;
-        if (!fipeData) return;
-        console.log(fipeData)
-
-        setSimulation((prev) => ({
-          ...prev,
-          vehicle_type_id: fipeData.tipo ?? prev.vehicle_type_id,
-          brand_id: fipeData.id_marca ?? prev.brand_id,
-          model_id: fipeData.id_modelo ?? prev.model_id,
-          year: fipeData.modelYear ?? prev.year,
-          fuel: fipeData.fuelCode ?? prev.fuel,
-          fipeValue: fipeData.valor ?? prev.fipeValue,
-          plate,
-        }));
-
-        console.log(fipeData);
-      } catch (err) {
-        console.error("Erro ao buscar veículo pela placa:", err);
-      }
-    };
-
-    if (plate && plate.length >= 7) {
-      fetchVehicleData();
+      setSimulation((prev) => ({
+        ...prev,
+        vehicle_type_id: fipeData.tipo ?? prev.vehicle_type_id,
+        brand_id: fipeData.id_marca ?? prev.brand_id,
+        model_id: fipeData.id_modelo ?? prev.model_id,
+        year: fipeData.modelYear ?? prev.year,
+        fuel: fipeData.fuelCode ?? prev.fuel,
+        fipeValue: fipeData.valor ?? prev.fipeValue,
+        plate,
+      }));
+    } catch (err) {
+      console.error("Erro ao buscar veículo pela placa:", err);
     }
-  }, [simulation.plate, isEditing]);
+  };
 
   const fetchClientData = async (cpf) => {
     if (cpf.length !== 11) return;
@@ -131,7 +121,7 @@ function ClientVehicleForm({
   return (
     <Card sx={{ borderRadius: 2 }} elevation={0} className="p-5">
       <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, md: 4.5 }}>
+        <Grid item size={{ xs: 12, md: 4.3 }}>
           <TextInput
             fullWidth
             label="Nome"
@@ -174,19 +164,17 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2 }}>
-          <TextInput
+        <Grid item size={{ xs: 12, md: 2.2 }}>
+          <PlateSearchInput
             fullWidth
             label="Placa"
             name="plate"
+            maxLength={8}
             value={simulation.plate ?? ""}
             onChange={(e) =>
-              setSimulation({
-                ...simulation,
-                plate: e.target.value ?? "",
-              })
+              setSimulation({ ...simulation, plate: e.target.value ?? "" })
             }
-            required
+            onSearch={handleFetchVehicleData}
           />
         </Grid>
         <Grid item size={{ xs: 12, md: 2 }}>
@@ -262,7 +250,7 @@ function ClientVehicleForm({
             }}
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid item size={{ xs: 12, md: 4 }}>
           <AutoCompleteInput
             fullWidth
             label="Tabela de Preço"
