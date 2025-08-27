@@ -241,7 +241,6 @@ export default function useSimulationEffects() {
       vehicle_type_id != null
     ) {
       setRangeDetails({});
-      setLoading(true);
 
       const vehiclePriceNumber =
         typeof protectedValue === "number"
@@ -272,11 +271,9 @@ export default function useSimulationEffects() {
         .then((res) => {
           setPlans(res.data.plans || []);
           setRangeDetails(res.data.rangeDetails || {});
-          setLoading(false);
         })
         .catch((err) => {
           console.error("Erro ao carregar planos:", err);
-          setLoading(false);
         });
     } else {
       setPlans([]);

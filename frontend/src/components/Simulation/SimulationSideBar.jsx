@@ -93,6 +93,7 @@ function SimulationSideBar() {
       elevation={0}
       className="p-4"
       sx={{
+        borderRadius: 2,
         height: "100%",
         display: "flex",
         flexDirection: "column",
