@@ -10,9 +10,11 @@ import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
-function ServiceModal({ open, service, setService, onClose }) {
+function ServiceModal({ open, service, setService, onClose, setServices }) {
   const [categories, setCategories] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     if (open) {
@@ -25,16 +27,47 @@ function ServiceModal({ open, service, setService, onClose }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await useHttp.post("/services/create/", {
-        ...service,
-      });
-      console.log("Serviço criado:", service);
-    } catch (error) {
-      console.error("Erro ao salvar o seviço:", error);
-    }
 
-    onClose();
+    try {
+      if (service.id) {
+        const res = await useHttp.patch(`/services/${service.id}`, {
+          name: service.name,
+          category_id: service.category_id,
+        });
+
+        const updatedService = res.data.service ?? {
+          ...service,
+        };
+
+        setServices((prev) =>
+          prev.map((s) => (s.id === updatedService.id ? updatedService : s))
+        );
+
+        console.log("Serviço atualizado:", updatedService);
+        showSnackbar(res.data.message, "success");
+      } else {
+        const res = await useHttp.post("/services/create/", {
+          name: service.name,
+          category_id: service.category_id,
+        });
+
+        const newService = res.data.service ?? {
+          ...service,
+          id: res.data.id,
+        };
+
+        setServices((prev) => [...prev, newService]);
+
+        showSnackbar(res.data.message, "success");
+        console.log("Serviço criado:", newService);
+      }
+
+      onClose();
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
+      console.error("Erro ao salvar o serviço:", error);
+    }
   };
 
   return (
@@ -57,7 +90,7 @@ function ServiceModal({ open, service, setService, onClose }) {
     >
       <DialogContent>
         <Typography variant="h5" mb={3} align="center" gutterBottom>
-          {"Criar Serviço"}
+          {service.id ? "Editar Serviço" : "Criar Serviço"}
         </Typography>
         <TextInput
           label="Nome do Serviço"

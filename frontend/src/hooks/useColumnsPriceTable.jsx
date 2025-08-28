@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 import TwoWheelerIcon from "@mui/icons-material/TwoWheeler";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
@@ -16,6 +17,7 @@ const vehicleTypeIcons = {
 export function useColumnsPriceTable() {
   const [priceTables, setPriceTables] = useState([]);
   const [vehicleCategories, setVehicleCategories] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchVehicleCategories();
@@ -34,15 +36,16 @@ export function useColumnsPriceTable() {
     });
   };
 
-  const handleDelete = (priceTable) => {
-    useHttp
-      .delete(`/price-tables/${priceTable.id}`)
-      .then(() => {
-        setPriceTables((prev) => prev.filter((p) => p.id !== priceTable.id));
-      })
-      .catch((err) => {
-        console.error("Erro ao deletar Tabela de Preço:", err);
-      });
+  const handleDelete = async (priceTable) => {
+    try {
+      const res = await useHttp.delete(`/price-tables/${priceTable.id}`);
+      setPriceTables((prev) => prev.filter((p) => p.id !== priceTable.id));
+      showSnackbar(res.data.message, "success");
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      console.error("Erro ao deletar Tabela de Preço:", error);
+      showSnackbar(msg, "error");
+    }
   };
 
   const filteredCar = priceTables.filter((item) => item.vehicle_type_id === 1);

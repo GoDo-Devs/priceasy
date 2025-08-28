@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 export function useColumnsUser() {
   const [users, setUsers] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchUser();
@@ -14,18 +16,24 @@ export function useColumnsUser() {
     });
   };
 
-  const handleDelete = (user) => {
-    useHttp.delete(`/users/${user.id}`).then(() => {
-      setProducts((prev) => prev.filter((p) => p.id !== user.id));
-    });
+  const handleDelete = async (user) => {
+    try {
+      const res = await useHttp.delete(`/auth/${user.id}`);
+      setUsers((prev) => prev.filter((p) => p.id !== user.id));
+      showSnackbar(res.data.message, "success");
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      console.error("Erro ao deletar usuário:", error);
+      showSnackbar(msg, "error");
+    }
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome", size: 60},
+    { accessorKey: "name", header: "Nome", size: 60 },
     {
       accessorKey: "email",
       header: "E-mail",
-      size: 70
+      size: 70,
     },
     {
       accessorKey: "is_admin",

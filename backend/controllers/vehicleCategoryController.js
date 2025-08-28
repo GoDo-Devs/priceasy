@@ -69,7 +69,7 @@ export default class VehicleCategoryController {
       return res.status(200).json(vehicleCategoriesByVehicleTypeId);
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao obter os serviços do plano.",
+        message: "Erro ao obter as Categorias de Veículos",
         error: error.message,
       });
     }
@@ -80,7 +80,7 @@ export default class VehicleCategoryController {
 
     const vehicleCategoryExists = await VehicleCategory.findByPk(id);
     if (!vehicleCategoryExists) {
-      res.status(404).json({ message: "Categoria de Veículo não encontrado!" });
+      res.status(404).json({ message: "Categoria de Veículo não encontrada!" });
       return;
     }
 
@@ -90,7 +90,7 @@ export default class VehicleCategoryController {
         .status(200)
         .json({ message: "Categoria de Veículo removido com sucesso!" });
     } catch (error) {
-      res.status(404).json({ message: "Categoria de Veículo não encontrado!" });
+      res.status(404).json({ message: "Não foi possível remover a Categoria de Veículo." });
       return;
     }
   }

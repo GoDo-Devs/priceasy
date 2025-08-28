@@ -13,6 +13,14 @@ function Implement() {
   const [openModal, setOpenModal] = useState(false);
   const [implement, setImplement] = useState({ name: "" });
 
+  const handleEdit = (id) => {
+    const implementEdit = implementsList.find((p) => p.id === id);
+    if (!implementEdit) return;
+
+    setImplement(implementEdit);
+    setOpenModal(true);
+  };
+
   return (
     <Box padding={3}>
       <Stack
@@ -24,6 +32,7 @@ function Implement() {
         <PageTitle title="Implementos" />
         <Button
           onClick={() => {
+            setImplement({ name: "" });
             setOpenModal(true);
           }}
           variant="contained"
@@ -39,6 +48,8 @@ function Implement() {
         columns={columns}
         data={implementsList}
         handleDelete={handleDelete}
+        enableEdit={true}
+        handleEdit={handleEdit}
       />
 
       <ImplementModal

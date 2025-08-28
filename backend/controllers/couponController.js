@@ -76,7 +76,7 @@ export default class CouponController {
       return res.status(200).json({ message: "Cupom removido com sucesso!" });
     } catch (error) {
       return res.status(500).json({
-        message: "Erro ao remover o cupom.",
+        message: "Não foi possível remover o Cupom.",
         error: error.message,
       });
     }

@@ -7,6 +7,5 @@ const router = express.Router();
 
 router.get("/", [checkToken, isAdmin], userController.getAll);
 router.post("/by-id", [checkToken, isAdmin], userController.getUserById);
-router.delete("/:id", [checkToken, isAdmin], userController.removeUserById);
 
 export default router;

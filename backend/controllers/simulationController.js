@@ -326,7 +326,7 @@ export default class SimulationController {
 
       return res.status(200).json(simulation);
     } catch (error) {
-      console.error("Erro ao atualizar simulação:", error);
+      console.error("Erro ao atualizar a Simulação:", error);
       return res.status(500).json({ error: "Erro ao atualizar simulação." });
     }
   }

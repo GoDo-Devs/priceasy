@@ -12,8 +12,8 @@ import { sendPdfEmail } from "@/utils/sendPdfEmail";
 import { generatePdf, updatePdf } from "@/utils/pdfActions";
 
 import PriceCardsList from "./PriceCardsList.jsx";
-import { Snackbar, Alert } from "@mui/material";
-import { useSimulation } from "../../contexts/simulationContext.jsx";
+import { useSimulation } from "@/contexts/simulationContext.jsx";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx"; 
 
 function SimulationSideBar() {
   const [openDiscountModal, setOpenDiscountModal] = useState(false);
@@ -27,11 +27,8 @@ function SimulationSideBar() {
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showError, setShowError] = useState(false);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    severity: "success",
-    message: "",
-  });
+
+  const showSnackbar = useSnackbar();
 
   const toNumber = (val) => {
     const num = Number(val);
@@ -63,18 +60,14 @@ function SimulationSideBar() {
     }
   };
 
-  const showSnackbar = (message, severity = "success") => {
-    setSnackbar({ open: true, severity, message });
-  };
-
-  async function handleSendEmail() {
+  const handleSendEmail = async () => {
     try {
       await sendPdfEmail(client, simulation, rangeDetails, consultant);
       showSnackbar("Email enviado com sucesso!", "success");
     } catch {
       showSnackbar("Erro ao enviar email.", "error");
     }
-  }
+  };
 
   useEffect(() => {
     if (!simulation?.user_id) return;
@@ -111,6 +104,7 @@ function SimulationSideBar() {
           toNumber={toNumber}
         />
       </Box>
+
       <Box>
         <Button
           variant="contained"
@@ -121,6 +115,7 @@ function SimulationSideBar() {
           Salvar
         </Button>
       </Box>
+
       <DiscountModal
         open={openDiscountModal}
         onClose={() => {
@@ -132,6 +127,7 @@ function SimulationSideBar() {
         setSimulation={setSimulation}
         rangeDetails={rangeDetails}
       />
+
       <SuccessModal
         open={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
@@ -157,27 +153,13 @@ function SimulationSideBar() {
         title="Cotação salva com sucesso!"
         message="Você pode baixar o arquivo ou enviar para o e-mail. Ou ir para a tela inicial."
       />
+
       <ErrorModal
         open={showError}
         onClose={() => setShowError(false)}
         title="Erro ao salvar a cotação"
         message={errorMessage}
       />
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={15000}
-        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{ width: "100%", mt: 2 }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Card>
   );
 }

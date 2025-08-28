@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 export function useColumnsService() {
   const [services, setServices] = useState([]);
   const [categories, setCategories] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchServices();
@@ -25,15 +27,19 @@ export function useColumnsService() {
   const filteredCoverage = services.filter((item) => item.category_id === 1);
   const filteredAssistance = services.filter((item) => item.category_id === 2);
 
-  const handleDelete = (service) => {
-    useHttp
-      .delete(`/services/${service.id}`)
-      .then(() => {
-        setServices((prev) => prev.filter((p) => p.id !== service.id));
-      })
-      .catch((err) => {
-        console.error("Erro ao deletar serviço:", err);
-      });
+  const handleDelete = async (service) => {
+    try {
+      const res = await useHttp.delete(`/services/${service.id}`);
+      setServices((prev) => prev.filter((p) => p.id !== service.id));
+      showSnackbar(
+        res.data.message,
+        "success"
+      );
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      console.error("Erro ao deletar serviço:", error);
+      showSnackbar(msg, "error");
+    }
   };
 
   const columns = [
@@ -58,6 +64,7 @@ export function useColumnsService() {
     filteredCoverage,
     filteredAssistance,
     services,
+    setServices,
     handleDelete,
   };
 }

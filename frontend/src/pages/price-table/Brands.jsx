@@ -88,7 +88,7 @@ function Brands({ priceTable, setPriceTable }) {
   return (
     <Box
       sx={{
-        borderRadius: "20px",
+        borderRadius: "15px",
         backgroundColor: "background.paper",
         padding: 3,
         mt: 3,

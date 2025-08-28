@@ -230,7 +230,7 @@ export default class PriceTableController {
         .status(200)
         .json({ message: "Tabela de Preços removida com sucesso!" });
     } catch (error) {
-      res.status(404).json({ message: "Tabela de Preços não encontrada!" });
+      res.status(422).json({ message: "Não foi possível remover a Tabela de Preços." });
       return;
     }
   }

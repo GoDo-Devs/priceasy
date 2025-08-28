@@ -14,7 +14,7 @@ export default class ImplementController {
 
     try {
       const newImplement = await Implement.create({
-        name: name.trim()
+        name: name.trim(),
       });
 
       return res.status(200).json({
@@ -58,6 +58,31 @@ export default class ImplementController {
     } catch (error) {
       res.status(404).json({ message: "Implemento não encontrado!" });
       return;
+    }
+  }
+
+  static async updateImplementById(req, res) {
+    const id = req.params.id;
+    const { name } = req.body;
+
+    try {
+      const implement = await Implement.findByPk(id);
+
+      if (!implement) {
+        return res.status(404).json({ message: "Implemento não encontrado!" });
+      }
+
+      await implement.update({ name: name.trim() });
+
+      return res.status(200).json({
+        message: "Implemento atualizado com sucesso!",
+        implement,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao atualizar o Implemento.",
+        error: error.message,
+      });
     }
   }
 }

@@ -4,7 +4,7 @@ import {
   DialogActions,
   Button,
   InputLabel,
-  Typography
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -14,6 +14,7 @@ import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
 import { NumericFormat } from "react-number-format";
 import TextField from "@mui/material/TextField";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 function ProductModal({
   open,
@@ -29,6 +30,7 @@ function ProductModal({
     all: [],
     selected: [],
   });
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     useHttp
@@ -86,6 +88,7 @@ function ProductModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const payload = {
       name: product.name?.trim(),
       price: Number(product.price),
@@ -99,21 +102,25 @@ function ProductModal({
 
     try {
       if (product.id) {
-        await useHttp.patch(`/products/${product.id}`, payload);
+        const res = await useHttp.patch(`/products/${product.id}`, payload);
+
         const updatedProduct = { ...payload, id: product.id };
         setProducts((prev) =>
           prev.map((p) => (p.id === product.id ? updatedProduct : p))
         );
 
-        console.log("Produto atualizado:", updatedProduct);
+        showSnackbar(res.data.message, "success");
       } else {
-        await useHttp.post("/products/create/", payload);
-        setProducts((prev) => [...prev, payload]);
-        console.log("Produto criado:", payload);
+        const res = await useHttp.post("/products/create", payload);
+        setProducts((prev) => [...prev, res.data.product]);
+
+        showSnackbar(res.data.message, "success");
       }
 
       onClose();
     } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
       console.error("Erro ao salvar o produto:", error);
     }
   };

@@ -8,6 +8,7 @@ import {
 import TextInput from "@/components/Form/TextInput.jsx";
 import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 function ImplementModal({
   open,
@@ -16,14 +17,45 @@ function ImplementModal({
   setImplement,
   setImplementsList,
 }) {
+  const showSnackbar = useSnackbar();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      await useHttp.post("/implements/create/", implement);
-      console.log("Implemento criado:", implement);
-      setImplementsList((prev) => [...prev, implement]);
+      if (implement.id) {
+        const res = await useHttp.patch(`/implements/${implement.id}`, {
+          name: implement.name.trim(),
+        });
+
+        setImplementsList((prev) =>
+          prev.map((i) =>
+            i.id === implement.id ? { ...i, name: implement.name.trim() } : i
+          )
+        );
+
+        showSnackbar(
+          res.data.message || "Implemento atualizado com sucesso!",
+          "success"
+        );
+      } else {
+        const res = await useHttp.post("/implements/create", {
+          name: implement.name.trim(),
+        });
+
+        setImplementsList((prev) => [...prev, res.data.implement]);
+
+        showSnackbar(
+          res.data.message || "Implemento criado com sucesso!",
+          "success"
+        );
+      }
+
       onClose();
     } catch (error) {
+      const msg =
+        error.response?.data?.message || "Erro ao salvar o implemento.";
+      showSnackbar(msg, "error");
       console.error("Erro ao salvar o implemento:", error);
     }
   };
@@ -48,7 +80,7 @@ function ImplementModal({
     >
       <DialogContent>
         <Typography variant="h5" mb={3} align="center" gutterBottom>
-          {"Criar Implemento"}
+          {implement.id ? "Editar Implemento" : "Criar Implemento"}
         </Typography>
         <TextInput
           label="Nome do Implemento"

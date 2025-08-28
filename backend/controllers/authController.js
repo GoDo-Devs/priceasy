@@ -150,7 +150,25 @@ export default class AuthController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ message: "Erro ao atualizar usuário." });
+      return res.status(500).json({ message: "Erro ao atualizar Usuário." });
+    }
+  }
+
+  static async removeUserById(req, res) {
+    const id = req.params.id;
+
+    try {
+      const userExists = await User.findByPk(id);
+      if (!userExists) {
+        return res.status(404).json({ message: "Usuário não encontrado!" });
+      }
+
+      await User.destroy({ where: { id } });
+      return res.status(200).json({ message: "Usuário removido com sucesso!" });
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ message: "Não foi possível remover o Usuário.", error: error.message });
     }
   }
 }

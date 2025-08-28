@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 export function useColumnsProduct() {
   const [products, setProducts] = useState([]);
   const [productGroups, setProductGroups] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchProducts();
@@ -22,19 +24,20 @@ export function useColumnsProduct() {
     });
   };
 
-  const handleDelete = (product) => {
-    useHttp
-      .delete(`/products/${product.id}`)
-      .then(() => {
-        setProducts((prev) => prev.filter((p) => p.id !== product.id));
-      })
-      .catch((err) => {
-        console.error("Erro ao deletar produto:", err);
-      });
+  const handleDelete = async (product) => {
+    try {
+      const res = await useHttp.delete(`/products/${product.id}`);
+      setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      showSnackbar(res.data.message, "success");
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      console.error("Erro ao deletar produto:", error);
+      showSnackbar(msg, "error");
+    }
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome", size: 50, },
+    { accessorKey: "name", header: "Nome", size: 50 },
     {
       accessorKey: "price",
       header: "Preço",

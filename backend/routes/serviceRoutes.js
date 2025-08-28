@@ -7,6 +7,15 @@ const router = express.Router();
 
 router.post("/create", [checkToken, isAdmin], ServiceController.create);
 router.get("/", [checkToken], ServiceController.getAll);
-router.delete("/:id", [checkToken, isAdmin], ServiceController.removeServiceById);
+router.delete(
+  "/:id",
+  [checkToken, isAdmin],
+  ServiceController.removeServiceById
+);
+router.patch(
+  "/:id",
+  [checkToken, isAdmin],
+  ServiceController.updateServiceById
+);
 
 export default router;

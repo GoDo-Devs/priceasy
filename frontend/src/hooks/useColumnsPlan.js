@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 export function useColumnsPlan() {
   const [plans, setPlans] = useState([]);
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchPlan();
@@ -14,16 +16,19 @@ export function useColumnsPlan() {
     });
   };
 
-  const handleDelete = (plan) => {
-    useHttp
-      .delete(`/plans/${plan.id}`)
-      .then(() => {
-        setPlans((prev) => prev.filter((p) => p.id !== plan.id));
-      })
-      .catch((err) => {
-        console.error("Erro ao deletar plano:", err);
-        setPlans([]);
-      });
+  const handleDelete = async (plan) => {
+    try {
+      const res = await useHttp.delete(`/plans/${plan.id}`);
+      setPlans((prev) => prev.filter((p) => p.id !== plan.id));
+      showSnackbar(
+        res.data.message || "Plano removido com sucesso!",
+        "success"
+      );
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
+      console.error("Erro ao deletar plano:", err);
+    }
   };
 
   const columns = [

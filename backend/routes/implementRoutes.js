@@ -20,5 +20,10 @@ router.delete(
   [checkToken, isAdmin],
   ImplementController.removeImplementById
 );
+router.patch(
+  "/:id",
+  [checkToken, isAdmin],
+  ImplementController.updateImplementById
+);
 
 export default router;

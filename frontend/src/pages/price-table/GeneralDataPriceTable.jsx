@@ -29,7 +29,7 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
         mt: 3,
         mb: 3,
         justifyContent: "start",
-        borderRadius: "20px",
+        borderRadius: "15px",
         backgroundColor: "background.paper",
       }}
     >
@@ -40,7 +40,7 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
         onChange={(e) => setPriceTable({ ...priceTable, name: e.target.value })}
         required
         fullWidth
-        style={{ width: "600px" }}
+        style={{ width: "70%" }}
       />
       <SelectInput
         label="Selecione uma Categoria de Veículos"
@@ -57,6 +57,8 @@ function GeneralDataPriceTable({ priceTable, setPriceTable }) {
           value: cat.id,
           label: cat.name,
         }))}
+        fullWidth
+        style={{ width: "30%" }}
       />
     </Box>
   );

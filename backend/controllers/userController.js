@@ -39,22 +39,4 @@ export default class UserController {
       });
     }
   }
-
-  static async removeUserById(req, res) {
-    const id = req.params.id;
-
-    const userExists = await User.findByPk(id);
-    if (!userExists) {
-      res.status(404).json({ message: "Usuário não encontrado!" });
-      return;
-    }
-
-    try {
-      await User.destroy({ where: { id: id } });
-      res.status(200).json({ message: "Usuário removido com sucesso!" });
-    } catch (error) {
-      res.status(404).json({ message: "Usuário não encontrado!" });
-      return;
-    }
-  }
 }

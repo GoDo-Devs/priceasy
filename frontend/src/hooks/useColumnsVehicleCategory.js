@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import useHttp from "@/services/useHttp";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 export function useColumnsVehicleCategory() {
   const [vehicleCategories, setVehicleCategories] = useState([]);
   const [vehicleTypes, setVehicleTypes] = useState([]);
+
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     fetchVehicleCategories();
@@ -35,12 +38,21 @@ export function useColumnsVehicleCategory() {
     (item) => item.vehicle_type_id === 4
   );
 
-  const handleDelete = (vehicleCategory) => {
-    useHttp.delete(`/vehicle-categories/${vehicleCategory.id}`).then(() => {
+  const handleDelete = async (vehicleCategory) => {
+    try {
+      const res = await useHttp.delete(
+        `/vehicle-categories/${vehicleCategory.id}`
+      );
       setVehicleCategories((prev) =>
         prev.filter((item) => item.id !== vehicleCategory.id)
       );
-    });
+      showSnackbar(res.data.message, "success");
+    } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
+
+      console.error("Erro ao deletar categoria de veículo:", error);
+    }
   };
 
   const columns = [

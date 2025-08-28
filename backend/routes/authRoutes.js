@@ -24,5 +24,10 @@ router.patch(
   [checkToken, isAdmin],
   AuthController.editUser
 );
+router.delete(
+  "/:id",
+  [checkToken, isAdmin],
+  AuthController.removeUserById
+);
 
 export default router;

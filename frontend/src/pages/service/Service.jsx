@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState } from "react";
-import { Box, Button, Stack} from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -12,13 +12,28 @@ import DataTable from "@/components/Table/DataTable.jsx";
 import PageTitle from "../../components/PageTitle/PageTitle";
 
 function Service() {
-  const { columns, filteredCoverage, filteredAssistance,  handleDelete } = useColumnsService();
+  const {
+    columns,
+    filteredCoverage,
+    filteredAssistance,
+    handleDelete,
+    services,
+    setServices,
+  } = useColumnsService();
   const [openModal, setOpenModal] = useState(false);
   const [service, setService] = useState({ name: "", category_id: "" });
   const [value, setValue] = React.useState("1");
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleEdit = (id) => {
+    const serviceEdit = services.find((p) => p.id === id);
+    if (!serviceEdit) return;
+
+    setService(serviceEdit);
+    setOpenModal(true);
   };
 
   const handleGroupChange = (e) => {
@@ -38,7 +53,12 @@ function Service() {
         mb={3}
       >
         <PageTitle title="Serviços" />
-        <Button size="small" variant="contained" color="primary" onClick={() => setOpenModal(true)}>
+        <Button
+          size="small"
+          variant="contained"
+          color="primary"
+          onClick={() => setOpenModal(true)}
+        >
           Criar Serviço
           <AddIcon sx={{ ml: 1 }} />
         </Button>
@@ -47,6 +67,7 @@ function Service() {
         open={openModal}
         service={service}
         setService={setService}
+        setServices={setServices}
         onChange={handleGroupChange}
         onClose={() => {
           setOpenModal(false);
@@ -65,6 +86,8 @@ function Service() {
             columns={columns}
             data={filteredCoverage}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
         <TabPanel value="2" sx={{ p: 0 }}>
@@ -72,6 +95,8 @@ function Service() {
             columns={columns}
             data={filteredAssistance}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
       </TabContext>

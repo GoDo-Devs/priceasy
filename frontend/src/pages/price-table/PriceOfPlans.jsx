@@ -24,16 +24,21 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
     }
   }, [priceTable.ranges, priceTable.plansSelected, setPriceTable]);
 
-  console.log(priceTable)
+  console.log(priceTable);
 
   return (
     <>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          borderRadius: "15px",
+          backgroundColor: "background.paper",
+          padding: "5px 20px",
+          mt: 3,
         }}
+        display="flex"
+        flexDirection="column"
+        gap={2}
+        mb={2}
       >
         <CheckBoxInput
           className="mb-1"

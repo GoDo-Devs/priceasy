@@ -5,6 +5,7 @@ import TextInput from "@/components/Form/TextInput.jsx";
 import { useColumnsService } from "@/hooks/useColumnsService.js";
 import SelectDataTable from "@/components/Table/SelectDataTable.jsx";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 function PlanAdd() {
   const { columns, filteredCoverage, filteredAssistance, services } =
@@ -16,6 +17,7 @@ function PlanAdd() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     if (!id || !services.length) return;
@@ -83,14 +85,18 @@ function PlanAdd() {
       };
 
       if (id) {
-        await useHttp.patch(`/plans/edit/${id}`, payload);
+        const res = await useHttp.patch(`/plans/edit/${id}`, payload);
         console.log("Plano atualizado:", payload);
+        showSnackbar(res.data.message, "success");
       } else {
-        await useHttp.post("/plans/create/", payload);
+        const res = await useHttp.post("/plans/create/", payload);
         console.log("Plano criado:", payload);
+        showSnackbar(res.data.message, "success");
       }
       navigate("/planos");
     } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
       console.error("Erro ao salvar o plano:", error);
     }
   };

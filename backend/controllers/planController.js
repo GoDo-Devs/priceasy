@@ -5,7 +5,8 @@ import isValidArray from "../helpers/isValidArray.js";
 
 export default class PlanController {
   static async create(req, res) {
-    const { name, price, services_id } = req.body;
+    const { name, services_id } = req.body;
+    let price = null;
 
     const planExists = await Plan.findOne({ where: { name } });
     if (planExists) {
@@ -90,7 +91,7 @@ export default class PlanController {
       res.status(200).json({ message: "Plano removido com sucesso!" });
       return;
     } catch (error) {
-      res.status(404).json({ message: "Plano não encontrado!" });
+      res.status(404).json({ message: "Não foi possível remover o Plano." });
       return;
     }
   }
