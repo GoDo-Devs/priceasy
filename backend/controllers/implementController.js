@@ -19,7 +19,7 @@ export default class ImplementController {
 
       return res.status(200).json({
         message: "Implemento criado com sucesso!",
-        product: newImplement,
+        implement: newImplement,
       });
     } catch (error) {
       return res.status(500).json({
