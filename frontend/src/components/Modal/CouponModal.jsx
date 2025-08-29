@@ -125,9 +125,6 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
     }
   };
 
-  console.log(selectedUserIds);
-  console.log(coupon);
-
   return (
     <Dialog
       open={open}
