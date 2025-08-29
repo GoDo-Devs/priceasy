@@ -37,11 +37,11 @@ export function useColumnsProduct() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome", size: 50 },
+    { accessorKey: "name", header: "Nome", size: 60 },
     {
       accessorKey: "price",
       header: "Preço",
-      size: 50,
+      size: 30,
       Cell: ({ cell }) =>
         cell.getValue().toLocaleString("pt-BR", {
           style: "currency",
@@ -51,7 +51,7 @@ export function useColumnsProduct() {
     {
       accessorKey: "product_group_id",
       header: "Grupo de Produtos",
-      size: 50,
+      size: 30,
       Cell: ({ cell }) => {
         const group = productGroups.find((g) => g.id === cell.getValue());
         return group ? group.name : "Nenhum";

@@ -186,7 +186,7 @@ function ProductModal({
         />
         {showNewGroupInput && (
           <TextInput
-            label="Novo Grupo de Produto"
+            label="Novo Grupo de Produtos"
             name="group_name"
             className="mb-5"
             value={product.group_name}

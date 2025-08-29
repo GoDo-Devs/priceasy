@@ -114,7 +114,17 @@ function PlanAdd() {
         </Box>
       ) : (
         <>
-          <Box display="flex" gap={2} mb={3}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 3,
+              padding: 3,
+              mb: 3,
+              justifyContent: "start",
+              borderRadius: "15px",
+              backgroundColor: "background.paper",
+            }}
+          >
             <TextInput
               label="Nome do Plano"
               name="name"
@@ -122,6 +132,7 @@ function PlanAdd() {
               onChange={(e) => setPlan({ ...plan, name: e.target.value })}
               required
               fullWidth
+              style={{ width: "100%" }}
             />
           </Box>
           <SelectDataTable
