@@ -94,7 +94,7 @@ function SimulationSideBar() {
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" mb={2} fontWeight="bold">
+        <Typography textAlign="center" variant="h6" mb={2} >
           Resumo da Cotação
         </Typography>
         <PriceCardsList
