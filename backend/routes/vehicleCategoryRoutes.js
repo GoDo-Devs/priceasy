@@ -17,5 +17,10 @@ router.delete(
   [checkToken, isAdmin],
   VehicleCategoryController.removeVehicleCategoryById
 );
+router.patch(
+  "/:id",
+  [checkToken, isAdmin],
+  VehicleCategoryController.updateVehicleCategoryById
+);
 
 export default router;

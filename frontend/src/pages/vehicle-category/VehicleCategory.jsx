@@ -23,6 +23,7 @@ function VehicleCategory() {
     filteredMotorcycle,
     filteredTruck,
     filteredAggregate,
+    vehicleCategories,
     setVehicleCategories,
     handleDelete,
   } = useColumnsVehicleCategory();
@@ -32,6 +33,14 @@ function VehicleCategory() {
     vehicle_type_id: "",
   });
   const [value, setValue] = React.useState("1");
+
+  const handleEdit = (id) => {
+    const vehicleCategoryEdit = vehicleCategories.find((p) => p.id === id);
+    if (!vehicleCategoryEdit) return;
+
+    setVehicleCategory(vehicleCategoryEdit);
+    setOpenModal(true);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -72,6 +81,8 @@ function VehicleCategory() {
             columns={columns}
             data={filteredCar}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
         <TabPanel value="2" sx={{ p: 0 }}>
@@ -79,6 +90,8 @@ function VehicleCategory() {
             columns={columns}
             data={filteredMotorcycle}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
         <TabPanel value="3" sx={{ p: 0 }}>
@@ -86,6 +99,8 @@ function VehicleCategory() {
             columns={columns}
             data={filteredTruck}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
         <TabPanel value="4" sx={{ p: 0 }}>
@@ -93,6 +108,8 @@ function VehicleCategory() {
             columns={columns}
             data={filteredAggregate}
             handleDelete={handleDelete}
+            enableEdit={true}
+            handleEdit={handleEdit}
           />
         </TabPanel>
       </TabContext>

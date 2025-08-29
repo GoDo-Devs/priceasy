@@ -10,20 +10,23 @@ import TextInput from "@/components/Form/TextInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 function VehicleCategoryModal({
   open,
   onClose,
-  vehicleCategory = {},
+  vehicleCategory,
   setVehicleCategory,
   setVehicleCategories,
 }) {
   const [vehicleType, setVehicleType] = useState([]);
+  const showSnackbar = useSnackbar();
+
   useEffect(() => {
     if (open) {
       useHttp
         .get("/vehicle-types")
-        .then((res) => setVehicleType(res.data.vehicleTypes))
+        .then((res) => setVehicleType(res.data.vehicleTypes || []))
         .catch((err) =>
           console.error("Erro ao carregar tipos de veículos:", err)
         );
@@ -32,12 +35,41 @@ function VehicleCategoryModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const payload = {
+      name: vehicleCategory.name,
+      vehicle_type_id: vehicleCategory.vehicle_type_id,
+    };
+
     try {
-      await useHttp.post("/vehicle-categories/create/", vehicleCategory);
-      console.log("Categoria de veículos criada:", vehicleCategory);
-      setVehicleCategories((prev) => [...prev, vehicleCategory]);
+      if (vehicleCategory.id) {
+        const res = await useHttp.patch(
+          `/vehicle-categories/${vehicleCategory.id}`,
+          payload
+        );
+
+        setVehicleCategories((prev) =>
+          prev.map((p) =>
+            p.id === vehicleCategory.id ? { ...p, ...payload } : p
+          )
+        );
+
+        showSnackbar(res.data.message, "success");
+      } else {
+        const res = await useHttp.post("/vehicle-categories/create", payload);
+        const newVehicleCategory =
+          res.data.categoryVehicle || res.data.vehicleCategories?.[0];
+
+        if (newVehicleCategory) {
+          setVehicleCategories((prev) => [...prev, newVehicleCategory]);
+        }
+        showSnackbar(res.data.message, "success");
+      }
+
       onClose();
     } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
       console.error("Erro ao salvar a categoria de veículos:", error);
     }
   };
@@ -62,35 +94,33 @@ function VehicleCategoryModal({
     >
       <DialogContent>
         <Typography variant="h5" mb={3} align="center" gutterBottom>
-          {"Criar Categoria"}
+          {vehicleCategory.id ? "Editar Categoria" : "Criar Categoria"}
         </Typography>
         <TextInput
           label="Nome da Categoria de Veículo"
           name="name"
           className="mb-5"
-          value={vehicleCategory.name ?? ""}
+          value={vehicleCategory.name || ""}
           onChange={(e) =>
             setVehicleCategory({ ...vehicleCategory, name: e.target.value })
           }
           required
-        ></TextInput>
+        />
         <SelectInput
           label="Selecione um Tipo de Veículo"
           name="vehicle_type_id"
           className="mb-5"
-          value={vehicleCategory.vehicle_type_id ?? ""}
+          value={vehicleCategory.vehicle_type_id || ""}
           onChange={(e) =>
             setVehicleCategory({
               ...vehicleCategory,
               vehicle_type_id: e.target.value,
             })
           }
-          options={[
-            ...vehicleType.map((g) => ({
-              value: g.id,
-              label: g.name,
-            })),
-          ]}
+          options={vehicleType.map((g) => ({
+            value: g.id,
+            label: g.name,
+          }))}
         />
       </DialogContent>
       <DialogActions>

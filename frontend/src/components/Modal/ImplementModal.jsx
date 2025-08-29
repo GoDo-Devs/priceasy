@@ -43,18 +43,18 @@ function ImplementModal({
           name: implement.name.trim(),
         });
 
-        setImplementsList((prev) => [...prev, res.data.implement]);
+        const newImplement = res.data.implement || res.data.implementsList?.[0];
 
-        showSnackbar(
-          res.data.message || "Implemento criado com sucesso!",
-          "success"
-        );
+        if (newImplement) {
+          setImplementsList((prev) => [...prev, newImplement]);
+        }
+
+        showSnackbar(res.data.message, "success");
       }
 
       onClose();
     } catch (error) {
-      const msg =
-        error.response?.data?.message || "Erro ao salvar o implemento.";
+      const msg = error.response?.data?.message;
       showSnackbar(msg, "error");
       console.error("Erro ao salvar o implemento:", error);
     }

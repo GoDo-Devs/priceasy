@@ -56,10 +56,11 @@ export function useColumnsVehicleCategory() {
   };
 
   const columns = [
-    { accessorKey: "name", header: "Nome" },
+    { accessorKey: "name", header: "Nome", size: 70 },
     {
       accessorKey: "vehicle_type_id",
       header: "Tipo de Veículo",
+      size: 70,
       Cell: ({ cell }) => {
         const type = vehicleTypes.find((t) => t.id === cell.getValue());
         return type ? type.name : "Nenhum";
@@ -73,6 +74,7 @@ export function useColumnsVehicleCategory() {
     filteredMotorcycle,
     filteredTruck,
     filteredAggregate,
+    vehicleCategories,
     setVehicleCategories,
     handleDelete,
   };
