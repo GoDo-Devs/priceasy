@@ -16,6 +16,7 @@ import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import SelectInput from "@/components/Form/SelectInput.jsx";
 import SelectUsersModal from "@/components/Modal/SelectUsersModal.jsx";
 import useHttp from "@/services/useHttp.js";
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
 const targetOptions = [
   { value: "accession", label: "Adesão" },
@@ -27,6 +28,8 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
   const [users, setUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   const [selectUsersModalOpen, setSelectUsersModalOpen] = useState(false);
+
+  const showSnackbar = useSnackbar();
 
   useEffect(() => {
     if (!open) return;
@@ -92,28 +95,38 @@ function CouponModal({ open, onClose, coupon, setCoupon, setCoupons }) {
       users_ids: selectedUserIds,
     };
 
-
     try {
       if (coupon?.id) {
-        await useHttp.patch(`/coupons/${coupon.id}`, payload);
+        const res = await useHttp.patch(`/coupons/${coupon.id}`, payload);
         setCoupons((prev) =>
           prev.map((c) =>
             c.id === coupon.id ? { ...payload, id: coupon.id } : c
           )
         );
+
+        showSnackbar(
+          res.data.message || "Cupom atualizado com sucesso!",
+          "success"
+        );
       } else {
         const res = await useHttp.post("/coupons/create/", payload);
         setCoupons((prev) => [...prev, res.data]);
+        showSnackbar(
+          res.data.message || "Cupom criado com sucesso!",
+          "success"
+        );
       }
 
       onClose();
     } catch (error) {
+      const msg = error.response?.data?.message;
+      showSnackbar(msg, "error");
       console.error("Erro ao salvar o cupom:", error);
     }
   };
 
-  console.log(selectedUserIds)
-  console.log(coupon)
+  console.log(selectedUserIds);
+  console.log(coupon);
 
   return (
     <Dialog
