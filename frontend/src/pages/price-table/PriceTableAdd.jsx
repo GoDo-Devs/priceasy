@@ -75,7 +75,7 @@ function PriceTableAdd() {
   }, [id]);
 
   const steps =
-    priceTable.vehicle_type_id && priceTable.vehicle_type_id !== 4
+    priceTable.vehicle_type_id && priceTable.vehicle_type_id !== 8
       ? ["Dados Gerais", "Marcas", "Veículos", "Tabela", "Preços dos Planos"]
       : ["Dados Gerais", "Tabela", "Preços dos Planos"];
 
@@ -126,7 +126,7 @@ function PriceTableAdd() {
     const payload = {
       vehicle_type_id: priceTable.vehicle_type_id,
       name: priceTable.name,
-      category_id: priceTable.category_id,
+      category_ids: priceTable.category_ids,
       brands: brandsIds,
       models: modelsIds,
       ranges: formattedRanges,
@@ -149,7 +149,7 @@ function PriceTableAdd() {
   };
 
   const renderStepContent = (step) => {
-    const isVehicleType4 = priceTable.vehicle_type_id === 4;
+    const isVehicleType8 = priceTable.vehicle_type_id === 8;
 
     if (step === 0) {
       return (
@@ -160,7 +160,7 @@ function PriceTableAdd() {
       );
     }
 
-    if (!isVehicleType4) {
+    if (!isVehicleType8) {
       if (step === 1) {
         return <Brands priceTable={priceTable} setPriceTable={setPriceTable} />;
       }

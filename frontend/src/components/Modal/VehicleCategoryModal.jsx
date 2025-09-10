@@ -25,7 +25,7 @@ function VehicleCategoryModal({
   useEffect(() => {
     if (open) {
       useHttp
-        .get("/vehicle-types")
+        .get("/vehicle-types/default")
         .then((res) => setVehicleType(res.data.vehicleTypes || []))
         .catch((err) =>
           console.error("Erro ao carregar tipos de veículos:", err)
@@ -39,6 +39,7 @@ function VehicleCategoryModal({
     const payload = {
       name: vehicleCategory.name,
       vehicle_type_id: vehicleCategory.vehicle_type_id,
+      fipeCode: vehicleCategory.fipeCode,
     };
 
     try {
@@ -111,12 +112,16 @@ function VehicleCategoryModal({
           name="vehicle_type_id"
           className="mb-5"
           value={vehicleCategory.vehicle_type_id || ""}
-          onChange={(e) =>
+          onChange={(e) => {
+            const selectedId = e.target.value;
+            const selectedType = vehicleType.find((t) => t.id === selectedId);
+
             setVehicleCategory({
               ...vehicleCategory,
-              vehicle_type_id: e.target.value,
-            })
-          }
+              vehicle_type_id: selectedId,
+              fipeCode: selectedType?.fipeCode || null, 
+            });
+          }}
           options={vehicleType.map((g) => ({
             value: g.id,
             label: g.name,

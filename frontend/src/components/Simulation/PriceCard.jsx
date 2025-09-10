@@ -1,4 +1,3 @@
-import React from "react";
 import { Card, Stack, Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -8,6 +7,7 @@ export default function PriceCard({
   originalValue,
   onEdit,
   alwaysGreen = false,
+  minHeight = 110,
 }) {
   const toNumber = (val) => {
     const num = Number(val);
@@ -33,57 +33,64 @@ export default function PriceCard({
     <Card
       variant="outlined"
       sx={{
-        mb: 1.5,
         borderRadius: 2,
         p: 1.7,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        minHeight,
+        position: "relative", 
       }}
     >
-      <Stack direction="row" justifyContent="space-between" alignItems="start">
-        <Box>
-          <Typography fontSize={15} color="text.secondary" fontWeight="medium">
-            {label}
-          </Typography>
-          {hasDiscount ? (
-            <>
+      <Box>
+        <Typography fontSize={11.5} color="text.secondary" fontWeight="medium">
+          {label}
+        </Typography>
+        {hasDiscount ? (
+          <>
+            <Typography
+              fontSize={10}
+              color="error"
+              sx={{ textDecoration: "line-through", mb: 0.1 }}
+            >
+              {formatBRL(originalValue)}
+            </Typography>
+            <Typography color="success.main" fontSize={15} fontWeight="bold">
+              {formatBRL(discountedValue)}
+            </Typography>
+          </>
+        ) : (
+          <>
+            {alwaysGreen ? (
               <Typography
-                fontSize={12}
-                color="error"
-                sx={{ textDecoration: "line-through", mb: 0.1 }}
+                color="success.main"
+                fontSize={15}
+                fontWeight="bold"
+                mt={0.1}
               >
-                {formatBRL(originalValue)}
+                {formatBRL(displayValue)}
               </Typography>
-              <Typography color="success.main" fontSize={16} fontWeight="bold">
-                {formatBRL(discountedValue)}
+            ) : (
+              <Typography fontSize={12} fontWeight="bold" mt={0.1}>
+                {formatBRL(displayValue)}
               </Typography>
-            </>
-          ) : (
-            <>
-              {alwaysGreen ? (
-                <Typography
-                  color="success.main"
-                  fontSize={16}
-                  fontWeight="bold"
-                  mt={0.1}
-                >
-                  {formatBRL(displayValue)}
-                </Typography>
-              ) : (
-                <Typography fontSize={14} fontWeight="bold" mt={0.1}>
-                  {formatBRL(displayValue)}
-                </Typography>
-              )}
-            </>
-          )}
-        </Box>
-        {onEdit && (
-          <IconButton size="small" onClick={onEdit}>
-            <EditIcon fontSize="small" color="primary" />
-          </IconButton>
+            )}
+          </>
         )}
-      </Stack>
+      </Box>
+      {onEdit && (
+        <IconButton
+          size="small"
+          onClick={onEdit}
+          sx={{
+            position: "absolute",
+            bottom: 8,
+            right: 8,
+          }}
+        >
+          <EditIcon fontSize="small" color="primary" />
+        </IconButton>
+      )}
     </Card>
   );
 }

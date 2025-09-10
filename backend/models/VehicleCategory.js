@@ -7,6 +7,13 @@ class VehicleCategory extends Model {
       foreignKey: "vehicle_type_id",
       as: "vehicle_types",
     });
+
+    VehicleCategory.belongsToMany(models.PriceTable, {
+      through: models.PriceTableCategory,
+      foreignKey: "category_id",
+      otherKey: "price_table_id",
+      as: "price_tables",
+    });
   }
 }
 
@@ -19,6 +26,10 @@ VehicleCategory.init(
     },
     name: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    fipeCode: {
+      type: DataTypes.NUMBER,
       allowNull: false,
     },
     vehicle_type_id: {

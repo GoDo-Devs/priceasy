@@ -13,12 +13,18 @@ import { generatePdf, updatePdf } from "@/utils/pdfActions";
 
 import PriceCardsList from "./PriceCardsList.jsx";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
-import { useSnackbar } from "@/contexts/snackbarContext.jsx"; 
+import { useSnackbar } from "@/contexts/snackbarContext.jsx";
+
+import priceTableService from "@/services/priceTableService.js";
+import Dropdown from "@/components/Simulation/Dropdown.jsx";
+import VehicleTypeDropdown from "@/components/Simulation/VehicleTypeDropdown.jsx";
+import useAggregatesTotals from "@/hooks/useAggregatesTotals.jsx";
 
 function SimulationSideBar() {
   const [openDiscountModal, setOpenDiscountModal] = useState(false);
   const [editType, setEditType] = useState(null);
   const [consultant, setConsultant] = useState(null);
+  const [priceOptions, setPriceOptions] = useState([]);
 
   const navigate = useNavigate();
   const { simulation: baseSimulation, setSimulation, client } = useSimulation();
@@ -29,6 +35,59 @@ function SimulationSideBar() {
   const [showError, setShowError] = useState(false);
 
   const showSnackbar = useSnackbar();
+  const { totalBasePrice, totalAccession, totalFranchise } =
+    useAggregatesTotals(simulation, priceOptions);
+
+  useEffect(() => {
+    if (!simulation?.aggregates?.length) return;
+
+    const fetchAll = async () => {
+      try {
+        const results = {};
+        const updatedAggregates = await Promise.all(
+          simulation.aggregates.map(async (agg) => {
+            if (!agg?.id || !agg?.value) return agg;
+
+            try {
+              const data = await priceTableService.getRangeDetailsByAggregate(
+                agg.id,
+                agg.value
+              );
+
+              const basePrice =
+                data.plans?.reduce(
+                  (sum, plan) => sum + (Number(plan.basePrice) || 0),
+                  0
+                ) || 0;
+
+              const franchiseValue = data.rangeDetails.franchiseValue || 0;
+              const accession = Number(data.rangeDetails.accession || 0);
+
+              results[agg.id] = data;
+
+              return { ...agg, basePrice, franchiseValue, accession };
+            } catch (err) {
+              console.error(`Erro ao buscar dados do agregado ${agg.id}:`, err);
+              return agg;
+            }
+          })
+        );
+
+        const isEqual =
+          JSON.stringify(simulation.aggregates) ===
+          JSON.stringify(updatedAggregates);
+
+        if (!isEqual) {
+          setSimulation((prev) => ({ ...prev, aggregates: updatedAggregates }));
+        }
+        setPriceOptions(results);
+      } catch (err) {
+        console.error("Erro ao buscar dados de agregados:", err);
+      }
+    };
+
+    fetchAll();
+  }, [simulation?.aggregates]);
 
   const toNumber = (val) => {
     const num = Number(val);
@@ -94,7 +153,7 @@ function SimulationSideBar() {
       }}
     >
       <Box sx={{ flexGrow: 1 }}>
-        <Typography textAlign="center" variant="h6" mb={2} >
+        <Typography textAlign="center" variant="h6" mb={1}>
           Resumo da Cotação
         </Typography>
         <PriceCardsList
@@ -102,9 +161,18 @@ function SimulationSideBar() {
           rangeDetails={rangeDetails}
           onEdit={handleEditClick}
           toNumber={toNumber}
+          totalAggregatesBasePrice={totalBasePrice}
+          totalAggregatesAccession={totalAccession}
+          totalAggregatesFranchiseValue={totalFranchise}
         />
+        <VehicleTypeDropdown
+          simulation={simulation}
+          rangeDetails={rangeDetails}
+        />
+        {simulation?.aggregates?.every((agg) => priceOptions[agg.id]) && (
+          <Dropdown data={priceOptions} simulation={simulation} />
+        )}
       </Box>
-
       <Box>
         <Button
           variant="contained"
@@ -115,7 +183,6 @@ function SimulationSideBar() {
           Salvar
         </Button>
       </Box>
-
       <DiscountModal
         open={openDiscountModal}
         onClose={() => {
@@ -127,7 +194,6 @@ function SimulationSideBar() {
         setSimulation={setSimulation}
         rangeDetails={rangeDetails}
       />
-
       <SuccessModal
         open={openSuccessModal}
         onClose={() => setOpenSuccessModal(false)}
@@ -153,7 +219,6 @@ function SimulationSideBar() {
         title="Cotação salva com sucesso!"
         message="Você pode baixar o arquivo ou enviar para o e-mail. Ou ir para a tela inicial."
       />
-
       <ErrorModal
         open={showError}
         onClose={() => setShowError(false)}

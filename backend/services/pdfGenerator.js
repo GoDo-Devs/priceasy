@@ -70,7 +70,7 @@ export async function generatePdf({
   const cobertura = simulation.plan?.cobertura || [];
   const assist24 = simulation.plan?.assist24 || [];
 
-  const implementList = simulation.implementList || [];
+  const aggregates = simulation.aggregates || [];
   const allProducts = simulation.products || [];
 
   const consultantName = consultant?.name?.toUpperCase() || "-";
@@ -84,10 +84,11 @@ export async function generatePdf({
       )
       .join("");
 
-  const generateImplementRows = () =>
-    implementList
+  const generateAggregatesRows = () =>
+    aggregates
       .map(
-        (i) => `<tr><td>${i.name}</td><td>${formatCurrency(i.price)}</td></tr>`
+        (agg) =>
+          `<tr><td>${agg.name}</td><td>${formatCurrency(agg.value)}</td></tr>`
       )
       .join("");
 
@@ -119,12 +120,20 @@ export async function generatePdf({
     .replace("{{COBERTURAS}}", coberturaRows)
     .replace("{{ASSISTENCIAS}}", assistenciasRows);
 
-  const implementTable = implementList.length
-    ? loadTemplate("table-implements.html").replace(
-        "{{IMPLEMENTOS}}",
-        generateImplementRows()
-      )
-    : "";
+  const aggregateTemplate = loadTemplate("table-aggregates.html");
+
+  const aggregateTable = aggregates
+    .map((agg) =>
+      aggregateTemplate
+        .replace("{{NOME}}", agg.name)
+        .replace("{{PLACA}}", agg.plate || "-")
+        .replace("{{VALOR}}", formatCurrency(agg.value))
+        .replace("{{PRECO_BASE}}", formatCurrency(agg.basePrice))
+        .replace("{{ADESAO}}", formatCurrency(agg.accession))
+        .replace("{{VALOR_FRANQUIA}}", formatPercentage(agg.franchiseValue))
+    )
+    .join("");
+
   const productsTable = allProducts.length
     ? loadTemplate("table-products.html").replace(
         "{{PRODUTOS}}",
@@ -190,7 +199,7 @@ export async function generatePdf({
     .replace("{{VEICULO_DESC}}", veiculoDesc)
     .replace("{{VALOR_FIPE}}", protectedValue)
     .replace("{{TABLE_PLAN}}", planTable)
-    .replace("{{TABLE_IMPLEMENT}}", implementTable)
+    .replace("{{TABLE_AGGREGATE}}", aggregateTable)
     .replace("{{TABLE_PRODUCTS}}", productsTable)
     .replace("{{TABLE_QUOTE}}", quoteTable)
     .replace("{{TABLE_CONSULTANT}}", consultantTable);

@@ -186,7 +186,7 @@ function RangeModal({
         <Box display="flex" gap={2} mb={2}>
           <CurrencyInput value={basePrice} onChange={setBasePrice} />
         </Box>
-        {priceTable?.vehicle_type_id !== 4 && (
+        {priceTable?.vehicle_type_id !== 8 && (
           <>
             <InputLabel className="text-white">
               Rastreador Obrigatório/Incluído

@@ -5,7 +5,6 @@ import RegisterPage from "@/pages/auth/Register.jsx";
 import Product from "@/pages/product/Product.jsx";
 import User from "@/pages/user/User.jsx";
 import VehicleCategory from "@/pages/vehicle-category/VehicleCategory.jsx";
-import Implement from "@/pages/implement/Implement.jsx";
 import Simulation from "@/pages/simulation/Simulation.jsx";
 import Service from "@/pages/service/Service.jsx";
 import Plan from "@/pages/plan/Plan.jsx";
@@ -17,7 +16,6 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PersonIcon from "@mui/icons-material/Person";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import AppLayout from "@/layout/AppLayout.jsx";
 import RootLayout from "@/layout/RootLayout";
 import authService from "@/services/authService";
@@ -87,12 +85,6 @@ export const guardedAuthenticatedRoutes = [
             label: "Produtos",
             icon: ShoppingCartIcon,
             Component: Product,
-          },
-          {
-            path: "/implementos",
-            label: "Implementos",
-            icon: AutoAwesomeIcon,
-            Component: Implement,
           },
           {
             path: "/categoria",

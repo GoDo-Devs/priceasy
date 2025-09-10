@@ -32,13 +32,17 @@ export default {
       },
       vehicle_type_id: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: {
           model: "vehicle_types",
           key: "id",
         },
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
+      },
+      vehicle_type_fipeCode: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       brand_id: {
         type: Sequelize.INTEGER,
@@ -96,7 +100,7 @@ export default {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
-      implementList: {
+      aggregates: {
         type: Sequelize.JSON,
         allowNull: true,
       },

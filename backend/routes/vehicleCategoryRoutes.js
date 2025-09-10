@@ -12,6 +12,16 @@ router.get(
   [checkToken],
   VehicleCategoryController.getVehicleCategoryByIdVehicleTypeId
 );
+router.post(
+  "/filter",
+  [checkToken],
+  VehicleCategoryController.getVehicleCategoriesFilterPriceTable
+);
+router.get(
+  "/price-table/:id",
+  [checkToken],
+  VehicleCategoryController.getVehicleCategoriesByPriceTable
+);
 router.delete(
   "/:id",
   [checkToken, isAdmin],

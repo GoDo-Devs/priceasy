@@ -1,4 +1,3 @@
-// importRangesFromExcel.js
 import * as XLSX from "xlsx";
 import useHttp from "@/services/useHttp";
 

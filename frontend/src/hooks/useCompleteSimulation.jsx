@@ -63,7 +63,6 @@ export function useCompleteSimulation(simulationInitial) {
             assist24,
           },
           products,
-          implementList: simulationInitial.implementList || [],
         };
         
         setSimulation(updatedSimulation);

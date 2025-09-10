@@ -21,7 +21,7 @@ const iconsMap = {
   1: <DirectionsCarIcon sx={{ fontSize: 40 }} />,
   2: <TwoWheelerIcon sx={{ fontSize: 40 }} />,
   3: <LocalShippingIcon sx={{ fontSize: 40 }} />,
-  4: <AgricultureIcon sx={{ fontSize: 40 }} />,
+  8: <AgricultureIcon sx={{ fontSize: 40 }} />,
 };
 
 function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
@@ -31,9 +31,9 @@ function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
   useEffect(() => {
     if (open) {
       useHttp
-        .get("/vehicle-types")
+        .get("/vehicle-types/default")
         .then((res) => setVehicleType(res.data.vehicleTypes))
-        .catch((err) => console.error("Erro ao carregar grupos:", err));
+        .catch((err) => console.error("Erro ao carregar tipos de véiculos:", err));
     }
   }, [open]);
 

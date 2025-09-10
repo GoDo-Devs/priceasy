@@ -19,6 +19,14 @@ VehicleType.init(
       autoIncrement: true,
       primaryKey: true,
     },
+    fipeCode: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    aggregate: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,

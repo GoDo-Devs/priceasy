@@ -39,52 +39,53 @@ router.post("/update", async (req, res) => {
     const key = `propostas/proposta_${simulation.id}.pdf`;
     const metaKey = `propostas/proposta_${simulation.id}.meta.json`;
 
-    // Gerar hash atual da simulação
-    // Depois — inclui todos os dados relevantes
     const hash = crypto
       .createHash("sha256")
-      .update(
-        JSON.stringify({
+      .update(JSON.stringify({ client, simulation, rangeDetails, consultant }))
+      .digest("hex");
+
+    let storedHash;
+    try {
+      const meta = await getMetaFromS3(metaKey);
+      storedHash = meta?.hash;
+    } catch (err) {
+      console.warn("Meta não encontrada ou erro no S3:", err.message);
+      storedHash = null;
+    }
+
+    let pdfBuffer;
+
+    if (!storedHash || storedHash !== hash) {
+      console.log("Gerando novo PDF...");
+      try {
+        pdfBuffer = await generatePdf({
           client,
           simulation,
           rangeDetails,
           consultant,
-        })
-      )
-      .digest("hex");
+        });
+      } catch (err) {
+        console.error("Erro ao gerar PDF:", err);
+        return res.status(500).send({ error: "Erro ao gerar PDF." });
+      }
 
-    // Buscar hash salvo no S3
-    const meta = await getMetaFromS3(metaKey);
-    const storedHash = meta?.hash;
-
-    let pdfBuffer;
-
-    if (!storedHash) {
-      // Nunca existiu — criar novo
-      pdfBuffer = await generatePdf({
-        client,
-        simulation,
-        rangeDetails,
-        consultant,
-      });
-      await uploadPdfToS3(key, pdfBuffer);
-      await uploadMetaToS3(metaKey, hash);
-    } else if (storedHash !== hash) {
-      // Simulação mudou — atualizar PDF e hash
-      pdfBuffer = await generatePdf({
-        client,
-        simulation,
-        rangeDetails,
-        consultant,
-      });
-      await uploadPdfToS3(key, pdfBuffer);
-      await uploadMetaToS3(metaKey, hash);
+      try {
+        await uploadPdfToS3(key, pdfBuffer);
+        await uploadMetaToS3(metaKey, hash);
+      } catch (err) {
+        console.error("Erro ao salvar PDF ou meta no S3:", err);
+        return res.status(500).send({ error: "Erro ao salvar PDF no S3." });
+      }
     } else {
-      // Nada mudou — pegar PDF do S3
-      pdfBuffer = await getPdfFromS3(key);
+      console.log("Usando PDF existente no S3...");
+      try {
+        pdfBuffer = await getPdfFromS3(key);
+      } catch (err) {
+        console.error("Erro ao buscar PDF do S3:", err);
+        return res.status(500).send({ error: "Erro ao buscar PDF no S3." });
+      }
     }
 
-    // Download ou Email
     if (action === "download") {
       const filename = key.split("/").pop();
       res.set({
@@ -156,18 +157,22 @@ router.post("/generate", async (req, res) => {
 
     let pdfBuffer;
 
-    const exists = await checkIfExists(key);
-    if (exists) {
-      pdfBuffer = await getPdfFromS3(key);
-    } else {
-      pdfBuffer = await generatePdf({
-        client,
-        simulation,
-        rangeDetails,
-        consultant,
-      });
-
-      await uploadPdfToS3(key, pdfBuffer);
+    try {
+      const exists = await checkIfExists(key);
+      if (exists) {
+        pdfBuffer = await getPdfFromS3(key);
+      } else {
+        pdfBuffer = await generatePdf({
+          client,
+          simulation,
+          rangeDetails,
+          consultant,
+        });
+        await uploadPdfToS3(key, pdfBuffer);
+      }
+    } catch (err) {
+      console.error("Erro ao gerar ou buscar PDF:", err);
+      return res.status(500).send({ error: "Erro ao gerar ou buscar PDF." });
     }
 
     if (action === "download") {
@@ -189,14 +194,13 @@ router.post("/generate", async (req, res) => {
         from: process.env.EMAIL_FROM,
         to: consultant.email,
         subject: "Nova cotação gerada",
-        text: "Olá! Segue em anexo a cotação solicitada.",
         html: `
-    <p>Olá ${consultant?.name || ""},</p>
-    <p>Segue em anexo a cotação solicitada para o cliente <strong>${
-      client?.name || "N/D"
-    }</strong>.</p>
-    <p>Atenciosamente,<br>Equipe ClubPró</p>
-  `,
+          <p>Olá ${consultant?.name || ""},</p>
+          <p>Segue em anexo a cotação solicitada para o cliente <strong>${
+            client?.name || "N/D"
+          }</strong>.</p>
+          <p>Atenciosamente,<br>Equipe ClubPró</p>
+        `,
         attachments: [
           {
             filename: key.split("/").pop(),

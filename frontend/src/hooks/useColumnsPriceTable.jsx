@@ -11,7 +11,14 @@ const vehicleTypeIcons = {
   1: DirectionsCarIcon,
   2: TwoWheelerIcon,
   3: LocalShippingIcon,
-  4: AgricultureIcon,
+  8: AgricultureIcon,
+};
+
+const vehicleTypeNames = {
+  1: "Carro",
+  2: "Moto",
+  3: "Caminhão",
+  8: "Agregado",
 };
 
 export function useColumnsPriceTable() {
@@ -56,7 +63,7 @@ export function useColumnsPriceTable() {
     (item) => item.vehicle_type_id === 3
   );
   const filteredAggregate = priceTables.filter(
-    (item) => item.vehicle_type_id === 4
+    (item) => item.vehicle_type_id === 8
   );
 
   const columns = [
@@ -85,13 +92,10 @@ export function useColumnsPriceTable() {
       },
     },
     {
-      accessorKey: "category_id",
+      accessorKey: "vehicle_type_id",
+      header: "Tipo de Veículo",
       size: 50,
-      header: "Categoria de Veículo",
-      Cell: ({ cell }) => {
-        const type = vehicleCategories.find((t) => t.id === cell.getValue());
-        return type ? type.name : "Nenhum";
-      },
+      Cell: ({ cell }) => vehicleTypeNames[cell.getValue()] || "Nenhum",
     },
   ];
 

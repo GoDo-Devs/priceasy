@@ -32,7 +32,6 @@ function Home() {
     try {
       const response = await simulationService.getMetrics();
       const apiUsage = response.apiUsage || null;
-      console.log(apiUsage);
 
       setMetrics([
         { title: "Total de Cotações", value: response.total.toString() },
