@@ -56,11 +56,15 @@ Simulation.init(
     },
     vehicle_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: true,
+      allowNull: false,
       references: {
         model: "vehicle_types",
         key: "id",
       },
+    },
+    vehicle_type_fipeCode: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     brand_id: {
       type: DataTypes.INTEGER,
@@ -114,7 +118,7 @@ Simulation.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
-    implementList: {
+    aggregates: {
       type: DataTypes.JSON,
       allowNull: true,
     },

@@ -74,9 +74,14 @@ function ClientVehicleForm({
       const fipeData = data.fipe;
       if (!fipeData) return;
 
+      const matchedType = vehicleType.find(
+        (cat) => cat.fipeCode === fipeData.tipo
+      );
+
       setSimulation((prev) => ({
         ...prev,
-        vehicle_type_id: fipeData.tipo ?? prev.vehicle_type_id,
+        vehicle_type_id: matchedType?.id ?? prev.vehicle_type_id,
+        vehicle_type_fipeCode: fipeData.tipo ?? prev.vehicle_type_fipeCode,
         brand_id: fipeData.id_marca ?? prev.brand_id,
         model_id: fipeData.id_modelo ?? prev.model_id,
         year: fipeData.modelYear ?? prev.year,
@@ -121,7 +126,7 @@ function ClientVehicleForm({
   return (
     <Card sx={{ borderRadius: 2 }} elevation={0} className="p-5">
       <Grid container spacing={2}>
-        <Grid item size={{ xs: 12, md: 4.3 }}>
+        <Grid size={{ xs: 12, md: 4.3 }}>
           <TextInput
             fullWidth
             label="Nome"
@@ -132,7 +137,7 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
           <AutoCompleteInput
             freeSolo
             fullWidth
@@ -149,7 +154,7 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2.5 }}>
+        <Grid size={{ xs: 12, md: 2.5 }}>
           <TextInput
             fullWidth
             label="Celular"
@@ -164,7 +169,7 @@ function ClientVehicleForm({
             required
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2.2 }}>
+        <Grid size={{ xs: 12, md: 2.2 }}>
           <PlateSearchInput
             fullWidth
             label="Placa"
@@ -177,28 +182,44 @@ function ClientVehicleForm({
             onSearch={handleFetchVehicleData}
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2 }}>
+        <Grid size={{ xs: 12, md: 3.5 }}>
           <SelectInput
             fullWidth
-            label="Tipo Veículo"
+            label="Tipo de Veículo"
             name="vehicle_type_id"
-            value={simulation.vehicle_type_id ?? ""}
-            onChange={(e) =>
-              setSimulation({
-                ...simulation,
-                vehicle_type_id: parseInt(e.target.value),
-                brand_id: "",
-                model_id: "",
-                year: "",
-              })
+            value={
+              vehicleType.some((cat) => cat.id === simulation.vehicle_type_id)
+                ? simulation.vehicle_type_id
+                : ""
             }
+            onChange={(e) => {
+              const selectedId = parseInt(e.target.value);
+              const selectedOption = vehicleType.find(
+                (cat) => cat.id === selectedId
+              );
+              if (selectedOption) {
+                setSimulation({
+                  ...simulation,
+                  vehicle_type_id: selectedOption.id,
+                  vehicle_type_fipeCode: selectedOption.fipeCode,
+                  aggregates: null,
+                  fipeValue: null,
+                  protectedValue: null,
+                  monthlyFee: null,
+                  brand_id: "",
+                  model_id: "",
+                  year: "",
+                  price_table_id: "",
+                });
+              }
+            }}
             options={vehicleType.map((cat) => ({
               value: cat.id,
               label: cat.name,
             }))}
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2.5 }}>
+        <Grid size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Marca"
@@ -214,7 +235,7 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 5 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <AutoCompleteInput
             fullWidth
             label="Modelo"
@@ -231,7 +252,7 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 2.5 }}>
+        <Grid size={{ xs: 12, md: 2.5 }}>
           <AutoCompleteInput
             fullWidth
             label="Ano Modelo"
@@ -250,7 +271,7 @@ function ClientVehicleForm({
             }}
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <AutoCompleteInput
             fullWidth
             label="Tabela de Preço"
@@ -264,7 +285,7 @@ function ClientVehicleForm({
             }
           />
         </Grid>
-        <Grid item size={{ xs: 12, md: 3 }}>
+        <Grid size={{ xs: 12, md: 3.5 }} mb={0.5}>
           <InputLabel className="mb-1">Valor Protegido</InputLabel>
           <CurrencyInput
             fullWidth

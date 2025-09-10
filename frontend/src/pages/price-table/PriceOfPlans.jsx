@@ -24,8 +24,6 @@ function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
     }
   }, [priceTable.ranges, priceTable.plansSelected, setPriceTable]);
 
-  console.log(priceTable);
-
   return (
     <>
       <Box

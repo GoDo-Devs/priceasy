@@ -37,9 +37,12 @@ export default function useSimulationEffects() {
     setModel([]);
     setYear([]);
 
-    if (simulation.vehicle_type_id && simulation.vehicle_type_id !== 4) {
+    if (
+      simulation.vehicle_type_fipeCode &&
+      simulation.vehicle_type_fipeCode !== 4
+    ) {
       useHttp
-        .post(`/fipe/brands`, { vehicleType: simulation.vehicle_type_id })
+        .post(`/fipe/brands`, { vehicleType: simulation.vehicle_type_fipeCode })
         .then((res) => {
           const options = res.data.brands.map((brand) => ({
             value: brand.id,
@@ -51,17 +54,17 @@ export default function useSimulationEffects() {
           console.error("Erro ao carregar marcas do veículo:", err)
         );
     }
-  }, [simulation.vehicle_type_id]);
+  }, [simulation.vehicle_type_fipeCode]);
 
   useEffect(() => {
     if (
-      simulation.vehicle_type_id &&
+      simulation.vehicle_type_fipeCode &&
       simulation.brand_id &&
-      simulation.vehicle_type_id !== 4
+      simulation.vehicle_type_fipeCode !== 4
     ) {
       useHttp
         .post(`/fipe/models`, {
-          vehicleType: simulation.vehicle_type_id,
+          vehicleType: simulation.vehicle_type_fipeCode,
           brandCode: simulation.brand_id,
         })
         .then((res) => {
@@ -75,18 +78,18 @@ export default function useSimulationEffects() {
     } else {
       setModel([]);
     }
-  }, [simulation.vehicle_type_id, simulation.brand_id]);
+  }, [simulation.vehicle_type_fipeCode, simulation.brand_id]);
 
   useEffect(() => {
     if (
-      simulation.vehicle_type_id &&
+      simulation.vehicle_type_fipeCode &&
       simulation.brand_id &&
       simulation.model_id &&
-      simulation.vehicle_type_id !== 4
+      simulation.vehicle_type_fipeCode !== 4
     ) {
       useHttp
         .post(`/fipe/years`, {
-          vehicleType: simulation.vehicle_type_id,
+          vehicleType: simulation.vehicle_type_fipeCode,
           brandCode: simulation.brand_id,
           modelCode: simulation.model_id,
         })
@@ -102,7 +105,11 @@ export default function useSimulationEffects() {
     } else {
       setYear([]);
     }
-  }, [simulation.vehicle_type_id, simulation.brand_id, simulation.model_id]);
+  }, [
+    simulation.vehicle_type_fipeCode,
+    simulation.brand_id,
+    simulation.model_id,
+  ]);
 
   useEffect(() => {
     if (
@@ -129,9 +136,10 @@ export default function useSimulationEffects() {
   }, [year, simulation.year]);
 
   useEffect(() => {
-    const { brand_id, model_id, year, fuel, vehicle_type_id } = simulation;
+    const { brand_id, model_id, year, fuel, vehicle_type_fipeCode } =
+      simulation;
 
-    if (vehicle_type_id !== 4 && (!brand_id || !model_id || !year)) {
+    if (vehicle_type_fipeCode !== 4 && (!brand_id || !model_id || !year)) {
       setSimulation((prev) => ({
         ...prev,
         protectedValue: "",
@@ -139,10 +147,10 @@ export default function useSimulationEffects() {
       return;
     }
 
-    if (brand_id && model_id && year && fuel && vehicle_type_id !== 4) {
+    if (brand_id && model_id && year && fuel && vehicle_type_fipeCode !== 4) {
       useHttp
         .post(`/fipe/price`, {
-          vehicleType: Number(vehicle_type_id),
+          vehicleType: Number(vehicle_type_fipeCode),
           brandCode: Number(brand_id),
           modelCode: Number(model_id),
           modelYear: Number(year),
@@ -177,14 +185,17 @@ export default function useSimulationEffects() {
   }, [
     simulation.brand_id,
     simulation.model_id,
+    simulation.vehicle_type_fipeCode,
     simulation.year,
     simulation.fuel,
   ]);
 
   useEffect(() => {
-    if (simulation.vehicle_type_id === 4) {
+    if (simulation.vehicle_type_fipeCode === 4) {
       useHttp
-        .post("/price-tables/filter", { vehicle_type_id: 4 })
+        .post("/price-tables/filter", {
+          vehicle_type_id: simulation.vehicle_type_id,
+        })
         .then((res) => {
           const options = (res.data.priceTables || []).map((table) => ({
             value: table.id,
@@ -207,7 +218,11 @@ export default function useSimulationEffects() {
     } else {
       setPriceTableNames([]);
     }
-  }, [simulation.model_id, simulation.vehicle_type_id]);
+  }, [
+    simulation.model_id,
+    simulation.vehicle_type_fipeCode,
+    simulation.vehicle_type_id,
+  ]);
 
   useEffect(() => {
     if (
@@ -229,62 +244,62 @@ export default function useSimulationEffects() {
       model_id,
       year,
       brand_id,
-      vehicle_type_id,
+      vehicle_type_fipeCode,
     } = simulation;
 
     if (
-      price_table_id != null &&
-      protectedValue != null &&
-      model_id != null &&
-      year != null &&
-      brand_id != null &&
-      vehicle_type_id != null
+      !price_table_id ||
+      !protectedValue ||
+      !vehicle_type_fipeCode ||
+      (vehicle_type_fipeCode !== 4 && (!model_id || !year || !brand_id))
     ) {
-      setRangeDetails({});
-
-      const vehiclePriceNumber =
-        typeof protectedValue === "number"
-          ? protectedValue
-          : Number(
-              String(protectedValue)
-                .replace(/[^\d,.-]/g, "")
-                .replace(".", "")
-                .replace(",", ".")
-            );
-
-      const payload =
-        vehicle_type_id === 4
-          ? {
-              price_table_id,
-              vehiclePrice: vehiclePriceNumber,
-              vehicle_type_id,
-            }
-          : {
-              price_table_id,
-              vehiclePrice: vehiclePriceNumber,
-              model_id,
-              vehicle_type_id,
-            };
-
-      useHttp
-        .post("/price-tables/plans", payload)
-        .then((res) => {
-          setPlans(res.data.plans || []);
-          setRangeDetails(res.data.rangeDetails || {});
-        })
-        .catch((err) => {
-          console.error("Erro ao carregar planos:", err);
-        });
-    } else {
       setPlans([]);
       setRangeDetails({});
+      return;
     }
+
+    setRangeDetails({});
+
+    const vehiclePriceNumber =
+      typeof protectedValue === "number"
+        ? protectedValue
+        : Number(
+            String(protectedValue)
+              .replace(/[^\d,.-]/g, "")
+              .replace(".", "")
+              .replace(",", ".")
+          );
+
+    const payload =
+      vehicle_type_fipeCode === 4
+        ? {
+            price_table_id,
+            vehiclePrice: vehiclePriceNumber,
+            vehicle_type_fipeCode,
+          }
+        : {
+            price_table_id,
+            vehiclePrice: vehiclePriceNumber,
+            model_id,
+            vehicle_type_fipeCode,
+          };
+
+    useHttp
+      .post("/price-tables/plans", payload)
+      .then((res) => {
+        setPlans(res.data.plans || []);
+        setRangeDetails(res.data.rangeDetails || {});
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar planos:", err);
+      });
   }, [
     simulation.price_table_id,
     simulation.protectedValue,
     simulation.model_id,
     simulation.year,
     simulation.brand_id,
+    simulation.vehicle_type_fipeCode,
     simulation.vehicle_type_id,
   ]);
 
@@ -311,6 +326,7 @@ export default function useSimulationEffects() {
           fipeCode: sim.fipeCode,
           fipeValue: sim.fipeValue,
           name: sim.name,
+          vehicle_type_fipeCode: sim.vehicle_type_fipeCode,
           vehicle_type_id: sim.vehicle_type_id,
           brand_id: sim.brand_id,
           model_id: sim.model_id,
@@ -323,7 +339,7 @@ export default function useSimulationEffects() {
           accession: sim.accession,
           monthlyFee: sim.monthlyFee,
           installationPrice: sim.installationPrice,
-          implementList: sim.implementList || [],
+          aggregates: sim.aggregates,
           isFranchisePercentage: sim.isFranchisePercentage,
           franchiseValue: sim.franchiseValue,
           discountedAccession: sim.discountedAccession,
@@ -334,6 +350,7 @@ export default function useSimulationEffects() {
           discountedInstallationPriceCouponId:
             sim.discountedInstallationPriceCouponId,
           valueSelectedProducts: sim.valueSelectedProducts ?? null,
+          vehicleType: sim.vehicleType,
         });
 
         if (sim.client_id) {
@@ -395,6 +412,7 @@ export default function useSimulationEffects() {
         fipeCode: simulation.fipeCode,
         fipeValue: simulation.fipeValue,
         name: simulation.name,
+        vehicle_type_fipeCode: simulation.vehicle_type_fipeCode,
         vehicle_type_id: simulation.vehicle_type_id,
         brand_id: Number(simulation.brand_id),
         model_id: Number(simulation.model_id),
@@ -404,7 +422,7 @@ export default function useSimulationEffects() {
         plate: simulation.plate,
         plan_id: simulation.plan_id,
         selectedProducts: selectedProductsArray,
-        implementList: simulation.implementList || [],
+        aggregates: simulation.aggregates,
         accession: rangeDetails.accession,
         monthlyFee: simulation.monthlyFee,
         installationPrice: rangeDetails.installationPrice,

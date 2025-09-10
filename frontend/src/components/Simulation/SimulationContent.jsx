@@ -1,13 +1,11 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box } from "@mui/material";
 import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
 import useSimulationEffects from "@/hooks/useSimulationEffects.js";
 import PlanDetailsModal from "@/components/Modal/PlanDetailsModal.jsx";
-import AddImplementSimulation from "@/components/Modal/AddImplementSimulation.jsx";
 
 import ClientVehicleForm from "@/components/Simulation/ClientVehicleForm.jsx";
-import ImplementTable from "@/components/Simulation/ImplementTable.jsx";
+import Aggregates from "@/components/Simulation/Aggregates.jsx";
 import PlanSelector from "@/components/Simulation/PlanSelector.jsx";
 
 function SimulationContent() {
@@ -17,8 +15,6 @@ function SimulationContent() {
     useSimulationEffects();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [implementModalOpen, setImplementModalOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
 
   const handleSavePlanDetails = ({
     planId,
@@ -31,20 +27,8 @@ function SimulationContent() {
       plan_id: planId,
       selectedProducts,
       monthlyFee,
-      valueSelectedProducts, 
+      valueSelectedProducts,
     }));
-  };
-
-  const handleEditImplement = (item) => {
-    setEditingItem(item);
-    setImplementModalOpen(true);
-  };
-
-  const handleDeleteImplement = (item) => {
-    const updatedList = simulation.implementList.filter(
-      (i) => i.id !== item.id
-    );
-    setSimulation({ ...simulation, implementList: updatedList });
   };
 
   return (
@@ -65,25 +49,7 @@ function SimulationContent() {
           setModalOpen(true);
         }}
       />
-      <ImplementTable
-        implementList={simulation.implementList}
-        onAdd={() => {
-          setEditingItem(null);
-          setImplementModalOpen(true);
-        }}
-        onEdit={handleEditImplement}
-        onDelete={handleDeleteImplement}
-      />
-      <AddImplementSimulation
-        open={implementModalOpen}
-        onClose={() => {
-          setImplementModalOpen(false);
-          setEditingItem(null);
-        }}
-        simulation={simulation}
-        setSimulation={setSimulation}
-        editingItem={editingItem}
-      />
+      <Aggregates simulation={simulation} setSimulation={setSimulation} />
       <PlanDetailsModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}

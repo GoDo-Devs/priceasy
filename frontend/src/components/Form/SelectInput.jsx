@@ -7,7 +7,7 @@ function SelectInput({
   label,
   options = [],
   className,
-  style
+  style,
 }) {
   return (
     <div className={className} style={style}>
@@ -17,7 +17,7 @@ function SelectInput({
         fullWidth
         size="small"
         name={name}
-        value={value} 
+        value={value}
         onChange={onChange}
         variant="outlined"
       >

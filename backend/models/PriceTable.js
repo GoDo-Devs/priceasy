@@ -8,9 +8,11 @@ class PriceTable extends Model {
       as: "vehicle_types",
     });
 
-    PriceTable.belongsTo(models.VehicleCategory, {
-      foreignKey: "category_id",
-      as: "vehicle_categories",
+    PriceTable.belongsToMany(models.VehicleCategory, {
+      through: models.PriceTableCategory,
+      foreignKey: "price_table_id",
+      otherKey: "category_id",
+      as: "categories",
     });
   }
 }
@@ -26,14 +28,8 @@ PriceTable.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    brands: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
-    models: {
-      type: DataTypes.JSON,
-      allowNull: true,
-    },
+    brands: DataTypes.JSON,
+    models: DataTypes.JSON,
     plansSelected: {
       type: DataTypes.JSON,
       allowNull: false,
@@ -43,14 +39,6 @@ PriceTable.init(
       allowNull: false,
       references: {
         model: "vehicle_types",
-        key: "id",
-      },
-    },
-    category_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: "vehicle_categories",
         key: "id",
       },
     },

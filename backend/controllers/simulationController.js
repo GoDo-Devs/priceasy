@@ -12,6 +12,7 @@ export default class SimulationController {
     try {
       const {
         client_id,
+        vehicle_type_fipeCode,
         vehicle_type_id,
         brand_id,
         model_id,
@@ -29,7 +30,7 @@ export default class SimulationController {
         installationPrice,
         isFranchisePercentage,
         franchiseValue,
-        implementList,
+        aggregates,
         discountedAccession,
         discountedAccessionCouponId,
         discountedMonthlyFee,
@@ -53,6 +54,7 @@ export default class SimulationController {
         fipeValue: fipeValue ?? null,
         fipeCode: fipeCode ?? null,
         name: name ?? null,
+        vehicle_type_fipeCode: vehicle_type_fipeCode ?? null,
         vehicle_type_id: vehicle_type_id ?? null,
         brand_id: brand_id ?? null,
         model_id: model_id ?? null,
@@ -69,7 +71,7 @@ export default class SimulationController {
         installationPrice: installationPrice ?? null,
         isFranchisePercentage: isFranchisePercentage ?? null,
         franchiseValue: franchiseValue ?? null,
-        implementList: Array.isArray(implementList) ? implementList : [],
+        aggregates: aggregates,
         discountedAccession: discountedAccession ?? null,
         discountedAccessionCouponId: discountedAccessionCouponId ?? null,
         discountedMonthlyFee: discountedMonthlyFee ?? null,
@@ -105,6 +107,7 @@ export default class SimulationController {
           "user_id",
           "client_id",
           "vehicle_type_id",
+          "vehicle_type_fipeCode",
           "brand_id",
           "model_id",
           "year",
@@ -117,7 +120,7 @@ export default class SimulationController {
           "plan_id",
           "monthlyFee",
           "valueSelectedProducts",
-          "implementList",
+          "aggregates",
           "selectedProducts",
           "accession",
           "installationPrice",
@@ -173,7 +176,21 @@ export default class SimulationController {
     const { id } = req.params;
 
     try {
-      const simulation = await Simulation.findOne({ where: { id } });
+      const simulation = await Simulation.findOne({
+        where: { id },
+        include: [
+          {
+            model: VehicleType,
+            as: "vehicleType",
+            attributes: ["id", "name"],
+          },
+          {
+            model: Client,
+            as: "client",
+            attributes: ["id", "name"],
+          },
+        ],
+      });
 
       if (!simulation) {
         return res.status(404).json({ error: "Simulação não encontrada." });
@@ -257,6 +274,7 @@ export default class SimulationController {
   static async updateSimulationById(req, res) {
     const { id } = req.params;
     const {
+      vehicle_type_fipeCode,
       vehicle_type_id,
       brand_id,
       model_id,
@@ -270,7 +288,7 @@ export default class SimulationController {
       fipeCode,
       name,
       monthlyFee,
-      implementList,
+      aggregates,
       discountedAccession,
       discountedAccessionCouponId,
       discountedMonthlyFee,
@@ -292,6 +310,8 @@ export default class SimulationController {
         fipeCode: fipeCode ?? null,
         name: name ?? null,
         vehicle_type_id: vehicle_type_id ?? simulation.vehicle_type_id,
+        vehicle_type_fipeCode:
+          vehicle_type_fipeCode ?? simulation.vehicle_type_fipeCode,
         brand_id: brand_id ?? simulation.brand_id,
         model_id: model_id ?? simulation.model_id,
         year: year ?? simulation.year,
@@ -303,9 +323,7 @@ export default class SimulationController {
           : simulation.selectedProducts,
         plan_id: plan_id ?? simulation.plan_id,
         monthlyFee: monthlyFee ?? simulation.monthlyFee,
-        implementList: Array.isArray(implementList)
-          ? implementList
-          : simulation.implementList,
+        aggregates: aggregates ?? simulation.aggregates,
         discountedAccession:
           discountedAccession ?? simulation.discountedAccession,
         discountedAccessionCouponId:

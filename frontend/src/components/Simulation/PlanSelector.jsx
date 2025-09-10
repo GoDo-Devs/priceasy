@@ -13,7 +13,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
 
   if (noTable || noPlans) {
     return (
-      <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
+      <Box bgcolor="#1D1420" borderRadius={2} padding={2.25} mt={2}>
         <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
           Planos
         </Typography>
@@ -44,7 +44,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
   };
 
   return (
-    <Box bgcolor="#1D1420" borderRadius={2} padding={2.5} mt={2}>
+    <Box bgcolor="#1D1420" borderRadius={2} padding={2} mt={2}>
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         Planos
       </Typography>

@@ -105,7 +105,7 @@ function QuotationCard({ simulation }) {
       </Box>
 
       <Grid container justifyContent="space-between" spacing={2} sx={{ mt: 1 }}>
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ textAlign: "center" }}>
             <Typography color="textSecondary" variant="caption">
               Adesão
@@ -115,7 +115,7 @@ function QuotationCard({ simulation }) {
             </Typography>
           </Box>
         </Grid>
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ textAlign: "center" }}>
             <Typography color="textSecondary" variant="caption">
               Mensalidade
@@ -125,7 +125,7 @@ function QuotationCard({ simulation }) {
             </Typography>
           </Box>
         </Grid>
-        <Grid item size={{ xs: 12, md: 4 }}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Box sx={{ textAlign: "center" }}>
             <Typography color="textSecondary" variant="caption">
               Valor Protegido

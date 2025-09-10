@@ -30,7 +30,7 @@ function VehicleCategory() {
   const [openModal, setOpenModal] = useState(false);
   const [vehicleCategory, setVehicleCategory] = useState({
     name: "",
-    vehicle_type_id: "",
+    fipeCode: "",
   });
   const [value, setValue] = React.useState("1");
 

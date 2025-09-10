@@ -14,6 +14,10 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      fipeCode: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
       vehicle_type_id: {
         type: Sequelize.INTEGER,
         allowNull: false,

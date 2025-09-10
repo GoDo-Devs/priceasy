@@ -1,10 +1,12 @@
 import VehicleCategory from "../models/VehicleCategory.js";
 import VehicleType from "../models/VehicleType.js";
+import PriceTableCategory from "../models/PriceTableCategory.js";
+import PriceTable from "../models/PriceTable.js";
 import { Op } from "sequelize";
 
 export default class VehicleCategoryController {
   static async create(req, res) {
-    const { name, vehicle_type_id } = req.body;
+    const { name, fipeCode, vehicle_type_id } = req.body;
 
     const nameExists = await VehicleCategory.findOne({ where: { name: name } });
 
@@ -26,6 +28,7 @@ export default class VehicleCategoryController {
     try {
       const newCategoryVehicle = await VehicleCategory.create({
         name,
+        fipeCode,
         vehicle_type_id,
       });
 
@@ -62,6 +65,69 @@ export default class VehicleCategoryController {
       });
 
       if (!vehicleCategoriesByVehicleTypeId) {
+        return res.status(422).json({
+          message: "Categorias não encontradas!",
+        });
+      }
+
+      return res.status(200).json(vehicleCategoriesByVehicleTypeId);
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao obter as Categorias de Veículos",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getVehicleCategoriesByPriceTable(req, res) {
+    const { id: price_table_id } = req.params;
+
+    try {
+      const priceTable = await PriceTable.findByPk(price_table_id, {
+        include: [
+          {
+            model: VehicleCategory,
+            as: "categories", 
+            through: { attributes: [] }, 
+          },
+        ],
+      });
+
+      if (!priceTable || !priceTable.categories.length) {
+        return res.status(404).json({
+          message: "Nenhuma categoria vinculada a esta tabela.",
+        });
+      }
+
+      return res.status(200).json(priceTable.categories);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({
+        message: "Erro ao buscar categorias da tabela de preços",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getVehicleCategoriesFilterPriceTable(req, res) {
+    const { vehicle_type_id } = req.body;
+
+    try {
+      const usedCategories = await PriceTableCategory.findAll({
+        attributes: ["category_id"],
+        raw: true,
+      });
+
+      const usedIds = usedCategories.map((c) => c.category_id);
+
+      const vehicleCategoriesByVehicleTypeId = await VehicleCategory.findAll({
+        where: {
+          vehicle_type_id,
+          id: { [Op.notIn]: usedIds },
+        },
+      });
+
+      if (!vehicleCategoriesByVehicleTypeId.length) {
         return res.status(422).json({
           message: "Categorias não encontradas!",
         });

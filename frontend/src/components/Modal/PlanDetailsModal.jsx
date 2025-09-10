@@ -51,17 +51,17 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   }, [plan, open]);
 
   useEffect(() => {
-    if (simulation?.vehicle_type_id && open) {
+    if (simulation?.vehicle_type_fipeCode && open) {
       useHttp
         .post("/product-vehicle-types/vehicle-type", {
-          vehicle_type_id: simulation.vehicle_type_id,
+          vehicle_type_id: simulation.vehicle_type_fipeCode,
         })
         .then((response) => {
           setProducts(response.data.products || []);
         })
         .catch(() => setProducts([]));
     }
-  }, [simulation?.vehicle_type_id, open]);
+  }, [simulation?.vehicle_type_fipeCode, open]);
 
   const formatPrice = (price) => {
     if (price < 1000) {

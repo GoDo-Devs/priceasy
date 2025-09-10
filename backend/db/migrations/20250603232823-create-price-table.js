@@ -36,16 +36,6 @@ export default {
         onUpdate: "CASCADE",
         onDelete: "SET DEFAULT",
       },
-      category_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "vehicle_categories",
-          key: "id",
-        },
-        onUpdate: "CASCADE",
-        onDelete: "SET DEFAULT",
-      },
       ranges: {
         type: Sequelize.JSON,
         allowNull: false,

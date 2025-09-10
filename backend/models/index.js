@@ -6,7 +6,6 @@ import PriceTable from "../models/PriceTable.js";
 import Product from "../models/Product.js";
 import ProductGroup from "../models/ProductGroup.js";
 import ProductVehicleType from "../models/ProductVehicleType.js";
-import Implement from "../models/Implement.js";
 import Category from "../models/Category.js";
 import Service from "../models/Service.js";
 import Plan from "../models/Plan.js";
@@ -14,6 +13,7 @@ import PlanService from "../models/PlanService.js";
 import VehicleCategory from "../models/VehicleCategory.js";
 import UserCoupon from "./UserCoupon.js";
 import Coupon from "./Coupon.js";
+import PriceTableCategory from "./PriceTableCategory.js";
 
 export const models = {
   Client,
@@ -26,7 +26,7 @@ export const models = {
   Product,
   ProductGroup,
   ProductVehicleType,
-  Implement,
+  PriceTableCategory,
   Category,
   Service,
   Plan,
@@ -36,7 +36,6 @@ export const models = {
 
 export const initializeModels = async () => {
   try {
-    // Inicializa as associações de todos os modelos
     Object.values(models).forEach((model) => {
       if (model.associate) {
         model.associate(models);

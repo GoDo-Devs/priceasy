@@ -25,17 +25,13 @@ export function useColumnsVehicleCategory() {
     });
   };
 
-  const filteredCar = vehicleCategories.filter(
-    (item) => item.vehicle_type_id === 1
-  );
+  const filteredCar = vehicleCategories.filter((item) => item.fipeCode === 1);
   const filteredMotorcycle = vehicleCategories.filter(
-    (item) => item.vehicle_type_id === 2
+    (item) => item.fipeCode === 2
   );
-  const filteredTruck = vehicleCategories.filter(
-    (item) => item.vehicle_type_id === 3
-  );
+  const filteredTruck = vehicleCategories.filter((item) => item.fipeCode === 3);
   const filteredAggregate = vehicleCategories.filter(
-    (item) => item.vehicle_type_id === 4
+    (item) => item.fipeCode === 4
   );
 
   const handleDelete = async (vehicleCategory) => {
@@ -58,11 +54,12 @@ export function useColumnsVehicleCategory() {
   const columns = [
     { accessorKey: "name", header: "Nome", size: 70 },
     {
-      accessorKey: "vehicle_type_id",
+      accessorKey: "fipeCode",
       header: "Tipo de Veículo",
       size: 70,
       Cell: ({ cell }) => {
-        const type = vehicleTypes.find((t) => t.id === cell.getValue());
+        const code = cell.getValue();
+        const type = vehicleTypes.find((t) => t.fipeCode === code);
         return type ? type.name : "Nenhum";
       },
     },

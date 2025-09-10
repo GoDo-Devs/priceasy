@@ -1,4 +1,5 @@
 import VehicleType from "../models/VehicleType.js";
+import { Op } from "sequelize";
 
 export default class VehicleTypeController {
   static async create(req, res) {
@@ -29,6 +30,25 @@ export default class VehicleTypeController {
     }
   }
 
+  static async getDefaultVehicleTypes(req, res) {
+    try {
+      const vehicleTypes = await VehicleType.findAll({
+        where: {
+          id: {
+            [Op.in]: [1, 2, 3, 8],
+          },
+        },
+      });
+
+      return res.status(200).json({ vehicleTypes });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao obter os Tipos de Veículos padrão.",
+        error: error.message,
+      });
+    }
+  }
+
   static async getAll(req, res) {
     try {
       const vehicleTypes = await VehicleType.findAll();
@@ -41,23 +61,24 @@ export default class VehicleTypeController {
     }
   }
 
-  static async removeVehicleTypeById(req, res) {
-    const id = req.params.id;
-
-    const vehicleTypeExists = await VehicleType.findByPk(id);
-    if (!vehicleTypeExists) {
-      res.status(404).json({ message: "Tipo de Veículos não encontrado!" });
-      return;
-    }
-
+  static async getById(req, res) {
     try {
-      await VehicleType.destroy({ where: { id: id } });
-      res
-        .status(200)
-        .json({ message: "Tipo de Veículos removido com sucesso!" });
+      const { id } = req.params;
+      const vehicleType = await VehicleType.findByPk(id);
+
+      if (!vehicleType) {
+        return res
+          .status(404)
+          .json({ message: "Tipo de veículo não encontrado!" });
+      }
+
+      return res.status(200).json(vehicleType);
     } catch (error) {
-      res.status(404).json({ message: "Tipo de Veículos não encontrado!" });
-      return;
+      console.error("Erro ao buscar tipo de veículo:", error);
+      return res.status(500).json({
+        message: "Erro ao buscar tipo de veículo.",
+        error: error.message,
+      });
     }
   }
 }

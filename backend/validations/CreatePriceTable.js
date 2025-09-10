@@ -24,7 +24,6 @@ const priceTableSchema = Joi.object({
   vehicle_type_id: Joi.number().required(),
   brands: Joi.array().items(Joi.number()).optional(),
   models: Joi.array().items(Joi.number()).optional(),
-  category_id: Joi.number().required(),
   plansSelected: Joi.array().items(Joi.number()).optional(),
   ranges: rangesSchema.optional(),
 });

@@ -34,7 +34,7 @@ function ProductModal({
 
   useEffect(() => {
     useHttp
-      .get("/vehicle-types")
+      .get("/vehicle-types/default")
       .then((res) =>
         setVehicleTypes({
           all: res.data.vehicleTypes,
