@@ -55,134 +55,133 @@ export async function generatePdf({
   }
 
   const nomeCliente = client.name?.toUpperCase?.() || "CLIENTE";
-  const placa =
-    simulation.plate && simulation.plate.trim()
-      ? `(placa ${simulation.plate.toUpperCase()})`
-      : "";
+  const placa = simulation.plate?.trim()
+    ? `${simulation.plate.toUpperCase()}`
+    : "";
   const fipeCode = simulation.fipeCode || "";
   const veiculoDesc = `${simulation.name?.toUpperCase() || ""} ${
     simulation.modelYear || ""
   }${fipeCode ? ` (FIPE: ${fipeCode})` : ""}`.trim();
-
   const protectedValue = formatCurrency(simulation.protectedValue);
 
-  const planName = simulation.plan?.name || "PLANO DESCONHECIDO";
-  const cobertura = simulation.plan?.cobertura || [];
-  const assist24 = simulation.plan?.assist24 || [];
+  const coberturaRows = (simulation.plan?.cobertura || [])
+    .map((c) => `<tr><td colspan="2" style="padding: 4px 8px;">${c}</td></tr>`)
+    .join("");
+  const assistenciasRows = (simulation.plan?.assist24 || [])
+    .map((a) => `<tr><td colspan="2" style="padding: 4px 8px;">${a}</td></tr>`)
+    .join("");
 
-  const aggregates = simulation.aggregates || [];
-  const allProducts = simulation.products || [];
+  // Produtos selecionados
+  const selectedIds = Object.values(simulation.selectedProducts || {}).map(
+    String
+  );
+  const selectedProducts = (simulation.products || []).filter((p) =>
+    selectedIds.includes(String(p.id))
+  );
 
-  const consultantName = consultant?.name?.toUpperCase() || "-";
-  const consultantEmail = consultant?.email || "-";
-
-  const generateListRows = (items) =>
-    items
-      .map(
-        (item) =>
-          `<tr><td colspan="2" style="padding: 4px 8px;">${item}</td></tr>`
-      )
-      .join("");
-
-  const generateAggregatesRows = () =>
-    aggregates
-      .map(
-        (agg) =>
-          `<tr><td>${agg.name}</td><td>${formatCurrency(agg.value)}</td></tr>`
-      )
-      .join("");
-
-  const generateProductRows = () => {
-    const selectedIds = Object.values(simulation.selectedProducts || {}).map(
-      String
-    );
-
-    const selectedProducts = (simulation.products || []).filter((p) =>
-      selectedIds.includes(String(p.id))
-    );
-
-    if (selectedProducts.length === 0) {
-      return `<tr><td colspan="2">Nenhum produto selecionado</td></tr>`;
-    }
-
-    return selectedProducts
+  let optionalSection = "";
+  if (selectedProducts.length) {
+    const productRows = selectedProducts
       .map(
         (p) => `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
       )
       .join("");
-  };
 
-  const coberturaRows = generateListRows(cobertura);
-  const assistenciasRows = generateListRows(assist24);
+    optionalSection = `
+      <tr>
+        <td colspan="2" class="plan-header">OPCIONAIS</td>
+      </tr>
+      <tr>
+        <td style="font-weight: bold">Nome</td>
+        <td style="font-weight: bold">Valor</td>
+      </tr>
+      ${productRows}
+    `;
+  }
 
-  const planTable = loadTemplate("table-plan.html")
-    .replace("{{PLAN_NAME}}", planName)
+  const mensalidade = formatValueWithDiscount(
+    getValue("monthlyFee"),
+    simulation.discountedMonthlyFee
+  );
+  const taxa = formatValueWithDiscount(
+    getValue("accession"),
+    simulation.discountedAccession
+  );
+  const cota = formatValueWithDiscount(
+    getValue("franchiseValue"),
+    simulation.discountedFranchiseValue,
+    true
+  );
+  const rastreador = formatValueWithDiscount(
+    getValue("installationPrice"),
+    simulation.discountedInstallationPrice
+  );
+
+  const unifiedQuoteTable = loadTemplate("table-quote.html")
+    .replace("{{PLACA}}", placa)
+    .replace("{{VEICULO_DESC}}", veiculoDesc)
+    .replace("{{VALOR_FIPE}}", protectedValue)
+    .replace("{{PLAN_NAME}}", simulation.plan?.name || "PLANO DESCONHECIDO")
     .replace("{{COBERTURAS}}", coberturaRows)
-    .replace("{{ASSISTENCIAS}}", assistenciasRows);
+    .replace("{{ASSISTENCIAS}}", assistenciasRows)
+    .replace("{{PRODUTOS}}", optionalSection)
+    .replace("{{MENSALIDADE_DESCONTO}}", mensalidade)
+    .replace("{{TAXA_MATRICULA_DESCONTO}}", taxa)
+    .replace("{{COTA_PARTICIPACAO_DESCONTO}}", cota)
+    .replace("{{RASTREADOR_DESCONTO}}", rastreador);
 
   const aggregateTemplate = loadTemplate("table-aggregates.html");
+  const aggregateTable = (simulation.aggregates || [])
+    .map((agg) => {
+      const aggPlanData = simulation.aggregatesPlans?.find(
+        (ap) => ap.aggregateId === agg.id
+      );
 
-  const aggregateTable = aggregates
-    .map((agg) =>
-      aggregateTemplate
-        .replace("{{NOME}}", agg.name)
+      const aggPlanName = aggPlanData?.plan?.name || "PLANO DESCONHECIDO";
+      const aggCobertura = (aggPlanData?.plan?.cobertura || [])
+        .map(
+          (c) => `<tr><td colspan="2" style="padding: 4px 8px;">${c}</td></tr>`
+        )
+        .join("");
+      const aggAssist24 = (aggPlanData?.plan?.assist24 || [])
+        .map(
+          (a) => `<tr><td colspan="2" style="padding: 4px 8px;">${a}</td></tr>`
+        )
+        .join("");
+
+      return aggregateTemplate
+        .replace("{{NOME}}", agg.name?.toUpperCase() || "-")
         .replace("{{PLACA}}", agg.plate || "-")
         .replace("{{VALOR}}", formatCurrency(agg.value))
         .replace("{{PRECO_BASE}}", formatCurrency(agg.basePrice))
-        .replace("{{ADESAO}}", formatCurrency(agg.accession))
+        .replace(
+          "{{ADESAO}}",
+          formatValueWithDiscount(agg.accession, agg.discountedAccession)
+        )
         .replace("{{VALOR_FRANQUIA}}", formatPercentage(agg.franchiseValue))
-    )
+        .replace("{{PLAN_NAME}}", aggPlanName)
+        .replace("{{COBERTURAS}}", aggCobertura)
+        .replace("{{ASSISTENCIAS}}", aggAssist24);
+    })
     .join("");
 
-  const productsTable = allProducts.length
-    ? loadTemplate("table-products.html").replace(
-        "{{PRODUTOS}}",
-        generateProductRows()
+  let totalTable = "";
+  if (simulation.aggregates?.length) {
+    const totalTableTemplate = loadTemplate("table-total.html");
+    totalTable = totalTableTemplate
+      .replace(
+        "{{TOTAL_MENSALIDADE}}",
+        formatCurrency(simulation.totalBasePrice)
       )
-    : "";
-
-  const mensalidadeReal = getValue("monthlyFee");
-  const taxaMatriculaReal = getValue("accession");
-  const cotaParticipacaoReal = getValue("franchiseValue");
-  const rastreadorReal = getValue("installationPrice");
-
-  const mensalidadeDesconto = simulation.discountedMonthlyFee;
-  const taxaMatriculaDesconto = simulation.discountedAccession;
-  const cotaParticipacaoDesconto = simulation.discountedFranchiseValue;
-  const rastreadorDesconto = simulation.discountedInstallationPrice;
-
-  const quoteTable = loadTemplate("table-quote.html")
-    .replace("{{MENSALIDADE_REAL}}", formatCurrency(mensalidadeReal))
-    .replace(
-      "{{MENSALIDADE_DESCONTO}}",
-      formatValueWithDiscount(mensalidadeReal, mensalidadeDesconto)
-    )
-    .replace("{{TAXA_MATRICULA_REAL}}", formatCurrency(taxaMatriculaReal))
-    .replace(
-      "{{TAXA_MATRICULA_DESCONTO}}",
-      formatValueWithDiscount(taxaMatriculaReal, taxaMatriculaDesconto)
-    )
-    .replace(
-      "{{COTA_PARTICIPACAO_REAL}}",
-      formatPercentage(cotaParticipacaoReal)
-    )
-    .replace(
-      "{{COTA_PARTICIPACAO_DESCONTO}}",
-      formatValueWithDiscount(
-        cotaParticipacaoReal,
-        cotaParticipacaoDesconto,
-        true
-      )
-    )
-    .replace("{{RASTREADOR_REAL}}", formatCurrency(rastreadorReal))
-    .replace(
-      "{{RASTREADOR_DESCONTO}}",
-      formatValueWithDiscount(rastreadorReal, rastreadorDesconto)
-    );
+      .replace(
+        "{{TOTAL_TAXA_MATRICULA}}",
+        formatCurrency(simulation.totalAccession)
+      );
+  }
 
   const consultantTable = loadTemplate("table-consultant.html")
-    .replace("{{CONSULTOR_NOME}}", consultantName)
-    .replace("{{CONSULTOR_EMAIL}}", consultantEmail);
+    .replace("{{CONSULTOR_NOME}}", consultant?.name?.toUpperCase() || "-")
+    .replace("{{CONSULTOR_EMAIL}}", consultant?.email || "-");
 
   const baseHtml = loadTemplate("base.html")
     .replace("{{LOGO_BASE64}}", logoBase64)
@@ -195,13 +194,9 @@ export async function generatePdf({
       })
     )
     .replace("{{NOME_CLIENTE}}", nomeCliente)
-    .replace("{{PLACA}}", placa)
-    .replace("{{VEICULO_DESC}}", veiculoDesc)
-    .replace("{{VALOR_FIPE}}", protectedValue)
-    .replace("{{TABLE_PLAN}}", planTable)
+    .replace("{{TABLE_QUOTE}}", unifiedQuoteTable)
     .replace("{{TABLE_AGGREGATE}}", aggregateTable)
-    .replace("{{TABLE_PRODUCTS}}", productsTable)
-    .replace("{{TABLE_QUOTE}}", quoteTable)
+    .replace("{{TABLE_TOTAL}}", totalTable)
     .replace("{{TABLE_CONSULTANT}}", consultantTable);
 
   const browser = await chromium.launch({
@@ -216,24 +211,11 @@ export async function generatePdf({
   });
   await browser.close();
 
-  const proposta1Path = path.join(assetsDir, "proposta1.pdf");
-  const proposta2Path = path.join(assetsDir, "proposta2.pdf");
-  const proposta3Path = path.join(assetsDir, "proposta3.pdf");
-
-  if (
-    !fs.existsSync(proposta1Path) ||
-    !fs.existsSync(proposta2Path) ||
-    !fs.existsSync(proposta3Path)
-  ) {
-    throw new Error("Arquivos de propostas não encontrados na pasta assets.");
-  }
-
-  const proposta1Bytes = fs.readFileSync(proposta1Path);
-  const proposta2Bytes = fs.readFileSync(proposta2Path);
-  const proposta3Bytes = fs.readFileSync(proposta3Path);
+  const proposta1Bytes = fs.readFileSync(path.join(assetsDir, "proposta1.pdf"));
+  const proposta2Bytes = fs.readFileSync(path.join(assetsDir, "proposta2.pdf"));
+  const proposta3Bytes = fs.readFileSync(path.join(assetsDir, "proposta3.pdf"));
 
   const mergedPdf = await PDFDocument.create();
-
   const pdfProposta1 = await PDFDocument.load(proposta1Bytes);
   const pdfCotacao = await PDFDocument.load(pdfBuffer);
   const pdfProposta2 = await PDFDocument.load(proposta2Bytes);
@@ -252,7 +234,5 @@ export async function generatePdf({
   await copyPages(pdfProposta2);
   await copyPages(pdfProposta3);
 
-  const mergedPdfBytes = await mergedPdf.save();
-
-  return mergedPdfBytes;
+  return await mergedPdf.save();
 }

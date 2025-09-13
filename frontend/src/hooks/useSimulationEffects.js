@@ -3,6 +3,42 @@ import useHttp from "@/services/useHttp.js";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
 
+const calcTotals = (sim, rangeDetails) => {
+  if (!sim) return { totalBasePrice: 0, totalAccession: 0 };
+
+  const aggregates = Array.isArray(sim.aggregates) ? sim.aggregates : [];
+
+  const aggregatesBasePrice = aggregates.reduce(
+    (sum, item) => sum + (parseFloat(item.basePrice) || 0),
+    0
+  );
+
+  const aggregatesAccession = aggregates.reduce((sum, item) => {
+    if (
+      item.discountedAccession !== null &&
+      item.discountedAccession !== undefined
+    ) {
+      return sum + parseFloat(item.discountedAccession || 0);
+    }
+    return sum;
+  }, 0);
+
+  const monthlyFeeValue = sim.discountedMonthlyFee
+    ? parseFloat(sim.discountedMonthlyFee) || 0
+    : parseFloat(sim.monthlyFee) || 0;
+
+  const accessionBase = rangeDetails?.accession ?? sim.accession;
+
+  const simAccessionValue = sim.discountedAccession
+    ? parseFloat(sim.discountedAccession) || 0
+    : parseFloat(accessionBase) || 0;
+
+  return {
+    totalBasePrice: aggregatesBasePrice + monthlyFeeValue,
+    totalAccession: aggregatesAccession + simAccessionValue,
+  };
+};
+
 export default function useSimulationEffects() {
   const {
     simulation,
@@ -22,6 +58,37 @@ export default function useSimulationEffects() {
   const [year, setYear] = useState([]);
   const [priceTableNames, setPriceTableNames] = useState([]);
   const [plans, setPlans] = useState([]);
+
+  useEffect(() => {
+    if (!simulation) return;
+
+    const { totalBasePrice, totalAccession } = calcTotals(
+      simulation,
+      rangeDetails
+    );
+
+    setSimulation((prev) => {
+      const prevBase = Number(prev?.totalBasePrice) || 0;
+      const prevAcc = Number(prev?.totalAccession) || 0;
+
+      if (prevBase === totalBasePrice && prevAcc === totalAccession) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        totalBasePrice: totalBasePrice.toFixed(2),
+        totalAccession: totalAccession.toFixed(2),
+      };
+    });
+  }, [
+    simulation?.aggregates,
+    simulation?.monthlyFee,
+    simulation?.accession,
+    simulation?.discountedMonthlyFee,
+    simulation?.discountedAccession,
+    rangeDetails,
+  ]);
 
   useEffect(() => {
     useHttp
@@ -321,36 +388,8 @@ export default function useSimulationEffects() {
           : {};
 
         setSimulation({
-          user_id: sim.user_id,
-          id: sim.id,
-          fipeCode: sim.fipeCode,
-          fipeValue: sim.fipeValue,
-          name: sim.name,
-          vehicle_type_fipeCode: sim.vehicle_type_fipeCode,
-          vehicle_type_id: sim.vehicle_type_id,
-          brand_id: sim.brand_id,
-          model_id: sim.model_id,
-          year: sim.year,
-          price_table_id: sim.price_table_id,
-          protectedValue: sim.protectedValue,
-          plate: sim.plate,
+          ...sim,
           selectedProducts,
-          plan_id: sim.plan_id,
-          accession: sim.accession,
-          monthlyFee: sim.monthlyFee,
-          installationPrice: sim.installationPrice,
-          aggregates: sim.aggregates,
-          isFranchisePercentage: sim.isFranchisePercentage,
-          franchiseValue: sim.franchiseValue,
-          discountedAccession: sim.discountedAccession,
-          discountedAccessionCouponId: sim.discountedAccessionCouponId,
-          discountedMonthlyFee: sim.discountedMonthlyFee,
-          discountedMonthlyFeeCouponId: sim.discountedMonthlyFeeCouponId,
-          discountedInstallationPrice: sim.discountedInstallationPrice,
-          discountedInstallationPriceCouponId:
-            sim.discountedInstallationPriceCouponId,
-          valueSelectedProducts: sim.valueSelectedProducts ?? null,
-          vehicleType: sim.vehicleType,
         });
 
         if (sim.client_id) {
@@ -407,35 +446,16 @@ export default function useSimulationEffects() {
         quantity,
       }));
 
+      const totals = calcTotals(simulation);
+
       const simulationPayload = {
-        user_id: simulation.user_id,
-        fipeCode: simulation.fipeCode,
-        fipeValue: simulation.fipeValue,
-        name: simulation.name,
-        vehicle_type_fipeCode: simulation.vehicle_type_fipeCode,
-        vehicle_type_id: simulation.vehicle_type_id,
-        brand_id: Number(simulation.brand_id),
-        model_id: Number(simulation.model_id),
-        year: Number(simulation.year),
-        price_table_id: simulation.price_table_id,
-        protectedValue: simulation.protectedValue,
-        plate: simulation.plate,
-        plan_id: simulation.plan_id,
+        ...simulation,
+        ...totals,
         selectedProducts: selectedProductsArray,
-        aggregates: simulation.aggregates,
         accession: rangeDetails.accession,
-        monthlyFee: simulation.monthlyFee,
         installationPrice: rangeDetails.installationPrice,
         isFranchisePercentage: rangeDetails.isFranchisePercentage,
         franchiseValue: rangeDetails.franchiseValue,
-        discountedAccession: simulation.discountedAccession,
-        discountedAccessionCouponId: simulation.discountedAccessionCouponId,
-        discountedMonthlyFee: simulation.discountedMonthlyFee,
-        discountedMonthlyFeeCouponId: simulation.discountedMonthlyFeeCouponId,
-        discountedInstallationPrice: simulation.discountedInstallationPrice,
-        discountedInstallationPriceCouponId:
-          simulation.discountedInstallationPriceCouponId,
-        valueSelectedProducts: simulation.valueSelectedProducts ?? null,
       };
 
       if (!simulation.id) {

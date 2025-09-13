@@ -9,11 +9,18 @@ import Aggregates from "@/components/Simulation/Aggregates.jsx";
 import PlanSelector from "@/components/Simulation/PlanSelector.jsx";
 
 function SimulationContent() {
-  const { simulation, setSimulation } = useSimulation();
+  const { simulation, setSimulation, priceOptions } = useSimulation();
+  const {
+    vehicleType,
+    brand,
+    model,
+    year,
+    priceTableNames,
+    plans: simulationPlans,
+    client,
+  } = useSimulationEffects();
 
-  const { vehicleType, brand, model, year, priceTableNames, plans, client } =
-    useSimulationEffects();
-  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [selectedPlanSimulation, setSelectedPlanSimulation] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleSavePlanDetails = ({
@@ -41,20 +48,24 @@ function SimulationContent() {
         priceTableNames={priceTableNames}
       />
       <PlanSelector
-        plans={plans}
+        plans={simulationPlans}
         simulation={simulation}
         setSimulation={setSimulation}
         onDetails={(plan) => {
-          setSelectedPlan(plan);
+          setSelectedPlanSimulation(plan);
           setModalOpen(true);
         }}
       />
-      <Aggregates simulation={simulation} setSimulation={setSimulation} />
+      <Aggregates
+        simulation={simulation}
+        setSimulation={setSimulation}
+      />
       <PlanDetailsModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        plan={selectedPlan}
+        plan={selectedPlanSimulation}
         simulation={simulation}
+        selectedProductsProp={simulation.selectedProducts}
         onSave={handleSavePlanDetails}
       />
     </Box>

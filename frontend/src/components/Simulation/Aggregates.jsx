@@ -25,8 +25,6 @@ function Aggregates({ simulation, setSimulation }) {
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         Agregados
       </Typography>
-
-      {/* Formulário com transição */}
       <Collapse in={shouldShowForm} timeout={300}>
         {shouldShowForm && (
           <AggregatesForm
@@ -40,8 +38,6 @@ function Aggregates({ simulation, setSimulation }) {
           />
         )}
       </Collapse>
-
-      {/* Mensagem com transição */}
       <Collapse in={!shouldShowForm} timeout={300}>
         {!shouldShowForm && (
           <Box

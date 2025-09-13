@@ -14,29 +14,43 @@ import Paper from "@mui/material/Paper";
 import { useEffect, useState, useMemo } from "react";
 import useHttp from "@/services/useHttp.js";
 
-function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
+function PlanDetailsModal({
+  open,
+  onClose,
+  plan,
+  simulation,
+  onSave,
+  selectedProductsProp,
+  valueSelectedProductsProp = 0,
+  isAggregate = false,
+}) {
   if (!open || !plan) return null;
 
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [selectedProducts, setSelectedProducts] = useState({});
+  const [valueSelectedProducts, setValueSelectedProducts] = useState(0);
 
   useEffect(() => {
-    if (!open || !plan?.id) return;
-
-    const isSamePlan = simulation?.plan_id === plan.id;
-
-    if (isSamePlan && simulation?.selectedProducts) {
-      setSelectedProducts(simulation.selectedProducts);
+    if (!open) return;
+    if (isAggregate) {
+      setSelectedProducts(selectedProductsProp || {});
+      setValueSelectedProducts(valueSelectedProductsProp || 0);
     } else {
-      setSelectedProducts({});
+      setSelectedProducts(simulation?.selectedProducts || {});
+      setValueSelectedProducts(0);
     }
-  }, [open, plan?.id, simulation.plan_id, simulation.selectedProducts]);
+  }, [
+    open,
+    selectedProductsProp,
+    valueSelectedProductsProp,
+    isAggregate,
+    simulation,
+  ]);
 
   useEffect(() => {
     if (!open) {
       setProducts([]);
-      setSelectedProducts({});
       setServices([]);
     }
   }, [open]);
@@ -50,18 +64,25 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
     }
   }, [plan, open]);
 
+
   useEffect(() => {
-    if (simulation?.vehicle_type_fipeCode && open) {
+    if (!open) return;
+
+    const vehicleTypeId = isAggregate ? 8 : simulation?.vehicle_type_fipeCode;
+
+    if (vehicleTypeId) {
       useHttp
         .post("/product-vehicle-types/vehicle-type", {
-          vehicle_type_id: simulation.vehicle_type_fipeCode,
+          vehicle_type_id: vehicleTypeId,
         })
         .then((response) => {
           setProducts(response.data.products || []);
         })
         .catch(() => setProducts([]));
+    } else {
+      setProducts([]);
     }
-  }, [simulation?.vehicle_type_fipeCode, open]);
+  }, [simulation, open, isAggregate]);
 
   const formatPrice = (price) => {
     if (price < 1000) {
@@ -76,8 +97,11 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   const handleToggle = (product) => {
     setSelectedProducts((prev) => {
       const updated = { ...prev };
-      updated[product.product_group_id] =
-        updated[product.product_group_id] === product.id ? null : product.id;
+      if (updated[product.product_group_id] === product.id) {
+        delete updated[product.product_group_id];
+      } else {
+        updated[product.product_group_id] = product.id;
+      }
       return updated;
     });
   };
@@ -85,7 +109,12 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   const isProductSelected = (product) =>
     selectedProducts[product.product_group_id] === product.id;
 
-  const valueSelectedProducts = useMemo(() => {
+  const isSwitchDisabled = (product) => {
+    const selectedId = selectedProducts[product.product_group_id];
+    return selectedId && selectedId !== product.id;
+  };
+
+  const calculatedValueSelectedProducts = useMemo(() => {
     return products.reduce((sum, p) => {
       return selectedProducts[p.product_group_id] === p.id
         ? sum + p.price
@@ -94,8 +123,15 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   }, [selectedProducts, products]);
 
   const monthlyFee = useMemo(
-    () => plan.basePrice + valueSelectedProducts,
-    [plan.basePrice, valueSelectedProducts]
+    () =>
+      plan.basePrice +
+      (isAggregate ? valueSelectedProducts : calculatedValueSelectedProducts),
+    [
+      plan.basePrice,
+      valueSelectedProducts,
+      calculatedValueSelectedProducts,
+      isAggregate,
+    ]
   );
 
   return (
@@ -136,6 +172,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             R$ {formatPrice(plan.basePrice)}
           </span>
         </Typography>
+
         {services.length > 0 ? (
           services.map((service) => (
             <div key={service.id}>
@@ -150,6 +187,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             Nenhum serviço listado para este plano.
           </Typography>
         )}
+
         <Typography
           variant="subtitle1"
           fontWeight="bold"
@@ -159,11 +197,11 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         >
           Produtos
         </Typography>
+
         {products.length > 0 ? (
           products.map((product) => {
             const isSelected = isProductSelected(product);
-            const isDisabled =
-              selectedProducts[product.product_group_id] && !isSelected;
+            const disabled = isSwitchDisabled(product);
 
             return (
               <Box
@@ -178,7 +216,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
                       checked={isSelected}
                       onChange={() => handleToggle(product)}
                       color="primary"
-                      disabled={isDisabled}
+                      disabled={disabled}
                     />
                   }
                   label={product.name}
@@ -200,7 +238,9 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             Nenhum produto vinculado a este tipo de veículo.
           </Typography>
         )}
+
         <Divider sx={{ my: 2 }} />
+
         <Typography
           variant="subtitle1"
           fontWeight="bold"
@@ -211,12 +251,12 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
           <span style={{ color: "#51d6a4" }}>R$ {formatPrice(monthlyFee)}</span>
         </Typography>
       </DialogContent>
+
       <DialogActions>
         <Button
           color="primary"
           onClick={() => {
             setProducts([]);
-            setSelectedProducts({});
             setServices([]);
             onClose();
           }}
@@ -228,8 +268,10 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             if (onSave)
               onSave({
                 planId: plan.id,
-                monthlyFee: plan.basePrice,
-                valueSelectedProducts,
+                monthlyFee,
+                valueSelectedProducts: isAggregate
+                  ? valueSelectedProducts
+                  : calculatedValueSelectedProducts,
                 selectedProducts,
               });
             onClose();

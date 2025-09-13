@@ -38,6 +38,8 @@ export default class SimulationController {
         discountedInstallationPrice,
         discountedInstallationPriceCouponId,
         valueSelectedProducts,
+        totalAccession,
+        totalBasePrice,
       } = req.body;
 
       const user_id = req.user?.id;
@@ -80,6 +82,8 @@ export default class SimulationController {
         discountedInstallationPriceCouponId:
           discountedInstallationPriceCouponId ?? null,
         valueSelectedProducts: valueSelectedProducts ?? null,
+        totalBasePrice: totalBasePrice,
+        totalAccession: totalAccession,
       });
 
       return res.status(201).json(simulation);
@@ -132,6 +136,8 @@ export default class SimulationController {
           "discountedInstallationPriceCouponId",
           "isFranchisePercentage",
           "franchiseValue",
+          "totalBasePrice",
+          "totalAccession",
           "created_at",
           "updated_at",
         ],
@@ -296,6 +302,8 @@ export default class SimulationController {
       discountedInstallationPrice,
       discountedInstallationPriceCouponId,
       valueSelectedProducts,
+      totalBasePrice,
+      totalAccession,
     } = req.body;
 
     try {
@@ -340,6 +348,8 @@ export default class SimulationController {
           simulation.discountedInstallationPriceCouponId,
         valueSelectedProducts:
           valueSelectedProducts ?? simulation.valueSelectedProducts,
+        totalBasePrice: totalBasePrice ?? simulation.totalBasePrice,
+        totalAccession: totalAccession ?? simulation.totalAccession,
       });
 
       return res.status(200).json(simulation);

@@ -1,7 +1,40 @@
 <table>
   <tbody>
     <tr>
-      <td colspan="2" class="plan-header">Cotação do Veículo</td>
+      <td colspan="2" class="plan-header">{{VEICULO_DESC}}</td>
+    </tr>
+    <tr>
+      <td>Placa</td>
+      <td>{{PLACA}}</td>
+    </tr>
+    <tr>
+      <td>Valor Protegido</td>
+      <td>{{VALOR_FIPE}}</td>
+    </tr>
+    <tr>
+      <td class="plan-header" colspan="2">{{PLAN_NAME}}</td>
+    </tr>
+    <tr>
+      <td
+        colspan="2"
+        style="font-weight: bold; padding: 8px; background-color: #eee"
+      >
+        Coberturas
+      </td>
+    </tr>
+    {{COBERTURAS}}
+    <tr>
+      <td
+        colspan="2"
+        style="font-weight: bold; padding: 8px; background-color: #eee"
+      >
+        Assistências 24h
+      </td>
+    </tr>
+    {{ASSISTENCIAS}}
+    {{PRODUTOS}}
+    <tr>
+      <td colspan="2" class="plan-header">COTAÇÃO DO VEÍCULO</td>
     </tr>
     <tr>
       <td>Mensalidade</td>
@@ -13,7 +46,7 @@
     </tr>
     <tr>
       <td>Cota de Participação</td>
-      <td>{{COTA_PARTICIPACAO_DESCONTO}}</td>
+      <td>{{COTA_PARTICIPACAO_DESCONTO}} FIPE</td>
     </tr>
     <tr>
       <td>Rastreador Obrigatório</td>

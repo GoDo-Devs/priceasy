@@ -7,36 +7,83 @@ export function useCompleteSimulation(simulationInitial) {
 
   useEffect(() => {
     async function fetchPlanDetails() {
-      if (!simulationInitial?.plan_id) {
-        setLoading(false);
-        return;
-      }
-
       try {
-        const planRes = await useHttp.get(
-          `/plans/${simulationInitial.plan_id}`
+        let simulationPlan = null;
+        if (simulationInitial?.plan_id) {
+          const planRes = await useHttp.get(
+            `/plans/${simulationInitial.plan_id}`
+          );
+          const planName = planRes.data.name;
+
+          const planServicesRes = await useHttp.get(
+            `/plan-services/${simulationInitial.plan_id}`
+          );
+          const serviceIds = planServicesRes.data.map((ps) => ps.id);
+
+          const servicesRes = await useHttp.get(`/services`);
+          const allServices = servicesRes.data.services;
+
+          const filteredServices = allServices.filter((s) =>
+            serviceIds.includes(s.id)
+          );
+
+          const cobertura = filteredServices
+            .filter((s) => s.category_id === 1)
+            .map((s) => s.name);
+          const assist24 = filteredServices
+            .filter((s) => s.category_id === 2)
+            .map((s) => s.name);
+
+          simulationPlan = {
+            id: simulationInitial.plan_id,
+            name: planName,
+            cobertura,
+            assist24,
+          };
+        }
+
+        const aggregatesPlans = await Promise.all(
+          (simulationInitial.aggregates || []).map(async (agg) => {
+            if (!agg.planId) return null;
+
+            try {
+              const planRes = await useHttp.get(`/plans/${agg.planId}`);
+              const planName = planRes.data.name;
+
+              const planServicesRes = await useHttp.get(
+                `/plan-services/${agg.planId}`
+              );
+              const serviceIds = planServicesRes.data.map((ps) => ps.id);
+
+              const servicesRes = await useHttp.get(`/services`);
+              const allServices = servicesRes.data.services;
+
+              const filteredServices = allServices.filter((s) =>
+                serviceIds.includes(s.id)
+              );
+
+              const cobertura = filteredServices
+                .filter((s) => s.category_id === 1)
+                .map((s) => s.name);
+              const assist24 = filteredServices
+                .filter((s) => s.category_id === 2)
+                .map((s) => s.name);
+
+              return {
+                aggregateId: agg.id,
+                plan: {
+                  id: agg.planId,
+                  name: planName,
+                  cobertura,
+                  assist24,
+                },
+              };
+            } catch (err) {
+              console.error(`Erro ao buscar plano do agregado ${agg.id}:`, err);
+              return null;
+            }
+          })
         );
-        const planName = planRes.data.name;
-
-        const planServicesRes = await useHttp.get(
-          `/plan-services/${simulationInitial.plan_id}`
-        );
-        const serviceIds = planServicesRes.data.map((ps) => ps.id);
-
-        const servicesRes = await useHttp.get(`/services`);
-        const allServices = servicesRes.data.services;
-
-        const filteredServices = allServices.filter((s) =>
-          serviceIds.includes(s.id)
-        );
-
-        const cobertura = filteredServices
-          .filter((s) => s.category_id === 1)
-          .map((s) => s.name);
-
-        const assist24 = filteredServices
-          .filter((s) => s.category_id === 2)
-          .map((s) => s.name);
 
         const selectedProducts = simulationInitial.selectedProducts || {};
         const productIds = Object.values(selectedProducts);
@@ -52,22 +99,20 @@ export function useCompleteSimulation(simulationInitial) {
             }
           })
         );
-
         const products = fetchedProducts.filter(Boolean);
 
-        const updatedSimulation = {
+        setSimulation({
           ...simulationInitial,
-          plan: {
-            name: planName,
-            cobertura,
-            assist24,
-          },
+          plan: simulationPlan,
+          aggregates: simulationInitial.aggregates,
+          aggregatesPlans: aggregatesPlans.filter(Boolean),
           products,
-        };
-        
-        setSimulation(updatedSimulation);
+        });
       } catch (err) {
-        console.error("Erro geral ao buscar dados do plano e produtos:", err);
+        console.error(
+          "Erro geral ao buscar dados da simulação e agregados:",
+          err
+        );
         setSimulation(simulationInitial);
       } finally {
         setLoading(false);

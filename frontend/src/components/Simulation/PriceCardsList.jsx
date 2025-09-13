@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Card } from "@mui/material";
 import PriceCard from "./PriceCard.jsx";
 
 export default function PriceCardsList({
@@ -6,9 +6,6 @@ export default function PriceCardsList({
   rangeDetails,
   onEdit,
   toNumber,
-  totalAggregatesBasePrice = 0,
-  totalAggregatesAccession = 0,
-  totalAggregatesFranchiseValue = 0,
 }) {
   return (
     <Grid container spacing={1.5}>
@@ -27,17 +24,14 @@ export default function PriceCardsList({
           label="Taxa de Matrícula"
           discountedValue={
             simulation.discountedAccession != null
-              ? toNumber(simulation.discountedAccession) +
-                toNumber(totalAggregatesAccession)
+              ? toNumber(simulation.discountedAccession)
               : null
           }
           originalValue={
             simulation.accession != null
-              ? toNumber(simulation.accession) +
-                toNumber(totalAggregatesAccession)
+              ? toNumber(simulation.accession)
               : rangeDetails.accession != null
-              ? toNumber(rangeDetails.accession) +
-                toNumber(totalAggregatesAccession)
+              ? toNumber(rangeDetails.accession)
               : null
           }
           onEdit={
@@ -55,19 +49,16 @@ export default function PriceCardsList({
           discountedValue={
             simulation.discountedMonthlyFee != null
               ? toNumber(simulation.discountedMonthlyFee) +
-                toNumber(simulation.valueSelectedProducts) +
-                toNumber(totalAggregatesBasePrice)
+                toNumber(simulation.valueSelectedProducts)             
               : null
           }
           originalValue={
             simulation.monthlyFee != null
               ? toNumber(simulation.monthlyFee) +
-                toNumber(simulation.valueSelectedProducts) +
-                toNumber(totalAggregatesBasePrice)
+                toNumber(simulation.valueSelectedProducts) 
               : rangeDetails.monthlyFee != null
               ? toNumber(rangeDetails.monthlyFee) +
-                toNumber(simulation.valueSelectedProducts) +
-                toNumber(totalAggregatesBasePrice)
+                toNumber(simulation.valueSelectedProducts)
               : null
           }
           onEdit={
@@ -109,17 +100,13 @@ export default function PriceCardsList({
             simulation.franchiseValue != null
               ? simulation.isFranchisePercentage
                 ? (simulation.protectedValue || 0) *
-                    (simulation.franchiseValue / 100) +
-                  toNumber(totalAggregatesFranchiseValue)
-                : toNumber(simulation.franchiseValue) +
-                  toNumber(totalAggregatesFranchiseValue)
+                    (simulation.franchiseValue / 100) 
+                : toNumber(simulation.franchiseValue) 
               : rangeDetails.franchiseValue != null
               ? rangeDetails.isFranchisePercentage
                 ? (simulation.protectedValue || 0) *
-                    (rangeDetails.franchiseValue / 100) +
-                  toNumber(totalAggregatesFranchiseValue)
-                : toNumber(rangeDetails.franchiseValue) +
-                  toNumber(totalAggregatesFranchiseValue)
+                    (rangeDetails.franchiseValue / 100) 
+                : toNumber(rangeDetails.franchiseValue)
               : null
           }
           originalValue={null}
