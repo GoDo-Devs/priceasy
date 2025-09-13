@@ -110,23 +110,25 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
   const syncSimulation = (updatedFields) => {
     setSimulation({
       ...simulation,
-      aggregates: updatedFields.map((f) => {
-        const existing =
-          simulation.aggregates?.find((agg) => agg.key === f.id) || {};
+      aggregates: updatedFields
+        .filter((f) => f.aggregateId && f.aggregateValue) 
+        .map((f) => {
+          const existing =
+            simulation.aggregates?.find((agg) => agg.key === f.id) || {};
 
-        const selectedAggregate = aggregates.find(
-          (agg) => agg.id === f.aggregateId
-        );
+          const selectedAggregate = aggregates.find(
+            (agg) => agg.id === f.aggregateId
+          );
 
-        return {
-          ...existing,
-          key: f.id,
-          id: f.aggregateId,
-          name: selectedAggregate?.name ?? existing.name ?? "",
-          value: f.aggregateValue,
-          plate: f.aggregatePlate,
-        };
-      }),
+          return {
+            ...existing,
+            key: f.id,
+            id: f.aggregateId,
+            name: selectedAggregate?.name ?? existing.name ?? "",
+            value: f.aggregateValue,
+            plate: f.aggregatePlate, 
+          };
+        }),
     });
   };
 

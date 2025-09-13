@@ -47,75 +47,87 @@ export default function Dropdown({ data, simulation, setSimulation }) {
 
   return (
     <>
-      {simulation.aggregates.map((agg) => {
-        const uniqueKey = `${agg.plate}-${agg.id}`;
-        const isExpanded = expandedIds.includes(uniqueKey);
-        const aggData = data[agg.id];
-        if (!aggData) return null;
+      {simulation.aggregates
+        .filter((agg) => agg?.id && agg?.value)
+        .map((agg) => {
+          const uniqueKey = `${agg.plate}-${agg.id}`;
+          const isExpanded = expandedIds.includes(uniqueKey);
+          const aggData = data[agg.id];
+          if (!aggData) return null;
 
-        return (
-          <Card
-            key={uniqueKey}
-            variant="outlined"
-            sx={{
-              mt: 1.5,
-              mb: 1.5,
-              borderRadius: 2,
-              p: 1.5,
-              backgroundColor: "transparent",
-            }}
-          >
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+          return (
+            <Card
+              key={uniqueKey}
+              variant="outlined"
+              sx={{
+                mt: 1.5,
+                mb: 1.5,
+                borderRadius: 2,
+                p: 1.5,
+                backgroundColor: "transparent",
+              }}
             >
-              <Typography fontSize={15} ml={0.5} color="text.secondary">
-                {agg.name} - {agg.plate}
-              </Typography>
-              <IconButton size="small" onClick={() => toggleExpand(uniqueKey)}>
-                <ExpandMoreIcon
-                  sx={{
-                    transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
-                    transition: "0.3s",
-                  }}
-                />
-              </IconButton>
-            </Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Typography fontSize={15} ml={0.5} color="text.secondary">
+                  {agg.name} - {agg.plate}
+                </Typography>
+                <IconButton
+                  size="small"
+                  onClick={() => toggleExpand(uniqueKey)}
+                >
+                  <ExpandMoreIcon
+                    sx={{
+                      transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                      transition: "0.3s",
+                    }}
+                  />
+                </IconButton>
+              </Stack>
 
-            <Collapse in={isExpanded}>
-              <Grid container mt={1}>
-                {aggData.plans?.map((plan) => (
-                  <Grid container spacing={1.5} size={{ xs: 12 }} key={plan.id}>
-                    <Grid size={{ xs: 6 }}>
-                      <PriceCard
-                        label="Taxa de Matrícula"
-                        discountedValue={agg.discountedAccession ?? null}
-                        originalValue={aggData.rangeDetails?.accession ?? null}
-                        onEdit={() => handleOpenModal("accession", agg)}
-                        alwaysGreen
-                        minHeight={110}
-                        noBorder 
-                      />
+              <Collapse in={isExpanded}>
+                <Grid container mt={1}>
+                  {aggData.plans?.map((plan) => (
+                    <Grid
+                      container
+                      spacing={1.5}
+                      size={{ xs: 12 }}
+                      key={plan.id}
+                    >
+                      <Grid size={{ xs: 6 }}>
+                        <PriceCard
+                          label="Taxa de Matrícula"
+                          discountedValue={agg.discountedAccession ?? null}
+                          originalValue={
+                            aggData.rangeDetails?.accession ?? null
+                          }
+                          onEdit={() => handleOpenModal("accession", agg)}
+                          alwaysGreen
+                          minHeight={110}
+                          noBorder
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 6 }}>
+                        <PriceCard
+                          label="Mensalidade"
+                          discountedValue={agg.discountedBasePrice ?? null}
+                          originalValue={plan.basePrice ?? null}
+                          onEdit={null}
+                          alwaysGreen
+                          minHeight={110}
+                          noBorder
+                        />
+                      </Grid>
                     </Grid>
-                    <Grid size={{ xs: 6 }}>
-                      <PriceCard
-                        label="Mensalidade"
-                        discountedValue={agg.discountedBasePrice ?? null}
-                        originalValue={plan.basePrice ?? null}
-                        onEdit={null}
-                        alwaysGreen
-                        minHeight={110}
-                        noBorder 
-                      />
-                    </Grid>
-                  </Grid>
-                ))}
-              </Grid>
-            </Collapse>
-          </Card>
-        );
-      })}
+                  ))}
+                </Grid>
+              </Collapse>
+            </Card>
+          );
+        })}
       <DiscountModalAggregates
         open={openModal}
         onClose={handleCloseModal}
