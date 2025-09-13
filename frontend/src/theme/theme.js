@@ -1,6 +1,5 @@
 import { createTheme } from "@mui/material/styles";
 
-// Create a theme instance.
 const theme = createTheme({
   cssVariables: true,
   palette: {
@@ -23,8 +22,19 @@ const theme = createTheme({
       main: "#1a1d24",
       light: "#1a1d24",
       dark: "#1a1d24",
-      'cardBg': "#1D1420",
+      cardBg: "#1D1420",
       contrastText: "#fff",
+    },
+  },
+  components: {
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#69696acd", 
+          }
+        },
+      },
     },
   },
 });

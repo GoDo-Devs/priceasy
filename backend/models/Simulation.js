@@ -170,6 +170,14 @@ Simulation.init(
       type: DataTypes.DECIMAL(10, 2),
       allowNull: true,
     },
+    totalBasePrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
+    totalAccession: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+    },
   },
   {
     sequelize,

@@ -72,6 +72,7 @@ function ClientVehicleForm({
     try {
       const { data } = await useHttp.post("/fipe/plate", { plate });
       const fipeData = data.fipe;
+      console.log("fipeData", fipeData)
       if (!fipeData) return;
 
       const matchedType = vehicleType.find(
@@ -88,6 +89,8 @@ function ClientVehicleForm({
         fuel: fipeData.fuelCode ?? prev.fuel,
         fipeValue: fipeData.valor ?? prev.fipeValue,
         plate,
+        name: fipeData.modelo,
+        fipeCode: fipeData.codigo
       }));
     } catch (err) {
       console.error("Erro ao buscar veículo pela placa:", err);

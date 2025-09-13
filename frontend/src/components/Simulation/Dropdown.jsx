@@ -6,13 +6,19 @@ import {
   Typography,
   Collapse,
   IconButton,
+  Grid,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import DiscountModalAggregates from "@/components/Modal/DiscountModalAggregates.jsx";
+import PriceCard from "@/components/Simulation/PriceCard.jsx";
 
-export default function Dropdown({ data, simulation }) {
+export default function Dropdown({ data, simulation, setSimulation }) {
   if (!data || !simulation?.aggregates) return null;
 
   const [expandedIds, setExpandedIds] = useState([]);
+  const [type, setType] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedAggregate, setSelectedAggregate] = useState(null);
 
   const toggleExpand = (uniqueKey) => {
     setExpandedIds((prev) =>
@@ -22,18 +28,21 @@ export default function Dropdown({ data, simulation }) {
     );
   };
 
-  const formatBRL = (value) => {
-    if (value === null || value === undefined) return "-";
-    const num = Number(value);
-    if (isNaN(num)) return "-";
-    return num.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const handleOpenModal = (type, aggregate) => {
+    setType(type);
+    setSelectedAggregate(aggregate);
+    setOpenModal(true);
   };
 
-  const formatFranchise = (rangeDetails, protectedValue) => {
-    if (!rangeDetails?.franchiseValue) return "-";
-    return rangeDetails.isFranchisePercentage
-      ? (rangeDetails.franchiseValue / 100) * protectedValue
-      : rangeDetails.franchiseValue;
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setType(null);
+    setSelectedAggregate(null);
+  };
+
+  const toNumber = (val) => {
+    const num = Number(val);
+    return isNaN(num) ? 0 : num;
   };
 
   return (
@@ -41,9 +50,7 @@ export default function Dropdown({ data, simulation }) {
       {simulation.aggregates.map((agg) => {
         const uniqueKey = `${agg.plate}-${agg.id}`;
         const isExpanded = expandedIds.includes(uniqueKey);
-        const protectedValue = agg.value ?? 0;
         const aggData = data[agg.id];
-
         if (!aggData) return null;
 
         return (
@@ -63,7 +70,7 @@ export default function Dropdown({ data, simulation }) {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Typography fontSize={15} color="text.secondary">
+              <Typography fontSize={15} ml={0.5} color="text.secondary">
                 {agg.name} - {agg.plate}
               </Typography>
               <IconButton size="small" onClick={() => toggleExpand(uniqueKey)}>
@@ -75,37 +82,48 @@ export default function Dropdown({ data, simulation }) {
                 />
               </IconButton>
             </Stack>
+
             <Collapse in={isExpanded}>
-              <Stack direction="column" spacing={1} mt={1}>
+              <Grid container mt={1}>
                 {aggData.plans?.map((plan) => (
-                  <Box key={plan.id}>
-                    <Typography fontSize={14} color="text.secondary">
-                      Taxa de Matrícula:{" "}
-                      <Box component="span" color="secondary.main">
-                        {formatBRL(aggData.rangeDetails?.accession)}
-                      </Box>
-                    </Typography>
-                    <Typography fontSize={14} color="text.secondary">
-                      Mensalidade:{" "}
-                      <Box component="span" color="secondary.main">
-                        {formatBRL(plan.basePrice)}
-                      </Box>
-                    </Typography>
-                    <Typography fontSize={14} color="text.secondary">
-                      Cota de Participação:{" "}
-                      <Box component="span" color="secondary.main">
-                        {formatBRL(
-                          formatFranchise(aggData.rangeDetails, protectedValue)
-                        )}
-                      </Box>
-                    </Typography>
-                  </Box>
+                  <Grid container spacing={1.5} size={{ xs: 12 }} key={plan.id}>
+                    <Grid size={{ xs: 6 }}>
+                      <PriceCard
+                        label="Taxa de Matrícula"
+                        discountedValue={agg.discountedAccession ?? null}
+                        originalValue={aggData.rangeDetails?.accession ?? null}
+                        onEdit={() => handleOpenModal("accession", agg)}
+                        alwaysGreen
+                        minHeight={110}
+                        noBorder 
+                      />
+                    </Grid>
+                    <Grid size={{ xs: 6 }}>
+                      <PriceCard
+                        label="Mensalidade"
+                        discountedValue={agg.discountedBasePrice ?? null}
+                        originalValue={plan.basePrice ?? null}
+                        onEdit={null}
+                        alwaysGreen
+                        minHeight={110}
+                        noBorder 
+                      />
+                    </Grid>
+                  </Grid>
                 ))}
-              </Stack>
+              </Grid>
             </Collapse>
           </Card>
         );
       })}
+      <DiscountModalAggregates
+        open={openModal}
+        onClose={handleCloseModal}
+        type={type}
+        aggregate={selectedAggregate}
+        simulation={simulation}
+        setSimulation={setSimulation}
+      />
     </>
   );
 }

@@ -15,19 +15,22 @@ import PriceCardsList from "./PriceCardsList.jsx";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSnackbar } from "@/contexts/snackbarContext.jsx";
 
-import priceTableService from "@/services/priceTableService.js";
 import Dropdown from "@/components/Simulation/Dropdown.jsx";
 import VehicleTypeDropdown from "@/components/Simulation/VehicleTypeDropdown.jsx";
-import useAggregatesTotals from "@/hooks/useAggregatesTotals.jsx";
 
 function SimulationSideBar() {
   const [openDiscountModal, setOpenDiscountModal] = useState(false);
   const [editType, setEditType] = useState(null);
   const [consultant, setConsultant] = useState(null);
-  const [priceOptions, setPriceOptions] = useState([]);
 
   const navigate = useNavigate();
-  const { simulation: baseSimulation, setSimulation, client } = useSimulation();
+  const {
+    simulation: baseSimulation,
+    setSimulation,
+    client,
+    priceOptions,
+    setPriceOptions,
+  } = useSimulation();
   const { simulation } = useCompleteSimulation(baseSimulation);
   const { rangeDetails, saveSimulation } = useSimulationEffects();
   const [openSuccessModal, setOpenSuccessModal] = useState(false);
@@ -35,59 +38,6 @@ function SimulationSideBar() {
   const [showError, setShowError] = useState(false);
 
   const showSnackbar = useSnackbar();
-  const { totalBasePrice, totalAccession, totalFranchise } =
-    useAggregatesTotals(simulation, priceOptions);
-
-  useEffect(() => {
-    if (!simulation?.aggregates?.length) return;
-
-    const fetchAll = async () => {
-      try {
-        const results = {};
-        const updatedAggregates = await Promise.all(
-          simulation.aggregates.map(async (agg) => {
-            if (!agg?.id || !agg?.value) return agg;
-
-            try {
-              const data = await priceTableService.getRangeDetailsByAggregate(
-                agg.id,
-                agg.value
-              );
-
-              const basePrice =
-                data.plans?.reduce(
-                  (sum, plan) => sum + (Number(plan.basePrice) || 0),
-                  0
-                ) || 0;
-
-              const franchiseValue = data.rangeDetails.franchiseValue || 0;
-              const accession = Number(data.rangeDetails.accession || 0);
-
-              results[agg.id] = data;
-
-              return { ...agg, basePrice, franchiseValue, accession };
-            } catch (err) {
-              console.error(`Erro ao buscar dados do agregado ${agg.id}:`, err);
-              return agg;
-            }
-          })
-        );
-
-        const isEqual =
-          JSON.stringify(simulation.aggregates) ===
-          JSON.stringify(updatedAggregates);
-
-        if (!isEqual) {
-          setSimulation((prev) => ({ ...prev, aggregates: updatedAggregates }));
-        }
-        setPriceOptions(results);
-      } catch (err) {
-        console.error("Erro ao buscar dados de agregados:", err);
-      }
-    };
-
-    fetchAll();
-  }, [simulation?.aggregates]);
 
   const toNumber = (val) => {
     const num = Number(val);
@@ -161,16 +111,17 @@ function SimulationSideBar() {
           rangeDetails={rangeDetails}
           onEdit={handleEditClick}
           toNumber={toNumber}
-          totalAggregatesBasePrice={totalBasePrice}
-          totalAggregatesAccession={totalAccession}
-          totalAggregatesFranchiseValue={totalFranchise}
         />
-        <VehicleTypeDropdown
+        {/* <VehicleTypeDropdown
           simulation={simulation}
           rangeDetails={rangeDetails}
-        />
+        /> */}
         {simulation?.aggregates?.every((agg) => priceOptions[agg.id]) && (
-          <Dropdown data={priceOptions} simulation={simulation} />
+          <Dropdown
+            data={priceOptions}
+            simulation={simulation}
+            setSimulation={setSimulation}
+          />
         )}
       </Box>
       <Box>

@@ -152,6 +152,14 @@ export default {
         type: Sequelize.DECIMAL(10, 2),
         allowNull: true,
       },
+      totalBasePrice: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
+      totalAccession: {
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+      },
       created_at: {
         allowNull: false,
         type: Sequelize.DATE,

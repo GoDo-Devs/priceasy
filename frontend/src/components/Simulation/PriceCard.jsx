@@ -8,6 +8,7 @@ export default function PriceCard({
   onEdit,
   alwaysGreen = false,
   minHeight = 110,
+  noBorder = false,
 }) {
   const toNumber = (val) => {
     const num = Number(val);
@@ -31,7 +32,7 @@ export default function PriceCard({
 
   return (
     <Card
-      variant="outlined"
+      variant={noBorder ? "elevation" : "outlined"}
       sx={{
         borderRadius: 2,
         p: 1.7,
@@ -39,7 +40,7 @@ export default function PriceCard({
         flexDirection: "column",
         justifyContent: "space-between",
         minHeight,
-        position: "relative", 
+        position: "relative",
       }}
     >
       <Box>

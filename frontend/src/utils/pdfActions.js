@@ -11,8 +11,8 @@ export async function updatePdf(client, simulation, rangeDetails, consultant) {
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
     const filename = simulation?.id
-      ? `proposta_${simulation.id}.pdf`
-      : "proposta.pdf";
+      ? `Proposta - ${simulation.plate}.pdf`
+      : "Proposta.pdf";
 
     const a = document.createElement("a");
     a.href = url;
@@ -42,8 +42,8 @@ export async function generatePdf(
     const blob = new Blob([response.data], { type: "application/pdf" });
     const url = window.URL.createObjectURL(blob);
     const filename = simulation?.id
-      ? `proposta_${simulation.id}.pdf`
-      : "proposta.pdf";
+      ? `Proposta - ${simulation.plate}.pdf`
+      : "Proposta.pdf";
 
     const a = document.createElement("a");
     a.href = url;

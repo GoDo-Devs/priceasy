@@ -13,7 +13,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
   const initialized = useRef(false);
   const lastVehicleTypeId = useRef(null);
   const debounceTimeout = useRef(null);
-  const [expandedIds, setExpandedIds] = useState([]); // Controle do Collapse
+  const [expandedIds, setExpandedIds] = useState([]);
 
   useEffect(() => {
     if (initialized.current) return;
@@ -26,7 +26,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
         aggregatePlate: agg.plate,
       }));
       setFields(initialFields);
-      setExpandedIds(initialFields.map(f => f.id)); // Abrir todos inicialmente
+      setExpandedIds(initialFields.map((f) => f.id));
       nextId.current = initialFields.length + 1;
     } else {
       const initialFields =
@@ -46,7 +46,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
               },
             ];
       setFields(initialFields);
-      setExpandedIds(initialFields.map(f => f.id));
+      setExpandedIds(initialFields.map((f) => f.id));
       nextId.current = initialFields.length + 1;
     }
 
@@ -111,12 +111,18 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
     setSimulation({
       ...simulation,
       aggregates: updatedFields.map((f) => {
+        const existing =
+          simulation.aggregates?.find((agg) => agg.key === f.id) || {};
+
         const selectedAggregate = aggregates.find(
           (agg) => agg.id === f.aggregateId
         );
+
         return {
+          ...existing,
+          key: f.id,
           id: f.aggregateId,
-          name: selectedAggregate?.name ?? "",
+          name: selectedAggregate?.name ?? existing.name ?? "",
           value: f.aggregateValue,
           plate: f.aggregatePlate,
         };
@@ -133,7 +139,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
     };
     const updated = [...fields, newField];
     setFields(updated);
-    setExpandedIds((prev) => [...prev, newField.id]); // Expande o novo campo
+    setExpandedIds((prev) => [...prev, newField.id]);
     nextId.current += 1;
   };
 

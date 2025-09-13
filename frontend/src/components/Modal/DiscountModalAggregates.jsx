@@ -13,19 +13,22 @@ import useHttp from "@/services/useHttp.js";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 
-function DiscountModal({
+function DiscountModalAggregates({
   open,
   onClose,
   simulation,
   setSimulation,
-  rangeDetails,
   type,
+  aggregate,
 }) {
   const [coupons, setCoupons] = useState([]);
   const [selectedCouponId, setSelectedCouponId] = useState(null);
   const [discountError, setDiscountError] = useState("");
   const [discountedValue, setDiscountedValue] = useState(null);
-  const originalValue = rangeDetails?.[type] ?? simulation?.[type] ?? 0;
+
+  const currentAggregate = aggregate || {};
+
+  const originalValue = currentAggregate.accession ?? 0;
 
   const selectedCoupon = coupons.find((c) => c.id === selectedCouponId);
 
@@ -34,46 +37,36 @@ function DiscountModal({
     : originalValue;
 
   const formatCurrency = (value) =>
-    value.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
+    value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   useEffect(() => {
-    if (open) {
-      useHttp
-        .get("/auth/checkuser")
-        .then((userRes) => {
-          const userId = userRes.data.user.id;
-          if (!userId) throw new Error("Usuário não encontrado");
+    if (!open) return;
 
-          return useHttp.post("/user-coupons/by-user-target", {
-            userId,
-            target: type,
-            is_active: true,
-          });
-        })
-        .then((res) => setCoupons(res.data.coupons || []))
-        .catch((err) => console.error("Erro ao carregar os cupons:", err));
-    }
+    useHttp
+      .get("/auth/checkuser")
+      .then((userRes) => {
+        const userId = userRes.data.user.id;
+        if (!userId) throw new Error("Usuário não encontrado");
+        return useHttp.post("/user-coupons/by-user-target", {
+          userId,
+          target: type,
+          is_active: true,
+        });
+      })
+      .then((res) => setCoupons(res.data.coupons || []))
+      .catch((err) => console.error("Erro ao carregar os cupons:", err));
   }, [open, type]);
 
   useEffect(() => {
-    if (open) {
-      const fieldMap = {
-        accession: "discountedAccession",
-        monthlyFee: "discountedMonthlyFee",
-        installationPrice: "discountedInstallationPrice",
-      };
-      const field = fieldMap[type];
-      const existingValue = simulation?.[field];
-      const savedCouponId = simulation?.[`${field}CouponId`];
+    if (!open) return;
 
-      setDiscountedValue(existingValue ?? originalValue);
-      setSelectedCouponId(savedCouponId ?? null);
-      setDiscountError("");
-    }
-  }, [open, type, simulation, originalValue]);
+    const existingValue = aggregate?.discountedAccession ?? originalValue;
+    const savedCouponId = aggregate?.discountedAccessionCouponId ?? null;
+
+    setDiscountedValue(existingValue);
+    setSelectedCouponId(savedCouponId);
+    setDiscountError("");
+  }, [open, aggregate, originalValue]);
 
   useEffect(() => {
     if (!selectedCoupon) {
@@ -118,8 +111,27 @@ function DiscountModal({
 
   const typeLabels = {
     accession: "Alterar valor da adesão",
-    monthlyFee: "Alterar valor da mensalidade",
-    installationPrice: "Alterar valor do rastreador",
+  };
+
+  const handleSave = () => {
+    if (!aggregate || !aggregate.key) return;
+
+    const updatedAggregates = simulation.aggregates.map((agg) =>
+      agg.key === aggregate.key
+        ? {
+            ...agg,
+            discountedAccession: discountedValue,
+            discountedAccessionCouponId: selectedCouponId,
+          }
+        : agg
+    );
+
+    setSimulation((prev) => ({
+      ...prev,
+      aggregates: updatedAggregates,
+    }));
+
+    onClose();
   };
 
   return (
@@ -158,6 +170,7 @@ function DiscountModal({
           </span>
         </Typography>
         <Divider sx={{ mb: 3 }} />
+
         <SelectInput
           label="Limite de Desconto"
           name="coupon"
@@ -169,6 +182,7 @@ function DiscountModal({
             label: `${g.name} - ${g.discountPercentage}%`,
           }))}
         />
+
         <InputLabel className="text-white mb-1 mt-5">
           Valor a ser cobrado
         </InputLabel>
@@ -179,6 +193,7 @@ function DiscountModal({
           error={Boolean(discountError)}
           helperText={discountError}
         />
+
         {selectedCoupon && (
           <>
             <Typography variant="body2" mt={2}>
@@ -196,28 +211,11 @@ function DiscountModal({
           </>
         )}
       </DialogContent>
+
       <DialogActions>
         <Button onClick={onClose}>Cancelar</Button>
         <Button
-          onClick={() => {
-            const simulationFieldMap = {
-              accession: "discountedAccession",
-              monthlyFee: "discountedMonthlyFee",
-              installationPrice: "discountedInstallationPrice",
-            };
-
-            const field = simulationFieldMap[type];
-
-            if (field && typeof setSimulation === "function") {
-              setSimulation((prev) => ({
-                ...prev,
-                [field]: discountedValue,
-                [`${field}CouponId`]: selectedCouponId,
-              }));
-            }
-
-            onClose();
-          }}
+          onClick={handleSave}
           variant="contained"
           color="secondary"
           disabled={discountedValue === null || Boolean(discountError)}
@@ -229,4 +227,4 @@ function DiscountModal({
   );
 }
 
-export default DiscountModal;
+export default DiscountModalAggregates;

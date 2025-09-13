@@ -11,12 +11,12 @@
 
       p {
         font-size: 12pt;
-        margin-bottom: 16px;
+        margin-bottom: 0px;
       }
 
       .compact-paragraph {
         margin-top: 0;
-        margin-bottom: 0.5em;
+        margin-bottom: 0;
         line-height: 1.2;
       }
 
@@ -114,14 +114,7 @@
         <div><strong>Data:</strong> {{DATA}}</div>
       </div>
     </div>
-
-    <p class="compact-paragraph">
-      <strong>OLÁ, {{NOME_CLIENTE}}.</strong>
-    </p>
-    <p>Esta é uma cotação para seu veículo {{PLACA}}: {{VEICULO_DESC}}</p>
-    <p class="compact-paragraph">Avaliado em <strong>{{VALOR_FIPE}}</strong></p>
-
-    {{TABLE_PLAN}} {{TABLE_AGGREGATE}} {{TABLE_PRODUCTS}} {{TABLE_QUOTE}}
-    {{TABLE_CONSULTANT}}
+    <p>Olá, {{NOME_CLIENTE}}. Esta é uma cotação para seu veículo:</p>
+    {{TABLE_QUOTE}} {{TABLE_AGGREGATE}} {{TABLE_TOTAL}} {{TABLE_CONSULTANT}} 
   </body>
 </html>
