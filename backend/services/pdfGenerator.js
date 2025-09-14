@@ -36,9 +36,8 @@ function formatValueWithDiscount(real, discounted, isPercentage = false) {
 
 function loadTemplate(fileName) {
   const filePath = path.join(templatesDir, fileName);
-  if (!fs.existsSync(filePath)) {
+  if (!fs.existsSync(filePath))
     throw new Error(`Template não encontrado: ${fileName}`);
-  }
   return fs.readFileSync(filePath, "utf-8");
 }
 
@@ -48,59 +47,43 @@ export async function generatePdf({
   rangeDetails = {},
   consultant,
 }) {
-  function getValue(key) {
-    if (simulation[key] != null) return simulation[key];
-    if (rangeDetails[key] != null) return rangeDetails[key];
-    return null;
-  }
-
   const nomeCliente = client.name?.toUpperCase?.() || "CLIENTE";
-  const placa = simulation.plate?.trim()
-    ? `${simulation.plate.toUpperCase()}`
-    : "";
+  const placa = simulation.plate?.trim() ? simulation.plate.toUpperCase() : "";
   const fipeCode = simulation.fipeCode || "";
   const veiculoDesc = `${simulation.name?.toUpperCase() || ""} ${
     simulation.modelYear || ""
   }${fipeCode ? ` (FIPE: ${fipeCode})` : ""}`.trim();
   const protectedValue = formatCurrency(simulation.protectedValue);
 
-  const coberturaRows = (simulation.plan?.cobertura || [])
-    .map((c) => `<tr><td colspan="2" style="padding: 4px 8px;">${c}</td></tr>`)
-    .join("");
-  const assistenciasRows = (simulation.plan?.assist24 || [])
-    .map((a) => `<tr><td colspan="2" style="padding: 4px 8px;">${a}</td></tr>`)
-    .join("");
+  const getValue = (key) => simulation[key] ?? rangeDetails[key] ?? null;
 
-  // Produtos selecionados
-  const selectedIds = Object.values(simulation.selectedProducts || {}).map(
-    String
-  );
-  const selectedProducts = (simulation.products || []).filter((p) =>
-    selectedIds.includes(String(p.id))
+  // -----------------------------
+  // Produtos da SIMULAÇÃO principal
+  // -----------------------------
+  const simulationSelectedIds = Object.values(
+    simulation.selectedProducts || {}
+  ).map(String);
+  const simulationProductsList = (simulation.products || []).filter((p) =>
+    simulationSelectedIds.includes(String(p.id))
   );
 
-  let optionalSection = "";
-  if (selectedProducts.length) {
-    const productRows = selectedProducts
-      .map(
-        (p) => `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
-      )
-      .join("");
-
-    optionalSection = `
-      <tr>
-        <td colspan="2" class="plan-header">OPCIONAIS</td>
-      </tr>
-      <tr>
-        <td style="font-weight: bold">Nome</td>
-        <td style="font-weight: bold">Valor</td>
-      </tr>
-      ${productRows}
+  let simulationProductsSection = "";
+  if (simulationProductsList.length) {
+    simulationProductsSection = `
+      <tr><td colspan="2" class="plan-header">OPCIONAIS</td></tr>
+      <tr><td style="font-weight:bold">Nome</td><td style="font-weight:bold">Valor</td></tr>
+      ${simulationProductsList
+        .map(
+          (p) =>
+            `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
+        )
+        .join("")}
     `;
   }
 
   const mensalidade = formatValueWithDiscount(
-    getValue("monthlyFee"),
+    Number(getValue("monthlyFee")) +
+      Number(simulation.valueSelectedProducts || 0),
     simulation.discountedMonthlyFee
   );
   const taxa = formatValueWithDiscount(
@@ -117,6 +100,13 @@ export async function generatePdf({
     simulation.discountedInstallationPrice
   );
 
+  const coberturaRows = (simulation.plan?.cobertura || [])
+    .map((c) => `<tr><td colspan="2" style="padding:4px 8px;">${c}</td></tr>`)
+    .join("");
+  const assistenciasRows = (simulation.plan?.assist24 || [])
+    .map((a) => `<tr><td colspan="2" style="padding:4px 8px;">${a}</td></tr>`)
+    .join("");
+
   const unifiedQuoteTable = loadTemplate("table-quote.html")
     .replace("{{PLACA}}", placa)
     .replace("{{VEICULO_DESC}}", veiculoDesc)
@@ -124,28 +114,45 @@ export async function generatePdf({
     .replace("{{PLAN_NAME}}", simulation.plan?.name || "PLANO DESCONHECIDO")
     .replace("{{COBERTURAS}}", coberturaRows)
     .replace("{{ASSISTENCIAS}}", assistenciasRows)
-    .replace("{{PRODUTOS}}", optionalSection)
+    .replace("{{PRODUTOS}}", simulationProductsSection)
     .replace("{{MENSALIDADE_DESCONTO}}", mensalidade)
     .replace("{{TAXA_MATRICULA_DESCONTO}}", taxa)
     .replace("{{COTA_PARTICIPACAO_DESCONTO}}", cota)
     .replace("{{RASTREADOR_DESCONTO}}", rastreador);
 
+  // -----------------------------
+  // Produtos de cada AGREGADO
+  // -----------------------------
   const aggregateTemplate = loadTemplate("table-aggregates.html");
+
+  const aggregateProductsSection = (agg) => {
+    if (!agg.products?.length) return "";
+    return `
+      <tr><td colspan="2" class="plan-header">PRODUTOS</td></tr>
+      <tr><td style="font-weight:bold">Nome</td><td style="font-weight:bold">Valor</td></tr>
+      ${agg.products
+        .map(
+          (p) =>
+            `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
+        )
+        .join("")}
+    `;
+  };
+
   const aggregateTable = (simulation.aggregates || [])
     .map((agg) => {
       const aggPlanData = simulation.aggregatesPlans?.find(
         (ap) => ap.aggregateId === agg.id
       );
-
       const aggPlanName = aggPlanData?.plan?.name || "PLANO DESCONHECIDO";
       const aggCobertura = (aggPlanData?.plan?.cobertura || [])
         .map(
-          (c) => `<tr><td colspan="2" style="padding: 4px 8px;">${c}</td></tr>`
+          (c) => `<tr><td colspan="2" style="padding:4px 8px;">${c}</td></tr>`
         )
         .join("");
       const aggAssist24 = (aggPlanData?.plan?.assist24 || [])
         .map(
-          (a) => `<tr><td colspan="2" style="padding: 4px 8px;">${a}</td></tr>`
+          (a) => `<tr><td colspan="2" style="padding:4px 8px;">${a}</td></tr>`
         )
         .join("");
 
@@ -161,10 +168,14 @@ export async function generatePdf({
         .replace("{{VALOR_FRANQUIA}}", formatPercentage(agg.franchiseValue))
         .replace("{{PLAN_NAME}}", aggPlanName)
         .replace("{{COBERTURAS}}", aggCobertura)
-        .replace("{{ASSISTENCIAS}}", aggAssist24);
+        .replace("{{ASSISTENCIAS}}", aggAssist24)
+        .replace("{{PRODUTOS}}", aggregateProductsSection(agg));
     })
     .join("");
 
+  // -----------------------------
+  // Tabela total
+  // -----------------------------
   let totalTable = "";
   if (simulation.aggregates?.length) {
     const totalTableTemplate = loadTemplate("table-total.html");
@@ -179,10 +190,16 @@ export async function generatePdf({
       );
   }
 
+  // -----------------------------
+  // Consultor
+  // -----------------------------
   const consultantTable = loadTemplate("table-consultant.html")
     .replace("{{CONSULTOR_NOME}}", consultant?.name?.toUpperCase() || "-")
     .replace("{{CONSULTOR_EMAIL}}", consultant?.email || "-");
 
+  // -----------------------------
+  // Monta HTML final
+  // -----------------------------
   const baseHtml = loadTemplate("base.html")
     .replace("{{LOGO_BASE64}}", logoBase64)
     .replace("{{ID_SIMULACAO}}", simulation.id || "sem-id")
@@ -199,6 +216,9 @@ export async function generatePdf({
     .replace("{{TABLE_TOTAL}}", totalTable)
     .replace("{{TABLE_CONSULTANT}}", consultantTable);
 
+  // -----------------------------
+  // Gera PDF via Playwright
+  // -----------------------------
   const browser = await chromium.launch({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
@@ -211,6 +231,9 @@ export async function generatePdf({
   });
   await browser.close();
 
+  // -----------------------------
+  // Merge PDFs adicionais
+  // -----------------------------
   const proposta1Bytes = fs.readFileSync(path.join(assetsDir, "proposta1.pdf"));
   const proposta2Bytes = fs.readFileSync(path.join(assetsDir, "proposta2.pdf"));
   const proposta3Bytes = fs.readFileSync(path.join(assetsDir, "proposta3.pdf"));

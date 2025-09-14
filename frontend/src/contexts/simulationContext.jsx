@@ -37,7 +37,19 @@ export function SimulationProvider({ children }) {
 
               results[agg.id] = data;
 
-              return { ...agg, planId, basePrice, franchiseValue, accession };
+              // Mantém valor manual só internamente
+              const finalBasePrice =
+                agg._manualBasePrice !== undefined
+                  ? agg._manualBasePrice
+                  : basePrice;
+
+              return {
+                ...agg,
+                planId,
+                basePrice: finalBasePrice,
+                franchiseValue,
+                accession,
+              };
             } catch (err) {
               console.error(`Erro ao buscar dados do agregado ${agg.id}:`, err);
               return agg;

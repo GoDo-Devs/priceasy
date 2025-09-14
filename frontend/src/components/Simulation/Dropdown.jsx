@@ -114,7 +114,10 @@ export default function Dropdown({ data, simulation, setSimulation }) {
                         <PriceCard
                           label="Mensalidade"
                           discountedValue={agg.discountedBasePrice ?? null}
-                          originalValue={plan.basePrice ?? null}
+                          originalValue={
+                            toNumber(plan.basePrice) +
+                              toNumber(agg.valueSelectedProducts) || null
+                          }
                           onEdit={null}
                           alwaysGreen
                           minHeight={110}
