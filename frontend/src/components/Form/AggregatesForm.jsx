@@ -5,7 +5,16 @@ import vehicleCategoryService from "@/services/vehicleCategoryService.js";
 import CurrencyInput from "@/components/Form/CurrencyInput.jsx";
 import TextInput from "@/components/Form/TextInput.jsx";
 
-function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
+import PlanSelectorAggregates from "@/components/Simulation/PlanSelectorAggregates.jsx";
+
+function AggregatesForm({
+  simulation,
+  setSimulation,
+  aggregateQty,
+  onEmpty,
+  plans,
+  onDetails,
+}) {
   const typeAgreggate = 8;
   const [fields, setFields] = useState([]);
   const [aggregates, setAggregates] = useState([]);
@@ -111,7 +120,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
     setSimulation({
       ...simulation,
       aggregates: updatedFields
-        .filter((f) => f.aggregateId && f.aggregateValue) 
+        .filter((f) => f.aggregateId && f.aggregateValue)
         .map((f) => {
           const existing =
             simulation.aggregates?.find((agg) => agg.key === f.id) || {};
@@ -126,7 +135,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
             id: f.aggregateId,
             name: selectedAggregate?.name ?? existing.name ?? "",
             value: f.aggregateValue,
-            plate: f.aggregatePlate, 
+            plate: f.aggregatePlate,
           };
         }),
     });
@@ -200,7 +209,7 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
                     fullWidth
                     label="Placa"
                     name="plate"
-                    maxLength={15}
+                    maxLength={8}
                     value={field.aggregatePlate ?? ""}
                     onChange={(e) =>
                       handleFieldChange(
@@ -241,6 +250,18 @@ function AggregatesForm({ simulation, setSimulation, aggregateQty, onEmpty }) {
               >
                 Cancelar
               </Button>
+            </Grid>
+            <Grid size={{ xs: 12 }}>
+              <PlanSelectorAggregates
+                simulation={{
+                  aggregates: (simulation.aggregates ?? []).filter(
+                    (a) => a.id === field.aggregateId
+                  ),
+                }}
+                setSimulation={setSimulation}
+                plans={plans}
+                onDetails={onDetails}
+              />
             </Grid>
           </Grid>
         </Collapse>

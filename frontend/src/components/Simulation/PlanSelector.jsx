@@ -59,7 +59,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
               justifyContent="space-between"
               width="100%"
               mb={1}
-              border="1px solid #4d566b"
+              border="1px solid #69696acd"
               borderRadius={1}
               sx={{ cursor: "pointer" }}
               onClick={() => handleSelectPlan(plan)}

@@ -54,8 +54,7 @@ export default function PriceCardsList({
           }
           originalValue={
             simulation.monthlyFee != null
-              ? toNumber(simulation.monthlyFee) +
-                toNumber(simulation.valueSelectedProducts) 
+              ? toNumber(simulation.monthlyFee) 
               : rangeDetails.monthlyFee != null
               ? toNumber(rangeDetails.monthlyFee) +
                 toNumber(simulation.valueSelectedProducts)

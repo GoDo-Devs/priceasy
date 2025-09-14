@@ -101,10 +101,35 @@ export function useCompleteSimulation(simulationInitial) {
         );
         const products = fetchedProducts.filter(Boolean);
 
+        const aggregatesWithProducts = await Promise.all(
+          (simulationInitial.aggregates || []).map(async (agg) => {
+            const selectedIds = Object.values(agg.selectedProducts || {});
+            const aggProducts = await Promise.all(
+              selectedIds.map(async (id) => {
+                try {
+                  const res = await useHttp.get(`/products/${id}`);
+                  return res.data;
+                } catch (err) {
+                  console.error(
+                    `Erro ao buscar produto ${id} do agregado ${agg.id}`,
+                    err
+                  );
+                  return null;
+                }
+              })
+            );
+
+            return {
+              ...agg,
+              products: aggProducts.filter(Boolean),
+            };
+          })
+        );
+
         setSimulation({
           ...simulationInitial,
           plan: simulationPlan,
-          aggregates: simulationInitial.aggregates,
+          aggregates: aggregatesWithProducts,
           aggregatesPlans: aggregatesPlans.filter(Boolean),
           products,
         });
@@ -121,6 +146,8 @@ export function useCompleteSimulation(simulationInitial) {
 
     fetchPlanDetails();
   }, [simulationInitial]);
+
+  console.log(simulation)
 
   return { simulation, loading };
 }

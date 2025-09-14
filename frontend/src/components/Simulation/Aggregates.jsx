@@ -3,8 +3,9 @@ import SubtitlesIcon from "@mui/icons-material/Subtitles";
 import AggregatesForm from "@/components/Form/AggregatesForm.jsx";
 import { useState, useEffect } from "react";
 import vehicleTypeService from "@/services/vehicleTypeService.js";
+import PlanSelectorAggregates from "@/components/Simulation/PlanSelectorAggregates.jsx";
 
-function Aggregates({ simulation, setSimulation }) {
+function Aggregates({ simulation, setSimulation, onDetails, plans }) {
   const [showForm, setShowForm] = useState(false);
   const [aggregateQty, setAggregateQty] = useState(0);
 
@@ -25,19 +26,26 @@ function Aggregates({ simulation, setSimulation }) {
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         Agregados
       </Typography>
+
       <Collapse in={shouldShowForm} timeout={300}>
         {shouldShowForm && (
-          <AggregatesForm
-            simulation={simulation}
-            setSimulation={setSimulation}
-            aggregateQty={aggregateQty}
-            onEmpty={() => {
-              setShowForm(false);
-              setAggregateQty(0);
-            }}
-          />
+          <Box display="flex" flexDirection="column" gap={1}>
+            <AggregatesForm
+              simulation={simulation}
+              setSimulation={setSimulation}
+              aggregateQty={aggregateQty}
+              plans={plans}
+              onDetails={onDetails}
+              onEmpty={() => {
+                setShowForm(false);
+                setAggregateQty(0);
+              }}
+            />
+            
+          </Box>
         )}
       </Collapse>
+
       <Collapse in={!shouldShowForm} timeout={300}>
         {!shouldShowForm && (
           <Box

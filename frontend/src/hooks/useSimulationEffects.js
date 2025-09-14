@@ -14,13 +14,8 @@ const calcTotals = (sim, rangeDetails) => {
   );
 
   const aggregatesAccession = aggregates.reduce((sum, item) => {
-    if (
-      item.discountedAccession !== null &&
-      item.discountedAccession !== undefined
-    ) {
-      return sum + parseFloat(item.discountedAccession || 0);
-    }
-    return sum;
+    const value = item.discountedAccession ?? item.accession ?? 0;
+    return sum + parseFloat(value || 0);
   }, 0);
 
   const monthlyFeeValue = sim.discountedMonthlyFee
@@ -387,9 +382,15 @@ export default function useSimulationEffects() {
             )
           : {};
 
+        const aggregatesWithManual = (sim.aggregates || []).map((agg) => ({
+          ...agg,
+          _manualBasePrice: agg.basePrice,
+        }));
+
         setSimulation({
           ...sim,
           selectedProducts,
+          aggregates: aggregatesWithManual,
         });
 
         if (sim.client_id) {
@@ -447,10 +448,14 @@ export default function useSimulationEffects() {
       }));
 
       const totals = calcTotals(simulation);
+      const aggregatesToSave = simulation.aggregates?.map(
+        ({ _manualBasePrice, ...agg }) => agg
+      );
 
       const simulationPayload = {
         ...simulation,
         ...totals,
+        aggregates: aggregatesToSave,
         selectedProducts: selectedProductsArray,
         accession: rangeDetails.accession,
         installationPrice: rangeDetails.installationPrice,
@@ -475,6 +480,7 @@ export default function useSimulationEffects() {
     }
   };
 
+  console.log(simulation);
   return {
     vehicleType,
     brand,

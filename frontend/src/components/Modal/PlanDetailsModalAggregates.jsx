@@ -14,7 +14,8 @@ import Paper from "@mui/material/Paper";
 import { useEffect, useState, useMemo } from "react";
 import useHttp from "@/services/useHttp.js";
 
-function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
+function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
+  console.log(plan);
   if (!open || !plan) return null;
 
   const [services, setServices] = useState([]);
@@ -22,62 +23,43 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   const [selectedProducts, setSelectedProducts] = useState({});
 
   useEffect(() => {
-    if (!open) return;
-    setSelectedProducts(simulation?.selectedProducts || {});
-  }, [open, simulation]);
-
-  useEffect(() => {
     if (!open) {
       setProducts([]);
       setServices([]);
+      setSelectedProducts({});
     }
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !plan) return;
+
+    setSelectedProducts(plan.selectedProducts || {});
+  }, [plan, open]);
 
   useEffect(() => {
     if (plan?.id && open) {
       useHttp
         .get(`/plan-services/${plan.id}`)
-        .then((response) => setServices(response.data))
+        .then((res) => setServices(res.data))
         .catch(() => setServices([]));
     }
   }, [plan, open]);
 
   useEffect(() => {
     if (!open) return;
-
-    const vehicleTypeId = simulation?.vehicle_type_fipeCode;
-
-    if (vehicleTypeId) {
-      useHttp
-        .post("/product-vehicle-types/vehicle-type", {
-          vehicle_type_id: vehicleTypeId,
-        })
-        .then((response) => {
-          setProducts(response.data.products || []);
-        })
-        .catch(() => setProducts([]));
-    } else {
-      setProducts([]);
-    }
-  }, [simulation, open]);
-
-  const formatPrice = (price) => {
-    if (price < 1000) {
-      return price.toFixed(2).replace(".", ",");
-    }
-    return price.toLocaleString("pt-BR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  };
+    useHttp
+      .post("/product-vehicle-types/vehicle-type", { vehicle_type_id: 8 })
+      .then((res) => setProducts(res.data.products || []))
+      .catch(() => setProducts([]));
+  }, [open]);
 
   const handleToggle = (product) => {
     setSelectedProducts((prev) => {
       const updated = { ...prev };
       if (updated[product.product_group_id] === product.id) {
-        delete updated[product.product_group_id];
+        delete updated[product.product_group_id]; // desmarca se já estava selecionado
       } else {
-        updated[product.product_group_id] = product.id;
+        updated[product.product_group_id] = product.id; // marca novo produto do grupo
       }
       return updated;
     });
@@ -88,7 +70,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
 
   const isSwitchDisabled = (product) => {
     const selectedId = selectedProducts[product.product_group_id];
-    return selectedId && selectedId !== product.id;
+    return selectedId && selectedId !== product.id; // só desabilita se outro produto do grupo estiver selecionado
   };
 
   const calculatedValueSelectedProducts = useMemo(() => {
@@ -99,10 +81,13 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
     }, 0);
   }, [selectedProducts, products]);
 
-  const monthlyFee = useMemo(
-    () => plan.basePrice + calculatedValueSelectedProducts,
-    [plan.basePrice, calculatedValueSelectedProducts]
-  );
+  const formatPrice = (price) =>
+    price < 1000
+      ? price.toFixed(2).replace(".", ",")
+      : price.toLocaleString("pt-BR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
   return (
     <Dialog
@@ -114,7 +99,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         paper: {
           sx: {
             textAlign: "justify",
-            width: "600px",
+            width: 600,
             maxWidth: "100%",
             borderRadius: 8,
             p: 1.5,
@@ -122,14 +107,9 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         },
       }}
     >
-      <DialogTitle textAlign="center">Detalhes do Plano</DialogTitle>
-      <DialogContent
-        dividers
-        sx={{
-          maxHeight: "70vh",
-          overflowY: "auto",
-        }}
-      >
+      <DialogTitle textAlign="center">Detalhes do Agregado</DialogTitle>
+
+      <DialogContent dividers sx={{ maxHeight: "70vh", overflowY: "auto" }}>
         <Typography
           variant="subtitle1"
           fontWeight="bold"
@@ -144,17 +124,17 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         </Typography>
 
         {services.length > 0 ? (
-          services.map((service) => (
-            <div key={service.id}>
+          services.map((s) => (
+            <div key={s.id}>
               <Typography variant="body2" fontSize="0.80rem">
-                {service.name}
+                {s.name}
               </Typography>
               <Divider sx={{ my: 1 }} />
             </div>
           ))
         ) : (
           <Typography variant="body2" color="text.secondary">
-            Nenhum serviço listado para este plano.
+            Nenhum serviço listado para este agregado.
           </Typography>
         )}
 
@@ -169,43 +149,36 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
         </Typography>
 
         {products.length > 0 ? (
-          products.map((product) => {
-            const isSelected = isProductSelected(product);
-            const disabled = isSwitchDisabled(product);
-
-            return (
-              <Box
-                key={product.id}
-                display="flex"
-                alignItems="center"
-                justifyContent="space-between"
-              >
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={isSelected}
-                      onChange={() => handleToggle(product)}
-                      color="primary"
-                      disabled={disabled}
-                    />
-                  }
-                  label={product.name}
-                  sx={{
-                    display: "block",
-                    "& .MuiFormControlLabel-label": {
-                      fontSize: "0.80rem",
-                    },
-                  }}
-                />
-                <Typography fontSize="0.75rem" color="text.secondary">
-                  R$ {formatPrice(product.price)}
-                </Typography>
-              </Box>
-            );
-          })
+          products.map((p) => (
+            <Box
+              key={p.id}
+              display="flex"
+              alignItems="center"
+              justifyContent="space-between"
+            >
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={isProductSelected(p)}
+                    onChange={() => handleToggle(p)}
+                    color="primary"
+                    disabled={isSwitchDisabled(p)}
+                  />
+                }
+                label={p.name}
+                sx={{
+                  display: "block",
+                  "& .MuiFormControlLabel-label": { fontSize: "0.80rem" },
+                }}
+              />
+              <Typography fontSize="0.75rem" color="text.secondary">
+                R$ {formatPrice(p.price)}
+              </Typography>
+            </Box>
+          ))
         ) : (
           <Typography variant="body2" color="text.secondary">
-            Nenhum produto vinculado a este tipo de veículo.
+            Nenhum produto vinculado a este agregado.
           </Typography>
         )}
 
@@ -218,34 +191,30 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
           justifyContent="space-between"
         >
           <span>Mensalidade média:</span>
-          <span style={{ color: "#51d6a4" }}>R$ {formatPrice(monthlyFee)}</span>
+          <span style={{ color: "#51d6a4" }}>
+            R$ {formatPrice(plan.basePrice + calculatedValueSelectedProducts)}
+          </span>
         </Typography>
       </DialogContent>
 
       <DialogActions>
-        <Button
-          color="primary"
-          onClick={() => {
-            setProducts([]);
-            setServices([]);
-            onClose();
-          }}
-        >
+        <Button color="primary" onClick={onClose}>
           Cancelar
         </Button>
         <Button
+          variant="contained"
+          color="secondary"
           onClick={() => {
             if (onSave)
               onSave({
+                key: plan.key,
                 planId: plan.id,
-                monthlyFee,
-                valueSelectedProducts: calculatedValueSelectedProducts,
                 selectedProducts,
+                basePrice: plan.basePrice,
+                valueSelectedProducts: calculatedValueSelectedProducts,
               });
             onClose();
           }}
-          variant="contained"
-          color="secondary"
         >
           Salvar
         </Button>
@@ -254,4 +223,4 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   );
 }
 
-export default PlanDetailsModal;
+export default PlanDetailsModalAggregates;
