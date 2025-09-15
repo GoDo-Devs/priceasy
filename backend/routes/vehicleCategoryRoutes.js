@@ -22,6 +22,11 @@ router.get(
   [checkToken],
   VehicleCategoryController.getVehicleCategoriesByPriceTable
 );
+router.get(
+  "/fipe/:id",
+  [checkToken],
+  VehicleCategoryController.getVehicleCategoryByFipeCode
+);
 router.delete(
   "/:id",
   [checkToken, isAdmin],

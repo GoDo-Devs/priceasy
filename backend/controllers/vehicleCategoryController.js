@@ -87,8 +87,8 @@ export default class VehicleCategoryController {
         include: [
           {
             model: VehicleCategory,
-            as: "categories", 
-            through: { attributes: [] }, 
+            as: "categories",
+            through: { attributes: [] },
           },
         ],
       });
@@ -137,6 +137,27 @@ export default class VehicleCategoryController {
     } catch (error) {
       return res.status(500).json({
         message: "Erro ao obter as Categorias de Veículos",
+        error: error.message,
+      });
+    }
+  }
+
+  static async getVehicleCategoryByFipeCode(req, res) {
+    const { id: fipeCode } = req.params;
+
+    try {
+      const category = await VehicleCategory.findAll({ where: { fipeCode } });
+
+      if (!category) {
+        return res.status(404).json({
+          message: `Categoria de veículo com fipeCode ${fipeCode} não encontrada!`,
+        });
+      }
+
+      return res.status(200).json(category);
+    } catch (error) {
+      return res.status(500).json({
+        message: "Erro ao buscar categoria de veículo pelo fipeCode",
         error: error.message,
       });
     }

@@ -92,26 +92,38 @@ export default class PriceTableController {
   }
 
   static async getPriceTablesByFilter(req, res) {
-    const { model, vehicle_type_id } = req.body;
+    const { model, vehicle_type_id, category_id } = req.body;
 
     try {
-      const allTables = await PriceTable.findAll();
-
-      if (vehicle_type_id) {
-        const filteredByVehicleType = allTables.filter(
-          (table) => table.vehicle_type_id === vehicle_type_id
-        );
-        return res.status(200).json({ priceTables: filteredByVehicleType });
+      if (vehicle_type_id === 8 && !category_id) {
+        return res.status(200).json({ priceTables: [] });
       }
+
+      if (vehicle_type_id !== 8 && (!model || !category_id)) {
+        return res.status(200).json({ priceTables: [] });
+      }
+
+      const categoryRelations = await PriceTableCategory.findAll({
+        where: { category_id },
+      });
+
+      const priceTableIds = categoryRelations.map((rel) => rel.price_table_id);
+
+      if (priceTableIds.length === 0) {
+        return res.status(200).json({ priceTables: [] });
+      }
+
+      let filteredTables = await PriceTable.findAll({
+        where: { id: priceTableIds },
+      });
 
       if (model && typeof model === "number") {
-        const filteredByModel = allTables.filter(
+        filteredTables = filteredTables.filter(
           (table) => Array.isArray(table.models) && table.models.includes(model)
         );
-        return res.status(200).json({ priceTables: filteredByModel });
       }
 
-      return res.status(200).json({ priceTables: allTables });
+      return res.status(200).json({ priceTables: filteredTables });
     } catch (error) {
       console.error("Erro ao buscar tabelas de preço:", error);
       return res.status(500).json({

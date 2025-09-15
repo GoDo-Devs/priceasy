@@ -53,7 +53,8 @@ function SimulationContent() {
     selectedProducts,
     valueSelectedProducts,
   }) => {
-    const newBasePrice = Number(basePrice) + Number(valueSelectedProducts || 0);
+    const finalBasePrice =
+      Number(basePrice) + Number(valueSelectedProducts || 0);
 
     setSimulation((prev) => ({
       ...prev,
@@ -64,8 +65,8 @@ function SimulationContent() {
               planId,
               selectedProducts,
               valueSelectedProducts,
-              basePrice: newBasePrice,
-              _manualBasePrice: newBasePrice, 
+              basePrice: basePrice,
+              totalBasePrice: finalBasePrice,
             }
           : agg
       ),

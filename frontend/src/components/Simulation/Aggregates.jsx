@@ -3,7 +3,6 @@ import SubtitlesIcon from "@mui/icons-material/Subtitles";
 import AggregatesForm from "@/components/Form/AggregatesForm.jsx";
 import { useState, useEffect } from "react";
 import vehicleTypeService from "@/services/vehicleTypeService.js";
-import PlanSelectorAggregates from "@/components/Simulation/PlanSelectorAggregates.jsx";
 
 function Aggregates({ simulation, setSimulation, onDetails, plans }) {
   const [showForm, setShowForm] = useState(false);
@@ -11,15 +10,53 @@ function Aggregates({ simulation, setSimulation, onDetails, plans }) {
 
   useEffect(() => {
     if (!simulation?.vehicle_type_id) return;
+
     vehicleTypeService
       .getById(simulation.vehicle_type_id)
       .then((data) => setAggregateQty(data.aggregate ?? 0))
       .catch((err) => console.error("Error fetching vehicle type:", err));
   }, [simulation?.vehicle_type_id]);
 
-  const hasSimulationAggregates = simulation?.aggregates?.length > 0;
+  const hasSimulationAggregates =
+    Array.isArray(simulation?.aggregates) && simulation.aggregates.length > 0;
+
+  const canAddAggregate = Boolean(simulation.vehicle_type_id);
   const shouldShowForm =
-    showForm || aggregateQty > 0 || hasSimulationAggregates;
+    showForm || hasSimulationAggregates || aggregateQty > 0;
+
+  useEffect(() => {
+    if (hasSimulationAggregates || aggregateQty > 0) {
+      setShowForm(true);
+    }
+  }, [hasSimulationAggregates, aggregateQty]);
+
+  const renderPlaceholder = (message, disableButton = false) => (
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="space-between"
+      gap={2}
+      mt={1}
+      borderRadius={2}
+      padding={1.5}
+    >
+      <Box display="flex" alignItems="center" gap={1}>
+        <SubtitlesIcon fontSize="small" sx={{ color: "white" }} />
+        <Typography color="text.secondary" fontStyle="italic">
+          {message}
+        </Typography>
+      </Box>
+      <Button
+        variant={disableButton ? "outlined" : "contained"}
+        color="primary"
+        size="medium"
+        onClick={() => setShowForm(true)}
+        disabled={disableButton}
+      >
+        Adicionar
+      </Button>
+    </Box>
+  );
 
   return (
     <Box bgcolor="#1D1420" borderRadius={2} padding={2.25} mt={2}>
@@ -28,52 +65,32 @@ function Aggregates({ simulation, setSimulation, onDetails, plans }) {
       </Typography>
 
       <Collapse in={shouldShowForm} timeout={300}>
-        {shouldShowForm && (
-          <Box display="flex" flexDirection="column" gap={1}>
-            <AggregatesForm
-              simulation={simulation}
-              setSimulation={setSimulation}
-              aggregateQty={aggregateQty}
-              plans={plans}
-              onDetails={onDetails}
-              onEmpty={() => {
-                setShowForm(false);
-                setAggregateQty(0);
-              }}
-            />
-            
-          </Box>
-        )}
+        {shouldShowForm && canAddAggregate ? (
+          <AggregatesForm
+            simulation={simulation}
+            setSimulation={setSimulation}
+            aggregateQty={aggregateQty}
+            plans={plans}
+            onDetails={onDetails}
+            onEmpty={() => {
+              setShowForm(false);
+              setAggregateQty(0);
+            }}
+          />
+        ) : null}
       </Collapse>
 
-      <Collapse in={!shouldShowForm} timeout={300}>
-        {!shouldShowForm && (
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="space-between"
-            gap={2}
-            mt={1}
-            borderRadius={2}
-            padding={1.5}
-          >
-            <Box display="flex" alignItems="center" gap={1}>
-              <SubtitlesIcon fontSize="small" sx={{ color: "white" }} />
-              <Typography fontStyle="italic" color="text.secondary">
-                Nenhum agregado cadastrado.
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              color="primary"
-              size="medium"
-              onClick={() => setShowForm(true)}
-            >
-              Adicionar
-            </Button>
-          </Box>
+      {!shouldShowForm &&
+        !canAddAggregate &&
+        renderPlaceholder(
+          "Selecione o tipo de veículo para adicionar agregados",
+          true
         )}
-      </Collapse>
+
+      {!shouldShowForm &&
+        canAddAggregate &&
+        !hasSimulationAggregates &&
+        renderPlaceholder("Nenhum agregado cadastrado")}
     </Box>
   );
 }

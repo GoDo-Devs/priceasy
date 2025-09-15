@@ -9,7 +9,7 @@ const calcTotals = (sim, rangeDetails) => {
   const aggregates = Array.isArray(sim.aggregates) ? sim.aggregates : [];
 
   const aggregatesBasePrice = aggregates.reduce(
-    (sum, item) => sum + (parseFloat(item.basePrice) || 0),
+    (sum, item) => sum + (parseFloat(item.totalBasePrice) || 0),
     0
   );
 
@@ -257,6 +257,7 @@ export default function useSimulationEffects() {
       useHttp
         .post("/price-tables/filter", {
           vehicle_type_id: simulation.vehicle_type_id,
+          category_id: simulation.category_id,
         })
         .then((res) => {
           const options = (res.data.priceTables || []).map((table) => ({
@@ -264,11 +265,16 @@ export default function useSimulationEffects() {
             label: table.name,
           }));
           setPriceTableNames(options);
+          console.log(priceTableNames)
         })
         .catch(console.error);
     } else if (simulation.model_id) {
       useHttp
-        .post("/price-tables/filter", { model: simulation.model_id })
+        .post("/price-tables/filter", {
+          model: simulation.model_id,
+          vehicle_type_id: simulation.vehicle_type_id,
+          category_id: simulation.category_id,
+        })
         .then((res) => {
           const options = (res.data.priceTables || []).map((table) => ({
             value: table.id,
@@ -284,7 +290,10 @@ export default function useSimulationEffects() {
     simulation.model_id,
     simulation.vehicle_type_fipeCode,
     simulation.vehicle_type_id,
+    simulation.category_id,
   ]);
+
+  console.log(priceTableNames);
 
   useEffect(() => {
     if (
@@ -455,12 +464,35 @@ export default function useSimulationEffects() {
       const simulationPayload = {
         ...simulation,
         ...totals,
+        user_id: simulation.user_id,
+        fipeCode: simulation.fipeCode,
+        fipeValue: simulation.fipeValue,
+        name: simulation.name,
+        vehicle_type_fipeCode: simulation.vehicle_type_fipeCode,
+        vehicle_type_id: simulation.vehicle_type_id,
+        brand_id: Number(simulation.brand_id),
+        model_id: Number(simulation.model_id),
+        year: Number(simulation.year),
+        price_table_id: simulation.price_table_id,
+        category_id: simulation.category_id,
+        protectedValue: simulation.protectedValue,
+        plate: simulation.plate,
+        plan_id: simulation.plan_id,
         aggregates: aggregatesToSave,
         selectedProducts: selectedProductsArray,
         accession: rangeDetails.accession,
+        monthlyFee: simulation.monthlyFee,
         installationPrice: rangeDetails.installationPrice,
         isFranchisePercentage: rangeDetails.isFranchisePercentage,
         franchiseValue: rangeDetails.franchiseValue,
+        discountedAccession: simulation.discountedAccession,
+        discountedAccessionCouponId: simulation.discountedAccessionCouponId,
+        discountedMonthlyFee: simulation.discountedMonthlyFee,
+        discountedMonthlyFeeCouponId: simulation.discountedMonthlyFeeCouponId,
+        discountedInstallationPrice: simulation.discountedInstallationPrice,
+        discountedInstallationPriceCouponId:
+          simulation.discountedInstallationPriceCouponId,
+        valueSelectedProducts: simulation.valueSelectedProducts ?? null,
       };
 
       if (!simulation.id) {

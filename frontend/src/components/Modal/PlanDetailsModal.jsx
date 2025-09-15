@@ -45,7 +45,10 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
   useEffect(() => {
     if (!open) return;
 
-    const vehicleTypeId = simulation?.vehicle_type_fipeCode;
+    const vehicleTypeId =
+      simulation?.vehicle_type_fipeCode === 4
+        ? 8
+        : simulation?.vehicle_type_fipeCode;
 
     if (vehicleTypeId) {
       useHttp

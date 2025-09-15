@@ -32,6 +32,12 @@ class Simulation extends Model {
       targetKey: "id",
       as: "plan",
     });
+
+    Simulation.belongsTo(models.VehicleCategory, {
+      foreignKey: "category_id",
+      targetKey: "id",
+      as: "category",
+    });
   }
 }
 
@@ -83,6 +89,14 @@ Simulation.init(
       allowNull: true,
       references: {
         model: "price_tables",
+        key: "id",
+      },
+    },
+    category_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: "vehicle_categories",
         key: "id",
       },
     },

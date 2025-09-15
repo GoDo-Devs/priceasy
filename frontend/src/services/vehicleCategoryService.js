@@ -22,6 +22,18 @@ export const vehicleCategoryService = {
       throw error;
     }
   },
+
+  getVehicleCategoryByFipeCode: async (fipeCode) => {
+    try {
+      const response = await useHttp.get(
+        `/vehicle-categories/fipe/${fipeCode}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching vehicle categories:", error);
+      throw error;
+    }
+  },
 };
 
 export default vehicleCategoryService;

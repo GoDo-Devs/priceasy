@@ -124,7 +124,7 @@ function SimulationSideBar() {
           />
         )}
       </Box>
-      <Box>
+      <Box  mb={0.8}>
         <Button
           variant="contained"
           color="secondary"

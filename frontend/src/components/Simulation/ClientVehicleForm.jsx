@@ -1,4 +1,4 @@
-import { Box, Card, Grid, InputLabel, Button } from "@mui/material";
+import { Box, Card, Grid, InputLabel } from "@mui/material";
 import { useEffect, useState } from "react";
 import useHttp from "@/services/useHttp.js";
 import TextInput from "@/components/Form/TextInput.jsx";
@@ -8,6 +8,7 @@ import PlateSearchInput from "@/components/Form/PlateSearchInput.jsx";
 import AutoCompleteInput from "@/components/Form/AutoCompleteInput.jsx";
 import { useSimulation } from "@/contexts/simulationContext.jsx";
 import { useSearchParams } from "react-router";
+import vehicleCategoryService from "@/services/vehicleCategoryService.js";
 
 function ClientVehicleForm({
   vehicleType,
@@ -19,8 +20,27 @@ function ClientVehicleForm({
   const [searchParams] = useSearchParams();
   const id = searchParams.get("id");
   const isEditing = Boolean(id);
+
   const { client, setClient, simulation, setSimulation } = useSimulation();
+
   const [cpfOptions, setCpfOptions] = useState([]);
+  const [vehicleCategories, setVehicleCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (!simulation.vehicle_type_fipeCode) return;
+      try {
+        const categories =
+          await vehicleCategoryService.getVehicleCategoryByFipeCode(
+            simulation.vehicle_type_fipeCode
+          );
+        setVehicleCategories(categories);
+      } catch (err) {
+        console.error("Erro ao buscar categorias no load:", err);
+      }
+    };
+    fetchCategories();
+  }, [simulation.vehicle_type_fipeCode]);
 
   useEffect(() => {
     if (
@@ -34,7 +54,6 @@ function ClientVehicleForm({
           String(y.value) === String(simulation.year) ||
           String(y.label) === String(simulation.year)
       );
-
       if (selected) {
         setSimulation((prev) => ({
           ...prev,
@@ -57,9 +76,7 @@ function ClientVehicleForm({
           }));
           setCpfOptions(options);
         })
-        .catch((err) => {
-          console.error("Erro ao buscar CPFs:", err);
-        });
+        .catch((err) => console.error("Erro ao buscar CPFs:", err));
     } else {
       setCpfOptions([]);
     }
@@ -72,7 +89,6 @@ function ClientVehicleForm({
     try {
       const { data } = await useHttp.post("/fipe/plate", { plate });
       const fipeData = data.fipe;
-      console.log("fipeData", fipeData)
       if (!fipeData) return;
 
       const matchedType = vehicleType.find(
@@ -90,7 +106,7 @@ function ClientVehicleForm({
         fipeValue: fipeData.valor ?? prev.fipeValue,
         plate,
         name: fipeData.modelo,
-        fipeCode: fipeData.codigo
+        fipeCode: fipeData.codigo,
       }));
     } catch (err) {
       console.error("Erro ao buscar veículo pela placa:", err);
@@ -104,9 +120,8 @@ function ClientVehicleForm({
       const { name, phone } = res.data;
       setClient((prev) => ({ ...prev, name, phone }));
     } catch (err) {
-      if (err.response?.status !== 404) {
+      if (err.response?.status !== 404)
         console.error("Erro ao buscar cliente:", err);
-      }
     }
   };
 
@@ -195,26 +210,28 @@ function ClientVehicleForm({
                 ? simulation.vehicle_type_id
                 : ""
             }
-            onChange={(e) => {
+            onChange={async (e) => {
               const selectedId = parseInt(e.target.value);
               const selectedOption = vehicleType.find(
                 (cat) => cat.id === selectedId
               );
-              if (selectedOption) {
-                setSimulation({
-                  ...simulation,
-                  vehicle_type_id: selectedOption.id,
-                  vehicle_type_fipeCode: selectedOption.fipeCode,
-                  aggregates: null,
-                  fipeValue: null,
-                  protectedValue: null,
-                  monthlyFee: null,
-                  brand_id: "",
-                  model_id: "",
-                  year: "",
-                  price_table_id: "",
-                });
-              }
+              if (!selectedOption) return;
+
+              const selectedFipeCode = selectedOption.fipeCode;
+              setSimulation((prev) => ({
+                ...prev,
+                vehicle_type_id: selectedOption.id,
+                vehicle_type_fipeCode: selectedFipeCode,
+                aggregates: null,
+                fipeValue: null,
+                protectedValue: null,
+                monthlyFee: null,
+                brand_id: "",
+                model_id: "",
+                year: "",
+                price_table_id: "",
+                category_id: "",
+              }));
             }}
             options={vehicleType.map((cat) => ({
               value: cat.id,
@@ -274,21 +291,51 @@ function ClientVehicleForm({
             }}
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 6 }}>
+        <Grid size={{ xs: 12, md: 3 }}>
+          <SelectInput
+            fullWidth
+            label="Categoria de Veículo"
+            name="category_id"
+            value={
+              vehicleCategories.some((cat) => cat.id === simulation.category_id)
+                ? simulation.category_id
+                : ""
+            }
+            onChange={(e) => {
+              const selectedId = parseInt(e.target.value);
+              const selectedOption = vehicleCategories.find(
+                (cat) => cat.id === selectedId
+              );
+              if (selectedOption) {
+                setSimulation((prev) => ({
+                  ...prev,
+                  category_id: selectedOption.id,
+                  price_table_id: "",
+                  name:
+                    prev.vehicle_type_id === 8
+                      ? selectedOption.name
+                      : prev.name,
+                }));
+              }
+            }}
+            options={vehicleCategories.map((cat) => ({
+              value: cat.id,
+              label: cat.name,
+            }))}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, md: 4 }}>
           <AutoCompleteInput
             fullWidth
             label="Tabela de Preço"
             value={simulation.price_table_id}
             options={priceTableNames}
             onChange={(val) =>
-              setSimulation({
-                ...simulation,
-                price_table_id: Number(val),
-              })
+              setSimulation({ ...simulation, price_table_id: Number(val) })
             }
           />
         </Grid>
-        <Grid size={{ xs: 12, md: 3.5 }} mb={0.5}>
+        <Grid size={{ xs: 12, md: 2.5 }} mb={0.5}>
           <InputLabel className="mb-1">Valor Protegido</InputLabel>
           <CurrencyInput
             fullWidth
@@ -300,10 +347,7 @@ function ClientVehicleForm({
                 : "")
             }
             onChange={(floatValue) =>
-              setSimulation({
-                ...simulation,
-                protectedValue: floatValue ?? "",
-              })
+              setSimulation({ ...simulation, protectedValue: floatValue ?? "" })
             }
             required
           />
