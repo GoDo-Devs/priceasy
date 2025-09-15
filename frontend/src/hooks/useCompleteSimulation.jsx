@@ -101,7 +101,8 @@ export function useCompleteSimulation(simulationInitial) {
         );
         const products = fetchedProducts.filter(Boolean);
 
-        const aggregatesWithProducts = await Promise.all(
+        const aggregatesProducts = {};
+        await Promise.all(
           (simulationInitial.aggregates || []).map(async (agg) => {
             const selectedIds = Object.values(agg.selectedProducts || {});
             const aggProducts = await Promise.all(
@@ -118,20 +119,18 @@ export function useCompleteSimulation(simulationInitial) {
                 }
               })
             );
-
-            return {
-              ...agg,
-              products: aggProducts.filter(Boolean),
-            };
+            const aggregateKey = agg.key || agg.id;
+            aggregatesProducts[aggregateKey] = aggProducts.filter(Boolean);
           })
         );
 
         setSimulation({
           ...simulationInitial,
           plan: simulationPlan,
-          aggregates: aggregatesWithProducts,
+          aggregates: simulationInitial.aggregates,
           aggregatesPlans: aggregatesPlans.filter(Boolean),
           products,
+          aggregatesProducts,
         });
       } catch (err) {
         console.error(
@@ -147,7 +146,7 @@ export function useCompleteSimulation(simulationInitial) {
     fetchPlanDetails();
   }, [simulationInitial]);
 
-  console.log(simulation)
+  console.log(simulation);
 
   return { simulation, loading };
 }

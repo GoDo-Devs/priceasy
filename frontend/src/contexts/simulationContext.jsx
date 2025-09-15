@@ -37,7 +37,6 @@ export function SimulationProvider({ children }) {
 
               results[agg.id] = data;
 
-              // Mantém valor manual só internamente
               const finalBasePrice =
                 agg._manualBasePrice !== undefined
                   ? agg._manualBasePrice

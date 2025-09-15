@@ -58,7 +58,7 @@ function PlanSelector({ plans, simulation, setSimulation, onDetails }) {
               alignItems="center"
               justifyContent="space-between"
               width="100%"
-              mb={1}
+              mb={0.5}
               border="1px solid #69696acd"
               borderRadius={1}
               sx={{ cursor: "pointer" }}

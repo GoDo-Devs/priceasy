@@ -57,9 +57,9 @@ function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
     setSelectedProducts((prev) => {
       const updated = { ...prev };
       if (updated[product.product_group_id] === product.id) {
-        delete updated[product.product_group_id]; // desmarca se já estava selecionado
+        delete updated[product.product_group_id]; 
       } else {
-        updated[product.product_group_id] = product.id; // marca novo produto do grupo
+        updated[product.product_group_id] = product.id; 
       }
       return updated;
     });
@@ -70,7 +70,7 @@ function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
 
   const isSwitchDisabled = (product) => {
     const selectedId = selectedProducts[product.product_group_id];
-    return selectedId && selectedId !== product.id; // só desabilita se outro produto do grupo estiver selecionado
+    return selectedId && selectedId !== product.id; 
   };
 
   const calculatedValueSelectedProducts = useMemo(() => {

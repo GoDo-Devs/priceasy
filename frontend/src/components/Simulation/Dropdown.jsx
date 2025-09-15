@@ -50,7 +50,7 @@ export default function Dropdown({ data, simulation, setSimulation }) {
       {simulation.aggregates
         .filter((agg) => agg?.id && agg?.value)
         .map((agg) => {
-          const uniqueKey = `${agg.plate}-${agg.id}`;
+          const uniqueKey = `${agg.key}-${agg.id}`;
           const isExpanded = expandedIds.includes(uniqueKey);
           const aggData = data[agg.id];
           if (!aggData) return null;
@@ -114,10 +114,9 @@ export default function Dropdown({ data, simulation, setSimulation }) {
                         <PriceCard
                           label="Mensalidade"
                           discountedValue={agg.discountedBasePrice ?? null}
-                          originalValue={
-                            toNumber(plan.basePrice) +
-                              toNumber(agg.valueSelectedProducts) || null
-                          }
+                          originalValue={toNumber(
+                            agg.totalBasePrice ?? agg.basePrice
+                          )}
                           onEdit={null}
                           alwaysGreen
                           minHeight={110}

@@ -49,19 +49,21 @@ export default function PriceCardsList({
           discountedValue={
             simulation.discountedMonthlyFee != null
               ? toNumber(simulation.discountedMonthlyFee) +
-                toNumber(simulation.valueSelectedProducts)             
+                toNumber(simulation.valueSelectedProducts)
               : null
           }
           originalValue={
             simulation.monthlyFee != null
-              ? toNumber(simulation.monthlyFee) 
+              ? toNumber(simulation.monthlyFee)
               : rangeDetails.monthlyFee != null
               ? toNumber(rangeDetails.monthlyFee) +
                 toNumber(simulation.valueSelectedProducts)
               : null
           }
           onEdit={
-            simulation.monthlyFee != null || rangeDetails.monthlyFee != null
+            simulation.vehicle_type_id === 8
+              ? null
+              : simulation.monthlyFee != null || rangeDetails.monthlyFee != null
               ? () => onEdit("monthlyFee")
               : null
           }
@@ -99,12 +101,12 @@ export default function PriceCardsList({
             simulation.franchiseValue != null
               ? simulation.isFranchisePercentage
                 ? (simulation.protectedValue || 0) *
-                    (simulation.franchiseValue / 100) 
-                : toNumber(simulation.franchiseValue) 
+                  (simulation.franchiseValue / 100)
+                : toNumber(simulation.franchiseValue)
               : rangeDetails.franchiseValue != null
               ? rangeDetails.isFranchisePercentage
                 ? (simulation.protectedValue || 0) *
-                    (rangeDetails.franchiseValue / 100) 
+                  (rangeDetails.franchiseValue / 100)
                 : toNumber(rangeDetails.franchiseValue)
               : null
           }

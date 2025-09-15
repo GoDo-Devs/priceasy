@@ -82,10 +82,10 @@ export async function generatePdf({
   }
 
   const mensalidade = formatValueWithDiscount(
-    Number(getValue("monthlyFee")) +
-      Number(simulation.valueSelectedProducts || 0),
+    getValue("monthlyFee"),
     simulation.discountedMonthlyFee
   );
+
   const taxa = formatValueWithDiscount(
     getValue("accession"),
     simulation.discountedAccession
@@ -126,17 +126,19 @@ export async function generatePdf({
   const aggregateTemplate = loadTemplate("table-aggregates.html");
 
   const aggregateProductsSection = (agg) => {
-    if (!agg.products?.length) return "";
+    const aggregateKey = agg.key || agg.id;
+    const aggProducts = simulation.aggregatesProducts?.[aggregateKey] || [];
+
+    if (!aggProducts.length) return "";
     return `
-      <tr><td colspan="2" class="plan-header">PRODUTOS</td></tr>
-      <tr><td style="font-weight:bold">Nome</td><td style="font-weight:bold">Valor</td></tr>
-      ${agg.products
-        .map(
-          (p) =>
-            `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
-        )
-        .join("")}
-    `;
+    <tr><td colspan="2" class="plan-header">PRODUTOS</td></tr>
+    <tr><td style="font-weight:bold">Nome</td><td style="font-weight:bold">Valor</td></tr>
+    ${aggProducts
+      .map(
+        (p) => `<tr><td>${p.name}</td><td>${formatCurrency(p.price)}</td></tr>`
+      )
+      .join("")}
+  `;
   };
 
   const aggregateTable = (simulation.aggregates || [])
@@ -160,7 +162,7 @@ export async function generatePdf({
         .replace("{{NOME}}", agg.name?.toUpperCase() || "-")
         .replace("{{PLACA}}", agg.plate || "-")
         .replace("{{VALOR}}", formatCurrency(agg.value))
-        .replace("{{PRECO_BASE}}", formatCurrency(agg.basePrice))
+        .replace("{{PRECO_BASE}}", formatCurrency(agg.totalBasePrice))
         .replace(
           "{{ADESAO}}",
           formatValueWithDiscount(agg.accession, agg.discountedAccession)
