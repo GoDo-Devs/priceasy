@@ -77,12 +77,12 @@ export default function PriceCardsList({
           discountedValue={
             simulation.discountedInstallationPrice != null
               ? simulation.discountedInstallationPrice
-              : rangeDetails.installationPrice
+              : null
           }
           originalValue={
             simulation.installationPrice != null
               ? simulation.installationPrice
-              : rangeDetails.installationPrice
+              : rangeDetails.installationPrice ?? null
           }
           onEdit={
             simulation.installationPrice != null ||

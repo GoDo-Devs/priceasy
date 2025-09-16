@@ -69,11 +69,25 @@ function DiscountModal({
       const existingValue = simulation?.[field];
       const savedCouponId = simulation?.[`${field}CouponId`];
 
-      setDiscountedValue(existingValue ?? originalValue);
       setSelectedCouponId(savedCouponId ?? null);
+      if (existingValue != null) {
+        setDiscountedValue(existingValue);
+      } else if (savedCouponId) {
+        const coupon = coupons.find((c) => c.id === savedCouponId);
+        if (coupon) {
+          const discounted =
+            originalValue - (originalValue * coupon.discountPercentage) / 100;
+          setDiscountedValue(Number(discounted.toFixed(2)));
+        } else {
+          setDiscountedValue(originalValue);
+        }
+      } else {
+        setDiscountedValue(originalValue);
+      }
+
       setDiscountError("");
     }
-  }, [open, type, simulation, originalValue]);
+  }, [open, type, simulation, originalValue, coupons]);
 
   useEffect(() => {
     if (!selectedCoupon) {
