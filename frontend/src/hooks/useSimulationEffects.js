@@ -265,7 +265,7 @@ export default function useSimulationEffects() {
             label: table.name,
           }));
           setPriceTableNames(options);
-          console.log(priceTableNames)
+          console.log(priceTableNames);
         })
         .catch(console.error);
     } else if (simulation.model_id) {
@@ -358,8 +358,30 @@ export default function useSimulationEffects() {
     useHttp
       .post("/price-tables/plans", payload)
       .then((res) => {
-        setPlans(res.data.plans || []);
-        setRangeDetails(res.data.rangeDetails || {});
+        const newPlans = res.data.plans || [];
+        const newRange = res.data.rangeDetails || {};
+
+        setPlans(newPlans);
+        setRangeDetails(newRange);
+
+        // se já existe um plano selecionado, recalcula a mensalidade
+        if (simulation.plan_id) {
+          const selectedPlan = newPlans.find(
+            (plan) => plan.id === simulation.plan_id
+          );
+
+          if (selectedPlan) {
+            const valueSelectedProducts = simulation.valueSelectedProducts || 0;
+
+            const newMonthlyFee =
+              Number(selectedPlan.basePrice) + Number(valueSelectedProducts);
+
+            setSimulation((prev) => ({
+              ...prev,
+              monthlyFee: newMonthlyFee,
+            }));
+          }
+        }
       })
       .catch((err) => {
         console.error("Erro ao carregar planos:", err);

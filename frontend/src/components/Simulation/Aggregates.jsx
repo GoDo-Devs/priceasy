@@ -9,11 +9,27 @@ function Aggregates({ simulation, setSimulation, onDetails, plans }) {
   const [aggregateQty, setAggregateQty] = useState(0);
 
   useEffect(() => {
-    if (!simulation?.vehicle_type_id) return;
+    if (!simulation?.vehicle_type_id) {
+      setShowForm(false);
+      setAggregateQty(0);
+      return;
+    }
 
     vehicleTypeService
       .getById(simulation.vehicle_type_id)
-      .then((data) => setAggregateQty(data.aggregate ?? 0))
+      .then((data) => {
+        const qty = data.aggregate ?? 0;
+        setAggregateQty(qty);
+
+        if (
+          qty === 0 &&
+          (!simulation.aggregates || simulation.aggregates.length === 0)
+        ) {
+          setShowForm(false);
+        } else {
+          setShowForm(true);
+        }
+      })
       .catch((err) => console.error("Error fetching vehicle type:", err));
   }, [simulation?.vehicle_type_id]);
 

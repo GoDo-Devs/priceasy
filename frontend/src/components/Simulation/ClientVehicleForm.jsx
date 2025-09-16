@@ -225,6 +225,9 @@ function ClientVehicleForm({
                 aggregates: null,
                 fipeValue: null,
                 protectedValue: null,
+                installationPrice:null,
+                accession: null,
+                franchiseValue: null,  
                 monthlyFee: null,
                 brand_id: "",
                 model_id: "",
@@ -347,7 +350,16 @@ function ClientVehicleForm({
                 : "")
             }
             onChange={(floatValue) =>
-              setSimulation({ ...simulation, protectedValue: floatValue ?? "" })
+              setSimulation({
+                ...simulation,
+                protectedValue: floatValue ?? "",
+                discountedAccession: null,
+                discountedMonthlyFee: null,
+                discountedInstallationPrice: null,
+                discountedAccessionCouponId: null,
+                discountedMonthlyFeeCouponId: null,
+                discountedInstallationPriceCouponId: null,
+              })
             }
             required
           />
