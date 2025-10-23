@@ -40,7 +40,7 @@ function StepperForm({
 
       if (!priceTable.category_ids) {
         showSnackbar(
-          "A categoria de veículos é obrigatória",
+          "A categoria de veículos é obrigatória.",
           "error"
         );
         return;

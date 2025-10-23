@@ -113,19 +113,27 @@ export default class VehicleCategoryController {
     const { vehicle_type_id } = req.body;
 
     try {
-      const usedCategories = await PriceTableCategory.findAll({
-        attributes: ["category_id"],
-        raw: true,
-      });
+      let vehicleCategoriesByVehicleTypeId;
 
-      const usedIds = usedCategories.map((c) => c.category_id);
+      if (vehicle_type_id === 8) {
+        const usedCategories = await PriceTableCategory.findAll({
+          attributes: ["category_id"],
+          raw: true,
+        });
 
-      const vehicleCategoriesByVehicleTypeId = await VehicleCategory.findAll({
-        where: {
-          vehicle_type_id,
-          id: { [Op.notIn]: usedIds },
-        },
-      });
+        const usedIds = usedCategories.map((c) => c.category_id);
+
+        vehicleCategoriesByVehicleTypeId = await VehicleCategory.findAll({
+          where: {
+            vehicle_type_id,
+            id: { [Op.notIn]: usedIds },
+          },
+        });
+      } else {
+        vehicleCategoriesByVehicleTypeId = await VehicleCategory.findAll({
+          where: { vehicle_type_id },
+        });
+      }
 
       if (!vehicleCategoriesByVehicleTypeId.length) {
         return res.status(422).json({

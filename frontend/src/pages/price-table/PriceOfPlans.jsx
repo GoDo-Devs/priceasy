@@ -1,80 +1,65 @@
-import { useState, useEffect } from "react";
-import { Box } from "@mui/material";
-import DataTable from "@/components/Table/DataTable";
-import CheckBoxInput from "@/components/Form/CheckBoxInput.jsx";
+import { Box, Checkbox, FormControlLabel } from "@mui/material";
+import DataTable from "@/components/Table/DataTable.jsx";
 
 function PriceOfPlans({ priceTable, setPriceTable, columns, data, plansAll }) {
-  const [plans, setPlans] = useState({
-    all: [],
-    selected: [],
-  });
+  const handlePlanChange = (planId, checked) => {
+    const updated = checked
+      ? [...(priceTable.plansSelected || []), planId]
+      : (priceTable.plansSelected || []).filter((id) => id !== planId);
 
-  useEffect(() => {
-    if (!priceTable.plansSelected || priceTable.plansSelected.length === 0) {
-      const planosSelecionados = (priceTable.ranges || [])
-        .flatMap((range) => (range.pricePlanId || []).map((p) => p.plan_id))
-        .filter((v, i, a) => a.indexOf(v) === i);
-
-      if (planosSelecionados.length > 0) {
-        setPriceTable((prev) => ({
-          ...prev,
-          plansSelected: planosSelecionados,
-        }));
-      }
-    }
-  }, [priceTable.ranges, priceTable.plansSelected, setPriceTable]);
+    setPriceTable((prev) => ({
+      ...prev,
+      plansSelected: updated,
+      ranges: prev.ranges.map((range) => ({
+        ...range,
+        pricePlanId: (range.pricePlanId || []).filter((p) =>
+          updated.includes(p.plan_id)
+        ),
+      })),
+    }));
+  };
 
   return (
-    <>
-      <Box
-        sx={{
-          borderRadius: "15px",
-          backgroundColor: "background.paper",
-          padding: "5px 20px",
-          mt: 3,
-        }}
-        display="flex"
-        flexDirection="column"
-        gap={2}
-        mb={2}
-      >
-        <CheckBoxInput
-          className="mb-1"
-          value={priceTable.plansSelected}
-          onChange={(e) => {
-            const selectedPlans = e.target.value;
-
-            setPriceTable((prev) => {
-              const updatedRanges = prev.ranges.map((range) => ({
-                ...range,
-                pricePlanId: (range.pricePlanId || []).filter((p) =>
-                  selectedPlans.includes(p.plan_id)
-                ),
-              }));
-
-              return {
-                ...prev,
-                plansSelected: selectedPlans,
-                ranges: updatedRanges,
-              };
-            });
-          }}
-          options={plansAll.map((g) => ({
-            value: g.id,
-            label: g.name,
-          }))}
-        />
-      </Box>
-      <Box>
-        <DataTable
-          columns={columns}
-          data={data}
-          enableDelete={false}
-          paddingTop="16px"
-          paddingBottom="16px"
-        />
-      </Box>
-    </>
+    <Box>
+      <DataTable
+        columns={columns}
+        data={data}
+        enableDelete={false}
+        paddingTop="16px"
+        paddingBottom="16px"
+        topToolbar={() => (
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 0.5,
+              padding: "10px 20px",
+              backgroundColor: "background.paper",
+              marginBottom: 2,
+            }}
+          >
+            {plansAll.map((plan) => (
+              <FormControlLabel
+              
+                key={plan.id}
+                control={
+                  <Checkbox
+                  sx={{ paddingBottom: 0.5, paddingTop: 0.5}}
+                    checked={
+                      priceTable.plansSelected?.includes(plan.id) || false
+                    }
+                    onChange={(e) =>
+                      handlePlanChange(plan.id, e.target.checked)
+                    }
+                  />
+                }
+                label={plan.name}
+              />
+            ))}
+          </Box>
+        )}
+      />
+    </Box>
   );
 }
 
