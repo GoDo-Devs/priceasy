@@ -364,7 +364,6 @@ export default function useSimulationEffects() {
         setPlans(newPlans);
         setRangeDetails(newRange);
 
-        // se já existe um plano selecionado, recalcula a mensalidade
         if (simulation.plan_id) {
           const selectedPlan = newPlans.find(
             (plan) => plan.id === simulation.plan_id

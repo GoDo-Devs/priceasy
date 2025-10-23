@@ -15,6 +15,7 @@ function DataTable({
   handleEdit,
   paddingTop = "10px",
   paddingBottom = "8px",
+  topToolbar = null,
 }) {
   const [alertModal, setAlertModal] = useState(false);
   const [selectedName, setSelectedName] = useState("");
@@ -98,10 +99,9 @@ function DataTable({
         enableFullScreenToggle={false}
         enableRowActions={false}
         enableColumnActions={false}
+        renderTopToolbarCustomActions={topToolbar}
         muiTableProps={{
-          sx: {
-            tableLayout: "fixed",
-          },
+          sx: { tableLayout: "fixed" },
         }}
         muiTablePaperProps={{
           sx: {

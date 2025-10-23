@@ -150,6 +150,7 @@ function PlanAdd() {
           />
           <Box display="flex" justifyContent="flex-end" mt={3}>
             <Button
+              disabled={!plan.name}
               onClick={handleSubmit}
               variant="contained"
               color="secondary"
