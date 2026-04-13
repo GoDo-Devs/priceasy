@@ -18,8 +18,8 @@
 Os primeiros passos do projeto partiram de diagramas para entendimento do fluxo e das regras de negócio.
 
 <p align="center">
-  <img src="frontend\assets\diagrama1.png" width="542"/>
-  <img src="frontend\assets\diagrama2.png" width="600"/>
+  <img src="frontend\assets\diagrama1.png" width="382"/>
+  <img src="frontend\assets\diagrama2.png" width="420"/>
 </p>
 
 ---
@@ -46,8 +46,8 @@ A partir disso:
 ## Interface
 
 <p align="center">
-  <img src="frontend\assets\interface1.png" width="550"/>
-  <img src="frontend\assets\interface2.png" width="550"/>
+  <img src="frontend\assets\interface1.png" width="400"/>
+  <img src="frontend\assets\interface2.png" width="400"/>
 </p>
 
 ---
