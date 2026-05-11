@@ -17,9 +17,16 @@
 
 Os primeiros passos do projeto partiram de diagramas para entendimento do fluxo e das regras de negócio.
 
+### Diagrama 1
+
 <p align="center">
-  <img src="frontend\assets\diagrama1.png" width="382"/>
-  <img src="frontend\assets\diagrama2.png" width="420"/>
+  <img src="frontend/assets/diagrama1.png" width="850"/>
+</p>
+
+### Diagrama 2
+
+<p align="center">
+  <img src="frontend/assets/diagrama2.png" width="850"/>
 </p>
 
 ---
@@ -45,9 +52,16 @@ A partir disso:
 
 ## Interface
 
+### Interface 1
+
 <p align="center">
-  <img src="frontend\assets\interface1.png" width="400"/>
-  <img src="frontend\assets\interface2.png" width="400"/>
+  <img src="frontend/assets/interface1.png" width="900"/>
+</p>
+
+### Interface 2
+
+<p align="center">
+  <img src="frontend/assets/interface2.png" width="900"/>
 </p>
 
 ---
@@ -123,8 +137,8 @@ A geração e download de PDFs exigia uma solução escalável.
 ## Saída do Sistema (PDF)
 
 <p align="center">
-  <img src="frontend\assets\pdf1.png" width="300"/>
-  <img src="frontend\assets\pdf2.png" width="300"/>
+  <img src="frontend/assets/pdf1.png" width="300"/>
+  <img src="frontend/assets/pdf2.png" width="300"/>
 </p>
 
 ---
@@ -152,4 +166,3 @@ A geração e download de PDFs exigia uma solução escalável.
 ## Observação
 
 Este repositório documenta a construção de uma solução baseada em um cenário real, com foco nas decisões técnicas, trade-offs e impactos no fluxo de negócio.
-
