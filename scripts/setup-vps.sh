@@ -64,8 +64,8 @@ Próximos passos, AINDA NA VPS:
        nano ${APP_PATH}/.env
        nano ${APP_PATH}/backend/.env
 
-     Atenção: DB_ROOT_PASSWORD (.env) e DB_PASSWORD (backend/.env)
-     precisam ter o MESMO valor quando DB_USER=root.
+     Atenção: DB_PASSWORD no .env da raiz e em backend/.env
+     precisam ter o MESMO valor.
 
   2. Libere a porta 80 no firewall da VPS / security group.
 

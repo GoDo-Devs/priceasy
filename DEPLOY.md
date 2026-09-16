@@ -33,7 +33,7 @@ a partir dos exemplos.
 Em seguida, **edite os segredos** (ainda na VPS):
 
 ```bash
-nano /root/priceasy-prod/.env          # DB_ROOT_PASSWORD, DB_NAME, VITE_API_URL
+nano /root/priceasy-prod/.env          # DB_PASSWORD, DB_USER, DB_NAME, VITE_API_URL
 nano /root/priceasy-prod/backend/.env  # JWT_SECRET, SMTP, FRONTEND_URL, API_PLATE_KEY
 ```
 
