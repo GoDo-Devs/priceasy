@@ -143,6 +143,16 @@ A geração e download de PDFs exigia uma solução escalável.
 
 ---
 
+## Deploy
+
+O processo de subida em produção (VPS + Docker + Nginx) está documentado em **[DEPLOY.md](DEPLOY.md)**.
+
+```bash
+./scripts/deploy.sh
+```
+
+---
+
 ## Tecnologias
 
 - React
