@@ -119,7 +119,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
             textAlign: "justify",
             width: "600px",
             maxWidth: "100%",
-            borderRadius: 8,
+            borderRadius: "32px",
             p: 1.5,
           },
         },

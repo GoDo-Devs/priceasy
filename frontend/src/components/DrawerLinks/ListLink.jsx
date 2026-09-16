@@ -20,7 +20,6 @@ function ListLink({ Icon, path, title }) {
         <ListItem sx={{ px: 1, py: 0.25 }} disablePadding>
           <ListItemButton
             sx={{
-              position: "relative",
               borderRadius: 2,
               gap: 1.5,
               py: 1,
@@ -36,18 +35,6 @@ function ListLink({ Icon, path, title }) {
                   : "rgba(44,74,107,0.35)",
                 color: isActive ? "secondary.main" : "text.primary",
               },
-              "&::before": isActive
-                ? {
-                    content: '""',
-                    position: "absolute",
-                    left: 0,
-                    top: 8,
-                    bottom: 8,
-                    width: 3,
-                    borderRadius: 3,
-                    backgroundColor: "secondary.main",
-                  }
-                : {},
             }}
           >
             <Box

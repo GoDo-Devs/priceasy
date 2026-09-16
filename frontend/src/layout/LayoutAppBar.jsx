@@ -14,12 +14,6 @@ function LayoutAppBar({ setOpenDrawer, openDrawer }) {
         <IconButton onClick={() => setOpenDrawer(!openDrawer)} edge="start">
           <MenuIcon />
         </IconButton>
-        <Box
-          component="img"
-          src="/logo.png"
-          alt="Logo"
-          sx={{ width: 52 }}
-        />
         <Box sx={{ display: "flex", flexDirection: "column", lineHeight: 1 }}>
           <Typography
             sx={{

@@ -53,7 +53,7 @@ function VehicleTypeModal({ open, priceTable, setPriceTable, onClose }) {
       slots={{ paper: Paper }}
       slotProps={{
         paper: {
-          sx: { borderRadius: 8, p: 2 },
+          sx: { borderRadius: "32px", p: 2 },
         },
       }}
     >

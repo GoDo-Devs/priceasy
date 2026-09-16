@@ -13,7 +13,7 @@ function AlertModal({ open, selectedName, onClose, handleDelete }) {
           sx: {
             textAlign: "justify",
             maxWidth: "36%",
-            borderRadius: 8,
+            borderRadius: "32px",
             p: 2,
           },
         },

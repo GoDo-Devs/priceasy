@@ -101,7 +101,7 @@ function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
             textAlign: "justify",
             width: 600,
             maxWidth: "100%",
-            borderRadius: 8,
+            borderRadius: "32px",
             p: 1.5,
           },
         },

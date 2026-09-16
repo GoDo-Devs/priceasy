@@ -146,7 +146,7 @@ function RangeModal({
       fullWidth
       maxWidth="sm"
       slots={{ paper: Paper }}
-      slotProps={{ paper: { sx: { borderRadius: 8, p: 2 } } }}
+      slotProps={{ paper: { sx: { borderRadius: "32px", p: 2 } } }}
     >
       <DialogContent>
         {rangeError && (

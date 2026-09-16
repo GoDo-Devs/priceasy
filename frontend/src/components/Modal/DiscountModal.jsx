@@ -148,7 +148,7 @@ function DiscountModal({
             textAlign: "justify",
             width: "450px",
             maxWidth: "100%",
-            borderRadius: 8,
+            borderRadius: "32px",
             p: 2,
           },
         },
