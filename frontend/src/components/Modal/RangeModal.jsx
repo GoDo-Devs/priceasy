@@ -114,7 +114,7 @@ function RangeModal({
       quota: toNumberOrUndefined(quota),
       basePrice: toNumberOrUndefined(basePrice),
       installationPrice: showNewGroupInput
-        ? toNumberOrUndefined(installationPrice)
+        ? toNumberOrUndefined(installationPrice) ?? 0
         : undefined,
       franchiseValue: toNumberOrUndefined(franchiseValue),
       isFranchisePercentage,

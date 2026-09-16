@@ -75,7 +75,7 @@ function Aggregates({ simulation, setSimulation, onDetails, plans }) {
   );
 
   return (
-    <Box bgcolor="#1D1420" borderRadius={2} padding={2.25} mt={2}>
+    <Box bgcolor="#16263F" borderRadius={2} padding={2.25} mt={2}>
       <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
         Agregados
       </Typography>

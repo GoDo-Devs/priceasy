@@ -39,21 +39,25 @@ export async function importRangesFromExcel(file, setPriceTable, showSnackbar) {
         })
         .filter(Boolean);
 
-      const validPlanIds = await Promise.all(
-        planHeaders.map(async (planId) => {
-          try {
-            await useHttp.get(`/plans/${planId}`);
-            return Number(planId);
-          } catch (err) {
-            console.warn(`Plano ${planId} não encontrado.`);
-            return null;
-          }
-        })
-      );
+      const hasPlanHeaders = planHeaders.length > 0;
 
-      const filteredPlanIds = validPlanIds.filter((id) => id !== null);
+      const filteredPlanIds = hasPlanHeaders
+        ? (
+            await Promise.all(
+              planHeaders.map(async (planId) => {
+                try {
+                  await useHttp.get(`/plans/${planId}`);
+                  return Number(planId);
+                } catch (err) {
+                  console.warn(`Plano ${planId} não encontrado.`);
+                  return null;
+                }
+              })
+            )
+          ).filter((id) => id !== null)
+        : [];
 
-      if (filteredPlanIds.length === 0) {
+      if (hasPlanHeaders && filteredPlanIds.length === 0) {
         showSnackbar("Nenhum plano válido encontrado.", "error");
         return;
       }
@@ -69,7 +73,7 @@ export async function importRangesFromExcel(file, setPriceTable, showSnackbar) {
           "INSTALACAO",
           "TIPO_FRANQUIA",
           "VALOR_FRANQUIA",
-          ...planHeaders,
+          ...(hasPlanHeaders ? planHeaders : ["PRECO_BASE"]),
         ],
         range: headerIndex + 1,
         raw: true,
@@ -90,20 +94,28 @@ export async function importRangesFromExcel(file, setPriceTable, showSnackbar) {
           const quota = Number(row["COTA"]);
           const accession = Number(row["ADESAO"]);
           const hasTracker = Number(row["RASTREADOR"]) === 1;
+          const installationValue = Number(row["INSTALACAO"]);
           const installationPrice = hasTracker
-            ? Number(row["INSTALACAO"])
+            ? isNaN(installationValue)
+              ? 0
+              : installationValue
             : undefined;
           const franchiseType = row["TIPO_FRANQUIA"];
           const isFranchisePercentage = franchiseType === "%";
           const franchiseValue = Number(row["VALOR_FRANQUIA"]);
 
-          const pricePlanId = filteredPlanIds.map((planId) => ({
-            plan_id: Number(planId),
-            basePrice: Number(row[planId]),
-          }));
+          const pricePlanId = hasPlanHeaders
+            ? filteredPlanIds.map((planId) => ({
+                plan_id: Number(planId),
+                basePrice: Number(row[planId]),
+              }))
+            : [];
 
-          const basePrice =
-            pricePlanId.length > 0 ? pricePlanId[0].basePrice : undefined;
+          const basePrice = hasPlanHeaders
+            ? pricePlanId.length > 0
+              ? pricePlanId[0].basePrice
+              : undefined
+            : Number(row["PRECO_BASE"]);
 
           return {
             min,
@@ -118,21 +130,25 @@ export async function importRangesFromExcel(file, setPriceTable, showSnackbar) {
           };
         })
         .filter((item) => {
-          return (
+          const validBase =
             !isNaN(item.min) &&
             !isNaN(item.max) &&
             !isNaN(item.quota) &&
             !isNaN(item.accession) &&
             !isNaN(item.franchiseValue) &&
-            !isNaN(item.basePrice) &&
-            item.pricePlanId.some((p) => !isNaN(p.basePrice))
+            !isNaN(item.basePrice);
+
+          if (!hasPlanHeaders) return validBase;
+
+          return (
+            validBase && item.pricePlanId.some((p) => !isNaN(p.basePrice))
           );
         });
 
       setPriceTable((prev) => ({
         ...prev,
         ranges: importedRanges,
-        plansSelected: filteredPlanIds,
+        ...(hasPlanHeaders ? { plansSelected: filteredPlanIds } : {}),
       }));
 
       showSnackbar("A tabela foi importada com sucesso!", "success");

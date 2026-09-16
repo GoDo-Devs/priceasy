@@ -13,7 +13,7 @@
 
     if (noTable || noPlans) {
       return (
-        <Box bgcolor="#1D1420" borderRadius={2} padding={2.25} mt={2}>
+        <Box bgcolor="#16263F" borderRadius={2} padding={2.25} mt={2}>
           <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
             Planos
           </Typography>
@@ -45,7 +45,7 @@
     };
 
     return (
-      <Box bgcolor="#1D1420" borderRadius={2} padding={2} mt={2}>
+      <Box bgcolor="#16263F" borderRadius={2} padding={2} mt={2}>
         <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
           Planos
         </Typography>

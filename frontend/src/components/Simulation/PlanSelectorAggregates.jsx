@@ -27,7 +27,7 @@ function PlanSelectorAggregates({
   };
 
   return (
-    <Box bgcolor="#1D1420" borderRadius={2}>
+    <Box bgcolor="#16263F" borderRadius={2}>
       <FormGroup
         key={`${aggregate.id}-${aggregate.key}`}
         sx={{ width: "100%" }}

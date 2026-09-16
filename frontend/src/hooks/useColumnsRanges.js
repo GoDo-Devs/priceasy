@@ -79,8 +79,9 @@ export function useColumnsRanges(priceTable, setPriceTable) {
       header: "Rastreador",
       size: 50,
       Cell: ({ cell }) => {
-        const value = parseNumber(cell.getValue());
-        if (value === 0) return "Não";
+        const raw = cell.getValue();
+        if (raw === null || raw === undefined) return "Não";
+        const value = parseNumber(raw);
         return `Sim (R$ ${value.toLocaleString("pt-BR", {
           minimumFractionDigits: 2,
         })})`;

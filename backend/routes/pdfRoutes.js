@@ -1,26 +1,24 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import { generatePdf } from "../services/pdfGenerator.js";
-import crypto from "crypto";
-import {
-  checkIfExists,
-  uploadPdfToS3,
-  getPdfFromS3,
-  uploadMetaToS3,
-  getMetaFromS3,
-} from "../services/S3.js";
 
 const router = express.Router();
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
+  port: Number(process.env.SMTP_PORT),
   secure: false,
   auth: {
-    user: process.env.AWS_SES_SMTP_USER,
-    pass: process.env.AWS_SES_SMTP_PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASSWORD,
   },
 });
+
+function buildFilename(simulation) {
+  return simulation?.id
+    ? `proposta_${simulation.id}.pdf`
+    : `proposta_${Date.now()}.pdf`;
+}
 
 router.post("/update", async (req, res) => {
   try {
@@ -36,58 +34,22 @@ router.post("/update", async (req, res) => {
       return res.status(400).send("Dados incompletos.");
     }
 
-    const key = `propostas/proposta_${simulation.id}.pdf`;
-    const metaKey = `propostas/proposta_${simulation.id}.meta.json`;
-
-    const hash = crypto
-      .createHash("sha256")
-      .update(JSON.stringify({ client, simulation, rangeDetails, consultant }))
-      .digest("hex");
-
-    let storedHash;
-    try {
-      const meta = await getMetaFromS3(metaKey);
-      storedHash = meta?.hash;
-    } catch (err) {
-      console.warn("Meta não encontrada ou erro no S3:", err.message);
-      storedHash = null;
-    }
+    const filename = buildFilename(simulation);
 
     let pdfBuffer;
-
-    if (!storedHash || storedHash !== hash) {
-      console.log("Gerando novo PDF...");
-      try {
-        pdfBuffer = await generatePdf({
-          client,
-          simulation,
-          rangeDetails,
-          consultant,
-        });
-      } catch (err) {
-        console.error("Erro ao gerar PDF:", err);
-        return res.status(500).send({ error: "Erro ao gerar PDF." });
-      }
-
-      try {
-        await uploadPdfToS3(key, pdfBuffer);
-        await uploadMetaToS3(metaKey, hash);
-      } catch (err) {
-        console.error("Erro ao salvar PDF ou meta no S3:", err);
-        return res.status(500).send({ error: "Erro ao salvar PDF no S3." });
-      }
-    } else {
-      console.log("Usando PDF existente no S3...");
-      try {
-        pdfBuffer = await getPdfFromS3(key);
-      } catch (err) {
-        console.error("Erro ao buscar PDF do S3:", err);
-        return res.status(500).send({ error: "Erro ao buscar PDF no S3." });
-      }
+    try {
+      pdfBuffer = await generatePdf({
+        client,
+        simulation,
+        rangeDetails,
+        consultant,
+      });
+    } catch (err) {
+      console.error("Erro ao gerar PDF:", err);
+      return res.status(500).send({ error: "Erro ao gerar PDF." });
     }
 
     if (action === "download") {
-      const filename = key.split("/").pop();
       res.set({
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${filename}"`,
@@ -113,7 +75,7 @@ router.post("/update", async (req, res) => {
         `,
         attachments: [
           {
-            filename: key.split("/").pop(),
+            filename,
             content: Buffer.from(pdfBuffer),
             contentType: "application/pdf",
           },
@@ -130,7 +92,7 @@ router.post("/update", async (req, res) => {
       return res.status(200).send({ message: "Email enviado com sucesso." });
     }
 
-    return res.status(200).send({ message: "PDF pronto.", url: key });
+    return res.status(200).send({ message: "PDF pronto." });
   } catch (err) {
     console.error("Erro no endpoint /pdf/update:", err);
     return res.status(500).send({ error: err.message || "Erro interno" });
@@ -151,32 +113,22 @@ router.post("/generate", async (req, res) => {
       return res.status(400).send("Dados incompletos para gerar o PDF.");
     }
 
-    const key = simulation?.id
-      ? `propostas/proposta_${simulation.id}.pdf`
-      : `propostas/proposta_${Date.now()}.pdf`;
+    const filename = buildFilename(simulation);
 
     let pdfBuffer;
-
     try {
-      const exists = await checkIfExists(key);
-      if (exists) {
-        pdfBuffer = await getPdfFromS3(key);
-      } else {
-        pdfBuffer = await generatePdf({
-          client,
-          simulation,
-          rangeDetails,
-          consultant,
-        });
-        await uploadPdfToS3(key, pdfBuffer);
-      }
+      pdfBuffer = await generatePdf({
+        client,
+        simulation,
+        rangeDetails,
+        consultant,
+      });
     } catch (err) {
-      console.error("Erro ao gerar ou buscar PDF:", err);
-      return res.status(500).send({ error: "Erro ao gerar ou buscar PDF." });
+      console.error("Erro ao gerar PDF:", err);
+      return res.status(500).send({ error: "Erro ao gerar PDF." });
     }
 
     if (action === "download") {
-      const filename = key.split("/").pop();
       res.set({
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="${filename}"`,
@@ -203,7 +155,7 @@ router.post("/generate", async (req, res) => {
         `,
         attachments: [
           {
-            filename: key.split("/").pop(),
+            filename,
             content: Buffer.from(pdfBuffer),
             contentType: "application/pdf",
           },

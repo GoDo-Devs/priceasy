@@ -140,8 +140,8 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
           display="flex"
           justifyContent="space-between"
         >
-          <span style={{ color: "#1894c3" }}>{plan.name}</span>
-          <span style={{ color: "#51d6a4" }}>
+          <span style={{ color: "#2A9FD6" }}>{plan.name}</span>
+          <span style={{ color: "#7FC9A8" }}>
             R$ {formatPrice(plan.basePrice)}
           </span>
         </Typography>
@@ -221,7 +221,7 @@ function PlanDetailsModal({ open, onClose, plan, simulation, onSave }) {
           justifyContent="space-between"
         >
           <span>Mensalidade média:</span>
-          <span style={{ color: "#51d6a4" }}>R$ {formatPrice(monthlyFee)}</span>
+          <span style={{ color: "#7FC9A8" }}>R$ {formatPrice(monthlyFee)}</span>
         </Typography>
       </DialogContent>
 

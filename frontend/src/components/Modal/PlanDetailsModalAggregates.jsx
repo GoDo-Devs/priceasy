@@ -117,8 +117,8 @@ function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
           display="flex"
           justifyContent="space-between"
         >
-          <span style={{ color: "#1894c3" }}>{plan.name}</span>
-          <span style={{ color: "#51d6a4" }}>
+          <span style={{ color: "#2A9FD6" }}>{plan.name}</span>
+          <span style={{ color: "#7FC9A8" }}>
             R$ {formatPrice(plan.basePrice)}
           </span>
         </Typography>
@@ -191,7 +191,7 @@ function PlanDetailsModalAggregates({ open, onClose, plan, onSave }) {
           justifyContent="space-between"
         >
           <span>Mensalidade média:</span>
-          <span style={{ color: "#51d6a4" }}>
+          <span style={{ color: "#7FC9A8" }}>
             R$ {formatPrice(plan.basePrice + calculatedValueSelectedProducts)}
           </span>
         </Typography>

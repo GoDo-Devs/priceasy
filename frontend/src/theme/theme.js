@@ -5,25 +5,36 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#1894c3",
+      main: "#2A9FD6",
+      light: "#5FBDE6",
+      dark: "#1B6FA0",
+      contrastText: "#0F1E33",
     },
     background: {
-      main: "#4d566b",
-      paper: "#1D1420",
-      default: "#120815",
+      main: "#1F3A5C",
+      paper: "#16263F",
+      default: "#0F1E33",
     },
     secondary: {
-      main: "#51d6a4",
+      main: "#7FC9A8",
+      light: "#A6DCC4",
+      dark: "#579B7E",
+      contrastText: "#0F1E33",
     },
     success: {
-      main: "#51d6a4",
+      main: "#7FC9A8",
     },
+    text: {
+      primary: "#EAF0F6",
+      secondary: "#A9BBD0",
+    },
+    divider: "#2C4A6B",
     defaultBg: {
-      main: "#1a1d24",
-      light: "#1a1d24",
-      dark: "#1a1d24",
-      cardBg: "#1D1420",
-      contrastText: "#fff",
+      main: "#16263F",
+      light: "#1F3A5C",
+      dark: "#0F1E33",
+      cardBg: "#16263F",
+      contrastText: "#EAF0F6",
     },
   },
   components: {
@@ -31,8 +42,8 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#69696acd", 
-          }
+            borderColor: "#2C4A6B",
+          },
         },
       },
     },

@@ -166,8 +166,8 @@ function DiscountModal({
           display="flex"
           justifyContent="space-between"
         >
-          <span style={{ color: "#1894c3" }}>Valor original:</span>
-          <span style={{ color: "#51d6a4" }}>
+          <span style={{ color: "#2A9FD6" }}>Valor original:</span>
+          <span style={{ color: "#7FC9A8" }}>
             {formatCurrency(originalValue)}
           </span>
         </Typography>
@@ -197,13 +197,13 @@ function DiscountModal({
           <>
             <Typography variant="body2" mt={2}>
               Desconto aplicado:{" "}
-              <span style={{ color: "#51d6a4" }}>
+              <span style={{ color: "#7FC9A8" }}>
                 {formatCurrency(originalValue - discountedValue)}
               </span>
             </Typography>
             <Typography variant="body2">
               Valor mínimo com desconto:{" "}
-              <span style={{ color: "#51d6a4" }}>
+              <span style={{ color: "#7FC9A8" }}>
                 {formatCurrency(maxDiscountedValue)}
               </span>
             </Typography>
