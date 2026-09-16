@@ -10,6 +10,9 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --include=dev && npm cache clean --force
 
+ARG GIT_SHA=dev
+RUN echo "$GIT_SHA" > /tmp/.git_sha
+
 COPY . .
 
 EXPOSE 4000

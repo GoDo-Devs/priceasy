@@ -17,7 +17,12 @@ fi
 
 COMPOSE="docker compose -f docker-compose.prod.yml"
 
-echo "==> Buildando imagens"
+# o sha do commit entra como build arg para invalidar o cache do COPY:
+# sem ele o docker pode reaproveitar a camada antiga e servir codigo velho
+GIT_SHA=$(git rev-parse HEAD)
+export GIT_SHA
+
+echo "==> Buildando imagens (commit ${GIT_SHA:0:7})"
 $COMPOSE build
 
 echo "==> Subindo banco"

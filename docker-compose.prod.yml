@@ -32,6 +32,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.prod
+      args:
+        GIT_SHA: ${GIT_SHA:-dev}
     restart: unless-stopped
     expose:
       - "4000"
@@ -62,6 +64,7 @@ services:
       dockerfile: Dockerfile.prod
       args:
         VITE_API_URL: ${VITE_API_URL:-/api}
+        GIT_SHA: ${GIT_SHA:-dev}
     restart: unless-stopped
     expose:
       - "3000"
