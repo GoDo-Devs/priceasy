@@ -43,7 +43,7 @@ $COMPOSE run --rm --no-deps -e NODE_ENV=production backend \
   npx sequelize-cli db:migrate --env production
 
 echo "==> Subindo aplicação"
-$COMPOSE up -d --remove-orphans
+$COMPOSE up -d --force-recreate --remove-orphans
 
 echo "==> Limpando imagens antigas"
 docker image prune -f >/dev/null
