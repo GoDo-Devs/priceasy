@@ -24,13 +24,13 @@ echo "==> Subindo banco"
 $COMPOSE up -d db
 
 echo "==> Aguardando banco ficar saudável"
-for i in $(seq 1 60); do
+for i in $(seq 1 90); do
   status=$($COMPOSE ps db --format '{{.Health}}' 2>/dev/null || echo "")
   if [[ "$status" == "healthy" ]]; then
     echo "    banco pronto"
     break
   fi
-  if [[ $i -eq 60 ]]; then
+  if [[ $i -eq 90 ]]; then
     echo "ERRO: banco não ficou saudável a tempo" >&2
     $COMPOSE logs --tail=50 db >&2
     exit 1
