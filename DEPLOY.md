@@ -1,11 +1,21 @@
 # Deploy em produção
 
-Stack: **Nginx** (serve o frontend e faz proxy do `/api`) → **backend Node** → **MySQL**, tudo em Docker.
-Só a porta **80** fica exposta; backend e banco ficam na rede interna do Docker.
+Stack em Docker: **Nginx** na borda faz proxy para o **frontend** (Vite preview) e
+para o **backend** em `/api`. Só a porta **80** fica exposta; os demais serviços
+ficam na rede interna, e o MySQL só aceita conexões de `127.0.0.1`.
 
 ```
-internet :80 → [nginx + build do frontend] ──/api/──→ [backend :4000] ──→ [mysql]
+internet :80 → [nginx] ──/──────→ [frontend :3000]
+                   └────/api/───→ [backend :4000] ──→ [mysql]
 ```
+
+Cada serviço tem limite de CPU/memória e healthcheck definidos no
+`docker-compose.prod.yml`.
+
+| Arquivo | Uso |
+|---|---|
+| `docker-compose.yml` | desenvolvimento local (hot reload, portas expostas) |
+| `docker-compose.prod.yml` | produção (nginx, limites, healthchecks, restart) |
 
 ---
 
@@ -27,8 +37,8 @@ nano /root/priceasy-prod/.env          # DB_ROOT_PASSWORD, DB_NAME, VITE_API_URL
 nano /root/priceasy-prod/backend/.env  # JWT_SECRET, SMTP, FRONTEND_URL, API_PLATE_KEY
 ```
 
-> `DB_ROOT_PASSWORD` (`.env`) e `DB_PASSWORD` (`backend/.env`) precisam ter o
-> **mesmo valor** enquanto `DB_USER=root`.
+> `DB_PASSWORD` no `.env` da raiz e em `backend/.env` precisam ter o **mesmo valor**:
+> o primeiro cria o usuário no MySQL, o segundo é usado pelo backend para conectar.
 >
 > `FRONTEND_URL` deve ser a URL pública (ex.: `http://52.67.41.3`) — é ela que o CORS usa.
 
@@ -114,7 +124,7 @@ docker compose -f docker-compose.prod.yml run --rm --no-deps \
 
 # backup do banco
 docker compose -f docker-compose.prod.yml exec db \
-  mysqldump -uroot -p"$DB_ROOT_PASSWORD" priceasy > backup-$(date +%F).sql
+  mysqldump -upriceasy -p"$DB_PASSWORD" priceasy > backup-$(date +%F).sql
 ```
 
 ---
@@ -137,7 +147,8 @@ Frontend em `http://localhost:3000`, backend em `http://localhost:4000`.
 
 | Variável | Descrição |
 |---|---|
-| `DB_ROOT_PASSWORD` | senha do root do MySQL (obrigatória) |
+| `DB_PASSWORD` | senha do usuário da aplicação no MySQL (obrigatória) |
+| `DB_USER` | usuário criado na primeira subida (`priceasy`) |
 | `DB_NAME` | nome do banco criado na primeira subida |
 | `VITE_API_URL` | caminho da API no build do frontend (`/api`) |
 
@@ -156,7 +167,7 @@ Frontend em `http://localhost:3000`, backend em `http://localhost:4000`.
 
 ## Adicionar HTTPS depois
 
-Com um domínio apontando para a VPS, o caminho mais curto é colocar um
-proxy com TLS automático (Caddy ou Traefik) na frente do serviço `frontend`,
-ou rodar o certbot e montar os certificados no Nginx do container, passando a
-expor também a porta 443.
+Com um domínio apontando para a VPS, o caminho mais curto é rodar o certbot e
+montar os certificados no serviço `nginx`, passando a expor também a porta 443 —
+o conf fica em `nginx/default.conf`. Alternativamente, trocar o `nginx` por
+Caddy ou Traefik, que resolvem TLS automaticamente.
