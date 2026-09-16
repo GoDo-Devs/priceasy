@@ -30,33 +30,49 @@ export default function PriceCard({
   const displayValue =
     discountedValue !== null ? discountedValue : originalValue;
 
+  const valueSx = {
+    fontFamily: '"Sora", sans-serif',
+    fontVariantNumeric: "tabular-nums",
+    letterSpacing: "-0.01em",
+    lineHeight: 1.15,
+  };
+
   return (
     <Card
       variant={noBorder ? "elevation" : "outlined"}
       sx={{
-        borderRadius: 2,
-        p: 1.7,
+        borderRadius: 3,
+        p: 2,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
         minHeight,
         position: "relative",
+        transition: "border-color 120ms ease, transform 120ms ease",
+        "&:hover": onEdit
+          ? { borderColor: "primary.main", transform: "translateY(-1px)" }
+          : {},
       }}
     >
       <Box>
-        <Typography fontSize={11.5} color="text.secondary" fontWeight="medium">
+        <Typography
+          fontSize={11}
+          color="text.secondary"
+          fontWeight={600}
+          sx={{ textTransform: "uppercase", letterSpacing: "0.05em", mb: 0.5 }}
+        >
           {label}
         </Typography>
         {hasDiscount ? (
           <>
             <Typography
-              fontSize={10}
-              color="error"
-              sx={{ textDecoration: "line-through", mb: 0.1 }}
+              fontSize={10.5}
+              color="text.secondary"
+              sx={{ textDecoration: "line-through", mb: 0.2, ...valueSx }}
             >
               {formatBRL(originalValue)}
             </Typography>
-            <Typography color="success.main" fontSize={15} fontWeight="bold">
+            <Typography color="secondary.main" fontSize={19} fontWeight={700} sx={valueSx}>
               {formatBRL(discountedValue)}
             </Typography>
           </>
@@ -64,15 +80,15 @@ export default function PriceCard({
           <>
             {alwaysGreen ? (
               <Typography
-                color="success.main"
-                fontSize={15}
-                fontWeight="bold"
-                mt={0.1}
+                color="secondary.main"
+                fontSize={19}
+                fontWeight={700}
+                sx={valueSx}
               >
                 {formatBRL(displayValue)}
               </Typography>
             ) : (
-              <Typography fontSize={12} fontWeight="bold" mt={0.1}>
+              <Typography fontSize={17} fontWeight={700} sx={valueSx}>
                 {formatBRL(displayValue)}
               </Typography>
             )}

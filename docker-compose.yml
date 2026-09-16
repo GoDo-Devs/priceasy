@@ -1,9 +1,12 @@
 name: priceasy
+
 services:
+
   frontend:
     build: ./frontend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
     environment:
@@ -15,10 +18,12 @@ services:
     build: ./backend
     volumes:
       - ./backend:/app
+      - /app/node_modules
     ports:
       - "4000:4000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DB_HOST=db
       - DB_USER=root
@@ -36,6 +41,12 @@ services:
       MYSQL_DATABASE: priceasy
     volumes:
       - database-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     networks:
       - priceasy-network
 
